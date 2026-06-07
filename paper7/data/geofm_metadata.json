@@ -1,0 +1,7 @@
+{
+  "n_blocks": 2600,
+  "embedding_dim": 64,
+  "year": 2020,
+  "source": "AlphaEarth GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+  "method": "centroid_point_sampling"
+}

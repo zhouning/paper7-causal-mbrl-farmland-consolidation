@@ -1,0 +1,13 @@
+numpy
+pandas
+scipy
+scikit-learn
+torch
+gymnasium
+stable-baselines3
+sb3-contrib
+geopandas
+shapely
+pyproj
+libpysal
+python-docx

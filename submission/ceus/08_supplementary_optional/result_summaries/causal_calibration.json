@@ -1,0 +1,10 @@
+{
+  "empirical_att": 0.0489673559786307,
+  "empirical_se": 0.029273565960382684,
+  "predicted_att": 0.2646815104037523,
+  "calibration_factor": 0.18500482298115412,
+  "high_reward_mean": 0.008657630980014801,
+  "low_reward_mean": -0.2560238794237375,
+  "n_high_sampled": 50,
+  "n_low_sampled": 50
+}

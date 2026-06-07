@@ -1,0 +1,32 @@
+Dear Editor,
+
+We are pleased to submit our manuscript entitled "A Causally Calibrated Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning" for consideration as a Research Article in Computers, Environment and Urban Systems.
+
+The manuscript addresses a practical geospatial decision-support problem: how county-level planning authorities can use reinforcement learning for farmland consolidation when the real planning environment is expensive to simulate and model-free training is unstable. We study this problem using all 13 townships of Bishan District, Chongqing, comprising 2,600 consolidation blocks and 52,515 parcels.
+
+The central contribution is a model-based geocomputational framework that learns a lightweight transition model from real planning trajectories and uses it as a CPU-based learned environment for policy optimization. The manuscript further introduces causal reward calibration, using propensity-score-matched treatment effect estimates from real trajectory data to correct reward overestimation in the learned environment.
+
+We believe the paper is well aligned with CEUS because it combines geocomputation, artificial intelligence, spatial planning support, and land/resource management. The work is framed as a planning-support method for large-scale land consolidation rather than as a generic reinforcement-learning benchmark, with emphasis on computational feasibility, reward-exploitation failure modes, and real-environment evaluation.
+
+Specifically, the manuscript reports:
+
+1. A learned-environment formulation for county-level farmland consolidation with 2,600 block actions and a 44,212-dimensional state representation.
+
+2. A 237K-parameter transition model trained from 12,000 real-environment trajectories.
+
+3. A causal reward calibration method that estimates reward overestimation from observational planning trajectories.
+
+4. A 15-seed real-environment evaluation showing that calibrated model-based policies outperform GPU-trained model-free baselines.
+
+5. A compute reduction from 8-12 A100 GPU-hours to an under-2-hour CPU pipeline.
+
+The manuscript has not been published previously and is not under consideration elsewhere. All authors have approved the submission. The authors declare no competing interests. Data and code availability are described in the title-page declarations and can be provided for peer review in anonymized form subject to the applicable data-use constraints.
+
+Thank you for considering our manuscript. We look forward to the reviewers' feedback.
+
+Sincerely,
+
+Ning Zhou
+on behalf of all authors
+School of Software and Microelectronics, Peking University
+Corresponding author: Xiang Jing, jingxiang@pku.edu.cn

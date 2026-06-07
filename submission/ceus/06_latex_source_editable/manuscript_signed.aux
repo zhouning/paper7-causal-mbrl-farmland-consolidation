@@ -1,0 +1,75 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\bibstyle{plainnat}
+\citation{hafner2023dreamerv3}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{2}{Introduction}{section.1}{}}
+\citation{ha2018world}
+\citation{hafner2023dreamerv3}
+\citation{schrittwieser2020muzero}
+\citation{zheng2023spatial}
+\citation{amodei2016concrete}
+\citation{levine2020offline}
+\citation{bai2022training}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{3}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Model-based reinforcement learning}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Reward model exploitation}{3}{subsection.2.2}\protected@file@percent }
+\citation{stuart2010matching}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}DRL for farmland consolidation}{4}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Causal inference for reward calibration}{4}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Problem Setting}{4}{section.3}\protected@file@percent }
+\newlabel{sec:problem}{{3}{4}{Problem Setting}{section.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Methods}{6}{section.4}\protected@file@percent }
+\newlabel{sec:methods}{{4}{6}{Methods}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with causal reward calibration applied during model-based training.}}{6}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:pipeline}{{1}{6}{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with causal reward calibration applied during model-based training}{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Stage 1: Trajectory collection}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Stage 2: Neural transition model}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Stage 3: Policy optimization on learned environment}{7}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Causal reward calibration}{8}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:calibration}{{4.4}{8}{Causal reward calibration}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{9}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{9}{Experiments}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Experimental setup}{9}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Main results}{9}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Asterisks indicate Mann-Whitney $U$ tests against Greedy-Sequential; comparisons with model-free DRL are reported descriptively because seed counts and training architectures differ. Best result in bold.}}{10}{table.caption.2}\protected@file@percent }
+\newlabel{tab:main}{{1}{10}{Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Asterisks indicate Mann-Whitney $U$ tests against Greedy-Sequential; comparisons with model-free DRL are reported descriptively because seed counts and training architectures differ. Best result in bold}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Transition model quality}{10}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:tm_quality}{{5.3}{10}{Transition model quality}{subsection.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Transition model validation metrics.}}{11}{table.caption.3}\protected@file@percent }
+\newlabel{tab:tm}{{2}{11}{Transition model validation metrics}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Ablation: Causal reward calibration (E5)}{11}{subsection.5.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Effect of causal reward calibration on policy quality (15 seeds). All metrics evaluated on real env.}}{11}{table.caption.4}\protected@file@percent }
+\newlabel{tab:e5}{{3}{11}{Effect of causal reward calibration on policy quality (15 seeds). All metrics evaluated on real env}{table.caption.4}{}}
+\citation{brown2025alphaearth}
+\citation{lambert2022investigating}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Causal calibration vs.\ heuristic reward scaling}{12}{subsection.5.5}\protected@file@percent }
+\newlabel{sec:grid_search}{{5.5}{12}{Causal calibration vs.\ heuristic reward scaling}{subsection.5.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Reward scaling grid search (5 seeds each). The causally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$.}}{12}{table.caption.5}\protected@file@percent }
+\newlabel{tab:grid}{{4}{12}{Reward scaling grid search (5 seeds each). The causally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Ablation: GeoFM embedding augmentation (E4)}{12}{subsection.5.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces GeoFM embedding ablation. TM = transition model.}}{13}{table.caption.6}\protected@file@percent }
+\newlabel{tab:e4}{{5}{13}{GeoFM embedding ablation. TM = transition model}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{13}{section.6}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{13}{Discussion}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Why model-based training can perform well with an approximate environment}{13}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Causal calibration as reward regularization}{14}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}The accuracy--utility paradox in GeoFM augmentation}{14}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Limitations}{14}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{15}{section.7}\protected@file@percent }
+\newlabel{sec:conclusions}{{7}{15}{Conclusions}{section.7}{}}
+\bibcite{amodei2016concrete}{{1}{2016}{{Amodei et~al.}}{{}}}
+\bibcite{bai2022training}{{2}{2022}{{Bai et~al.}}{{}}}
+\bibcite{brown2025alphaearth}{{3}{2025}{{Brown et~al.}}{{}}}
+\bibcite{ha2018world}{{4}{2018}{{Ha and Schmidhuber}}{{}}}
+\bibcite{hafner2023dreamerv3}{{5}{2023}{{Hafner et~al.}}{{}}}
+\bibcite{lambert2022investigating}{{6}{2022}{{Lambert et~al.}}{{}}}
+\bibcite{levine2020offline}{{7}{2020}{{Levine et~al.}}{{}}}
+\bibcite{schrittwieser2020muzero}{{8}{2020}{{Schrittwieser et~al.}}{{}}}
+\bibcite{stuart2010matching}{{9}{2010}{{Stuart}}{{}}}
+\bibcite{zheng2023spatial}{{10}{2023}{{Zheng et~al.}}{{}}}
+\gdef \@abspage@last{16}

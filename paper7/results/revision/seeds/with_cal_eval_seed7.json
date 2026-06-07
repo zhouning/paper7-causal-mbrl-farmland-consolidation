@@ -1,0 +1,11 @@
+{
+  "label": "with_cal",
+  "seed": 7,
+  "reward_scale": 0.185,
+  "training_time_s": 2199.3185110092163,
+  "reward_real": 37.87018683579725,
+  "slope_change_pct": -1.0415319428722265,
+  "cont_change": 0.011849365575812953,
+  "baimu_count_change": 1,
+  "baimu_area_change_ha": -278.18323259833454
+}

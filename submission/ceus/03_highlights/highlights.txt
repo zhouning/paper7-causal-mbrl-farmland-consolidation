@@ -1,0 +1,5 @@
+* Learned environments enable CPU-based farmland planning reinforcement learning.
+* Causal reward calibration reduces model-based reward exploitation.
+* County-scale experiments cover 13 townships and 52,515 parcels.
+* Calibrated policies outperform GPU-trained model-free baselines.
+* GeoFM embeddings improve model fit but reduce downstream policy utility.

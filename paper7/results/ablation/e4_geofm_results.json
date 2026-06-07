@@ -1,0 +1,40 @@
+[
+  {
+    "label": "no_geofm",
+    "seed": 0,
+    "slope_change_pct": -0.818,
+    "tm_val_loss": 0.085084,
+    "tm_val_cosine": 0.999786,
+    "geofm_dim": 0
+  },
+  {
+    "label": "no_geofm",
+    "seed": 1,
+    "slope_change_pct": -1.107,
+    "tm_val_loss": 0.085084,
+    "tm_val_cosine": 0.999786,
+    "geofm_dim": 0
+  },
+  {
+    "slope_change_pct": -0.6923346743302087,
+    "cont_change": 0.02079995931548284,
+    "baimu_count_change": 3,
+    "label": "with_geofm",
+    "seed": 0,
+    "training_time_s": 6247.297945022583,
+    "tm_val_loss": 0.05076321529984278,
+    "tm_val_cosine": 0.9997910229783309,
+    "geofm_dim": 64
+  },
+  {
+    "slope_change_pct": -0.7138570192411211,
+    "cont_change": 0.01749434230935476,
+    "baimu_count_change": 2,
+    "label": "with_geofm",
+    "seed": 1,
+    "training_time_s": 4190.505494832993,
+    "tm_val_loss": 0.05076321529984278,
+    "tm_val_cosine": 0.9997910229783309,
+    "geofm_dim": 64
+  }
+]

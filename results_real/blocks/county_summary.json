@@ -1,0 +1,119 @@
+{
+  "500227001": {
+    "label": "T01-Bishan (Street)",
+    "n_swappable": 3906,
+    "n_blocks": 202,
+    "n_baimu": 155,
+    "median_parcels_per_block": 16,
+    "median_area_ha": 17.824832653005622,
+    "total_area_ha": 4739.270751572485
+  },
+  "500227002": {
+    "label": "T02-Qinggang (Street)",
+    "n_swappable": 5415,
+    "n_blocks": 269,
+    "n_baimu": 248,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 18.519047073136303,
+    "total_area_ha": 6136.061130860596
+  },
+  "500227100": {
+    "label": "T03-Hechuan",
+    "n_swappable": 2317,
+    "n_blocks": 112,
+    "n_baimu": 107,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 35.706654047788085,
+    "total_area_ha": 5255.733341711812
+  },
+  "500227101": {
+    "label": "T04-Laifeng",
+    "n_swappable": 2899,
+    "n_blocks": 142,
+    "n_baimu": 138,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 27.255627636580265,
+    "total_area_ha": 4967.424903204414
+  },
+  "500227102": {
+    "label": "T05-Guangpu",
+    "n_swappable": 5875,
+    "n_blocks": 291,
+    "n_baimu": 277,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 27.23979242635411,
+    "total_area_ha": 9402.780983454955
+  },
+  "500227103": {
+    "label": "T06-Daxing",
+    "n_swappable": 3617,
+    "n_blocks": 179,
+    "n_baimu": 168,
+    "median_parcels_per_block": 20,
+    "median_area_ha": 19.822840208079594,
+    "total_area_ha": 3648.48202067212
+  },
+  "500227104": {
+    "label": "T07-Zhengxing",
+    "n_swappable": 2538,
+    "n_blocks": 120,
+    "n_baimu": 110,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 21.54882634233982,
+    "total_area_ha": 2898.5737105219696
+  },
+  "500227106": {
+    "label": "T09-Hebian",
+    "n_swappable": 5739,
+    "n_blocks": 282,
+    "n_baimu": 273,
+    "median_parcels_per_block": 20,
+    "median_area_ha": 19.199472130936112,
+    "total_area_ha": 5796.5963312683025
+  },
+  "500227107": {
+    "label": "T10-Shihe",
+    "n_swappable": 5927,
+    "n_blocks": 297,
+    "n_baimu": 283,
+    "median_parcels_per_block": 20,
+    "median_area_ha": 22.410549912016005,
+    "total_area_ha": 6757.977815686887
+  },
+  "500227200": {
+    "label": "T13-Qinglonghu",
+    "n_swappable": 3225,
+    "n_blocks": 158,
+    "n_baimu": 152,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 21.691418886901648,
+    "total_area_ha": 4129.027687332527
+  },
+  "500227105": {
+    "label": "T08-Dalukou (Large)",
+    "n_swappable": 6787,
+    "n_blocks": 338,
+    "n_baimu": 324,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 19.54284174321089,
+    "total_area_ha": 7025.303688313668
+  },
+  "500227108": {
+    "label": "T11-Baxian (Medium)",
+    "n_swappable": 2669,
+    "n_blocks": 132,
+    "n_baimu": 128,
+    "median_parcels_per_block": 19,
+    "median_area_ha": 27.983204128064937,
+    "total_area_ha": 3806.231847970365
+  },
+  "500227109": {
+    "label": "T12-Jianlong (Small)",
+    "n_swappable": 1601,
+    "n_blocks": 78,
+    "n_baimu": 76,
+    "median_parcels_per_block": 18,
+    "median_area_ha": 33.165015067027,
+    "total_area_ha": 2632.562994374626
+  }
+}

@@ -1,0 +1,986 @@
+{
+  "greedy_global": {
+    "method": "Greedy-Global",
+    "slope_change_pct": 0.9991301029344141,
+    "cont_change": 0.12958018664022175,
+    "baimu_count_change": -9,
+    "baimu_area_change_ha": 1445.9051311540127,
+    "completed_swaps": 500,
+    "elapsed": 0.2871387004852295,
+    "initial_slope": 9.615713046605176,
+    "final_slope": 9.711786530365513,
+    "initial_cont": 3.585221349200295,
+    "final_cont": 3.714801535840517,
+    "initial_baimu_count": 109,
+    "final_baimu_count": 100,
+    "per_township": {
+      "500227001": {
+        "label": "T01-Bishan",
+        "n_blocks": 202,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 10.390035136173001,
+        "farmland_area_ha": 2780.3823924794233
+      },
+      "500227002": {
+        "label": "T02-Qinggang",
+        "n_blocks": 269,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.577462874537537,
+        "farmland_area_ha": 4045.929428695263
+      },
+      "500227100": {
+        "label": "T03-Hechuan",
+        "n_blocks": 112,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 11.417738692605173,
+        "farmland_area_ha": 3279.7032223583997
+      },
+      "500227101": {
+        "label": "T04-Laifeng",
+        "n_blocks": 142,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 10.314345841304618,
+        "farmland_area_ha": 3509.946535718521
+      },
+      "500227102": {
+        "label": "T05-Guangpu",
+        "n_blocks": 291,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 11.667045758003995,
+        "farmland_area_ha": 6542.177843112138
+      },
+      "500227103": {
+        "label": "T06-Daxing",
+        "n_blocks": 179,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 12.685474686124241,
+        "farmland_area_ha": 2727.38682774915
+      },
+      "500227104": {
+        "label": "T07-Zhengxing",
+        "n_blocks": 120,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 12.41683572856266,
+        "farmland_area_ha": 1827.1163064977109
+      },
+      "500227105": {
+        "label": "T08-Dalukou",
+        "n_blocks": 338,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.585945605140042,
+        "farmland_area_ha": 5782.401577854268
+      },
+      "500227106": {
+        "label": "T09-Hebian",
+        "n_blocks": 282,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 8.3749684125706,
+        "farmland_area_ha": 4751.180893998388
+      },
+      "500227107": {
+        "label": "T10-Shihe",
+        "n_blocks": 297,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.659346872196313,
+        "farmland_area_ha": 5977.4002635472825
+      },
+      "500227108": {
+        "label": "T11-Baxian",
+        "n_blocks": 132,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.112691699083678,
+        "farmland_area_ha": 3412.735503074803
+      },
+      "500227109": {
+        "label": "T12-Jianlong",
+        "n_blocks": 78,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.818802618917227,
+        "farmland_area_ha": 2113.397317009988
+      },
+      "500227200": {
+        "label": "T13-Qinglonghu",
+        "n_blocks": 158,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.558973897675617,
+        "farmland_area_ha": 2619.438763030645
+      }
+    }
+  },
+  "greedy_sequential": {
+    "method": "Greedy-Sequential",
+    "slope_change_pct": -0.27305760589931705,
+    "cont_change": 0.007526635644722113,
+    "baimu_count_change": 3,
+    "baimu_area_change_ha": 18.11294012170434,
+    "completed_swaps": 272,
+    "elapsed": 10.532263278961182,
+    "initial_slope": 9.615713046605176,
+    "final_slope": 9.589456610742662,
+    "initial_cont": 3.585221349200295,
+    "final_cont": 3.5927479848450172,
+    "initial_baimu_count": 109,
+    "final_baimu_count": 112,
+    "per_township": {
+      "500227001": {
+        "label": "T01-Bishan",
+        "n_blocks": 202,
+        "swaps_used": 25,
+        "blocks_invested": 11,
+        "avg_farmland_slope": 10.71387795978651,
+        "farmland_area_ha": 2821.8124861566603
+      },
+      "500227002": {
+        "label": "T02-Qinggang",
+        "n_blocks": 269,
+        "swaps_used": 3,
+        "blocks_invested": 2,
+        "avg_farmland_slope": 7.624395117122218,
+        "farmland_area_ha": 4009.6231811870307
+      },
+      "500227100": {
+        "label": "T03-Hechuan",
+        "n_blocks": 112,
+        "swaps_used": 10,
+        "blocks_invested": 4,
+        "avg_farmland_slope": 11.066850943274105,
+        "farmland_area_ha": 3164.8664720518514
+      },
+      "500227101": {
+        "label": "T04-Laifeng",
+        "n_blocks": 142,
+        "swaps_used": 15,
+        "blocks_invested": 6,
+        "avg_farmland_slope": 9.953341229022646,
+        "farmland_area_ha": 3373.599690983978
+      },
+      "500227102": {
+        "label": "T05-Guangpu",
+        "n_blocks": 291,
+        "swaps_used": 27,
+        "blocks_invested": 10,
+        "avg_farmland_slope": 11.048076590676864,
+        "farmland_area_ha": 5976.37864915129
+      },
+      "500227103": {
+        "label": "T06-Daxing",
+        "n_blocks": 179,
+        "swaps_used": 42,
+        "blocks_invested": 15,
+        "avg_farmland_slope": 12.749722953491256,
+        "farmland_area_ha": 2729.5340882438113
+      },
+      "500227104": {
+        "label": "T07-Zhengxing",
+        "n_blocks": 120,
+        "swaps_used": 19,
+        "blocks_invested": 7,
+        "avg_farmland_slope": 12.570210186295316,
+        "farmland_area_ha": 1819.1946240853533
+      },
+      "500227105": {
+        "label": "T08-Dalukou",
+        "n_blocks": 338,
+        "swaps_used": 49,
+        "blocks_invested": 16,
+        "avg_farmland_slope": 9.544464257876072,
+        "farmland_area_ha": 5723.62497524254
+      },
+      "500227106": {
+        "label": "T09-Hebian",
+        "n_blocks": 282,
+        "swaps_used": 42,
+        "blocks_invested": 14,
+        "avg_farmland_slope": 8.268079698108432,
+        "farmland_area_ha": 4613.21804640194
+      },
+      "500227107": {
+        "label": "T10-Shihe",
+        "n_blocks": 297,
+        "swaps_used": 15,
+        "blocks_invested": 7,
+        "avg_farmland_slope": 7.674174269151268,
+        "farmland_area_ha": 5905.39032114152
+      },
+      "500227108": {
+        "label": "T11-Baxian",
+        "n_blocks": 132,
+        "swaps_used": 8,
+        "blocks_invested": 3,
+        "avg_farmland_slope": 9.14403649942946,
+        "farmland_area_ha": 3383.3915494673997
+      },
+      "500227109": {
+        "label": "T12-Jianlong",
+        "n_blocks": 78,
+        "swaps_used": 10,
+        "blocks_invested": 3,
+        "avg_farmland_slope": 9.735183936407582,
+        "farmland_area_ha": 2103.2993870275745
+      },
+      "500227200": {
+        "label": "T13-Qinglonghu",
+        "n_blocks": 158,
+        "swaps_used": 7,
+        "blocks_invested": 2,
+        "avg_farmland_slope": 7.609959126524213,
+        "farmland_area_ha": 2575.737743848021
+      }
+    }
+  },
+  "random_block": {
+    "method": "Random-Block",
+    "slope_pct_mean": 0.08932642818594551,
+    "slope_pct_std": 0.13768303312410055,
+    "cont_mean": 0.016131410989904893,
+    "cont_std": 0.0023986188338296103,
+    "baimu_count_mean": 2.2,
+    "baimu_area_mean": 178.12998369434837,
+    "per_seed": [
+      {
+        "method": "Random-Block",
+        "slope_change_pct": 0.08731616106760133,
+        "cont_change": 0.013019045439519594,
+        "baimu_count_change": 6,
+        "baimu_area_change_ha": 196.23575690217615,
+        "completed_swaps": 294,
+        "elapsed": 0.017635583877563477,
+        "initial_slope": 9.615713046605176,
+        "final_slope": 9.62410911810548,
+        "initial_cont": 3.585221349200295,
+        "final_cont": 3.5982403946398147,
+        "initial_baimu_count": 109,
+        "final_baimu_count": 115,
+        "per_township": {
+          "500227001": {
+            "label": "T01-Bishan",
+            "n_blocks": 202,
+            "swaps_used": 16,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 10.804761517138967,
+            "farmland_area_ha": 2840.9318849613583
+          },
+          "500227002": {
+            "label": "T02-Qinggang",
+            "n_blocks": 269,
+            "swaps_used": 20,
+            "blocks_invested": 6,
+            "avg_farmland_slope": 7.618493997376878,
+            "farmland_area_ha": 4010.7995280997457
+          },
+          "500227100": {
+            "label": "T03-Hechuan",
+            "n_blocks": 112,
+            "swaps_used": 3,
+            "blocks_invested": 2,
+            "avg_farmland_slope": 11.08460902507347,
+            "farmland_area_ha": 3166.195366417797
+          },
+          "500227101": {
+            "label": "T04-Laifeng",
+            "n_blocks": 142,
+            "swaps_used": 11,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 9.986649492201828,
+            "farmland_area_ha": 3381.986789727762
+          },
+          "500227102": {
+            "label": "T05-Guangpu",
+            "n_blocks": 291,
+            "swaps_used": 30,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 11.077935169891472,
+            "farmland_area_ha": 6009.031745768908
+          },
+          "500227103": {
+            "label": "T06-Daxing",
+            "n_blocks": 179,
+            "swaps_used": 33,
+            "blocks_invested": 10,
+            "avg_farmland_slope": 12.731057986719334,
+            "farmland_area_ha": 2714.5918616242316
+          },
+          "500227104": {
+            "label": "T07-Zhengxing",
+            "n_blocks": 120,
+            "swaps_used": 8,
+            "blocks_invested": 3,
+            "avg_farmland_slope": 12.561205624842792,
+            "farmland_area_ha": 1809.2243705081821
+          },
+          "500227105": {
+            "label": "T08-Dalukou",
+            "n_blocks": 338,
+            "swaps_used": 51,
+            "blocks_invested": 16,
+            "avg_farmland_slope": 9.610177347315894,
+            "farmland_area_ha": 5742.683291591426
+          },
+          "500227106": {
+            "label": "T09-Hebian",
+            "n_blocks": 282,
+            "swaps_used": 52,
+            "blocks_invested": 15,
+            "avg_farmland_slope": 8.325520730873697,
+            "farmland_area_ha": 4623.099975004834
+          },
+          "500227107": {
+            "label": "T10-Shihe",
+            "n_blocks": 297,
+            "swaps_used": 38,
+            "blocks_invested": 11,
+            "avg_farmland_slope": 7.7096592897280365,
+            "farmland_area_ha": 5940.368689444021
+          },
+          "500227108": {
+            "label": "T11-Baxian",
+            "n_blocks": 132,
+            "swaps_used": 15,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 9.129851592696232,
+            "farmland_area_ha": 3381.8029074696706
+          },
+          "500227109": {
+            "label": "T12-Jianlong",
+            "n_blocks": 78,
+            "swaps_used": 7,
+            "blocks_invested": 3,
+            "avg_farmland_slope": 9.869668036912632,
+            "farmland_area_ha": 2128.759695566719
+          },
+          "500227200": {
+            "label": "T13-Qinglonghu",
+            "n_blocks": 158,
+            "swaps_used": 10,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 7.68866110125598,
+            "farmland_area_ha": 2603.8550725709874
+          }
+        },
+        "seed": 0
+      },
+      {
+        "method": "Random-Block",
+        "slope_change_pct": 0.182276775848223,
+        "cont_change": 0.015205838228188995,
+        "baimu_count_change": 3,
+        "baimu_area_change_ha": 209.8402218557954,
+        "completed_swaps": 297,
+        "elapsed": 0.02028965950012207,
+        "initial_slope": 9.615713046605176,
+        "final_slope": 9.633240258339573,
+        "initial_cont": 3.585221349200295,
+        "final_cont": 3.600427187428484,
+        "initial_baimu_count": 109,
+        "final_baimu_count": 112,
+        "per_township": {
+          "500227001": {
+            "label": "T01-Bishan",
+            "n_blocks": 202,
+            "swaps_used": 24,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 10.709904931833146,
+            "farmland_area_ha": 2817.9436877028274
+          },
+          "500227002": {
+            "label": "T02-Qinggang",
+            "n_blocks": 269,
+            "swaps_used": 32,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 7.615876778555363,
+            "farmland_area_ha": 4019.030098598343
+          },
+          "500227100": {
+            "label": "T03-Hechuan",
+            "n_blocks": 112,
+            "swaps_used": 5,
+            "blocks_invested": 1,
+            "avg_farmland_slope": 11.101839685691322,
+            "farmland_area_ha": 3178.8378528083995
+          },
+          "500227101": {
+            "label": "T04-Laifeng",
+            "n_blocks": 142,
+            "swaps_used": 14,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 9.973740467267039,
+            "farmland_area_ha": 3376.7784561623052
+          },
+          "500227102": {
+            "label": "T05-Guangpu",
+            "n_blocks": 291,
+            "swaps_used": 42,
+            "blocks_invested": 12,
+            "avg_farmland_slope": 11.12689599749163,
+            "farmland_area_ha": 6057.242564555684
+          },
+          "500227103": {
+            "label": "T06-Daxing",
+            "n_blocks": 179,
+            "swaps_used": 25,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 12.73190130266483,
+            "farmland_area_ha": 2711.9513433937805
+          },
+          "500227104": {
+            "label": "T07-Zhengxing",
+            "n_blocks": 120,
+            "swaps_used": 18,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 12.727981295604877,
+            "farmland_area_ha": 1848.0785756462883
+          },
+          "500227105": {
+            "label": "T08-Dalukou",
+            "n_blocks": 338,
+            "swaps_used": 42,
+            "blocks_invested": 15,
+            "avg_farmland_slope": 9.632206402204302,
+            "farmland_area_ha": 5771.416224979631
+          },
+          "500227106": {
+            "label": "T09-Hebian",
+            "n_blocks": 282,
+            "swaps_used": 16,
+            "blocks_invested": 6,
+            "avg_farmland_slope": 8.287498712290482,
+            "farmland_area_ha": 4600.648404781013
+          },
+          "500227107": {
+            "label": "T10-Shihe",
+            "n_blocks": 297,
+            "swaps_used": 41,
+            "blocks_invested": 16,
+            "avg_farmland_slope": 7.716922164454474,
+            "farmland_area_ha": 5926.421110410411
+          },
+          "500227108": {
+            "label": "T11-Baxian",
+            "n_blocks": 132,
+            "swaps_used": 12,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 9.149778137567948,
+            "farmland_area_ha": 3369.9639169190577
+          },
+          "500227109": {
+            "label": "T12-Jianlong",
+            "n_blocks": 78,
+            "swaps_used": 4,
+            "blocks_invested": 2,
+            "avg_farmland_slope": 9.877056393273545,
+            "farmland_area_ha": 2119.6046230272977
+          },
+          "500227200": {
+            "label": "T13-Qinglonghu",
+            "n_blocks": 158,
+            "swaps_used": 22,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 7.593966184455155,
+            "farmland_area_ha": 2573.431526570121
+          }
+        },
+        "seed": 1
+      },
+      {
+        "method": "Random-Block",
+        "slope_change_pct": 0.1766185936752585,
+        "cont_change": 0.019325145574287106,
+        "baimu_count_change": 0,
+        "baimu_area_change_ha": 234.93764857500196,
+        "completed_swaps": 309,
+        "elapsed": 0.01853775978088379,
+        "initial_slope": 9.615713046605176,
+        "final_slope": 9.6326961837776,
+        "initial_cont": 3.585221349200295,
+        "final_cont": 3.604546494774582,
+        "initial_baimu_count": 109,
+        "final_baimu_count": 109,
+        "per_township": {
+          "500227001": {
+            "label": "T01-Bishan",
+            "n_blocks": 202,
+            "swaps_used": 10,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 10.621775114049045,
+            "farmland_area_ha": 2790.8538185977163
+          },
+          "500227002": {
+            "label": "T02-Qinggang",
+            "n_blocks": 269,
+            "swaps_used": 27,
+            "blocks_invested": 8,
+            "avg_farmland_slope": 7.606404048396694,
+            "farmland_area_ha": 4005.03910664179
+          },
+          "500227100": {
+            "label": "T03-Hechuan",
+            "n_blocks": 112,
+            "swaps_used": 14,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 11.11494237419636,
+            "farmland_area_ha": 3192.401458861199
+          },
+          "500227101": {
+            "label": "T04-Laifeng",
+            "n_blocks": 142,
+            "swaps_used": 18,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 9.97751084261845,
+            "farmland_area_ha": 3374.6807480032
+          },
+          "500227102": {
+            "label": "T05-Guangpu",
+            "n_blocks": 291,
+            "swaps_used": 26,
+            "blocks_invested": 8,
+            "avg_farmland_slope": 11.193556658634055,
+            "farmland_area_ha": 6103.185633250531
+          },
+          "500227103": {
+            "label": "T06-Daxing",
+            "n_blocks": 179,
+            "swaps_used": 23,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 12.704975778368704,
+            "farmland_area_ha": 2699.4660238424253
+          },
+          "500227104": {
+            "label": "T07-Zhengxing",
+            "n_blocks": 120,
+            "swaps_used": 19,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 12.771810852643245,
+            "farmland_area_ha": 1851.3817948454634
+          },
+          "500227105": {
+            "label": "T08-Dalukou",
+            "n_blocks": 338,
+            "swaps_used": 41,
+            "blocks_invested": 15,
+            "avg_farmland_slope": 9.623088084588712,
+            "farmland_area_ha": 5764.454511308295
+          },
+          "500227106": {
+            "label": "T09-Hebian",
+            "n_blocks": 282,
+            "swaps_used": 49,
+            "blocks_invested": 13,
+            "avg_farmland_slope": 8.28161477115049,
+            "farmland_area_ha": 4615.011352244289
+          },
+          "500227107": {
+            "label": "T10-Shihe",
+            "n_blocks": 297,
+            "swaps_used": 21,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 7.732041369843041,
+            "farmland_area_ha": 5932.120916256955
+          },
+          "500227108": {
+            "label": "T11-Baxian",
+            "n_blocks": 132,
+            "swaps_used": 28,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 9.073022131707827,
+            "farmland_area_ha": 3348.216671133026
+          },
+          "500227109": {
+            "label": "T12-Jianlong",
+            "n_blocks": 78,
+            "swaps_used": 11,
+            "blocks_invested": 3,
+            "avg_farmland_slope": 9.861271981457392,
+            "farmland_area_ha": 2118.6718510613173
+          },
+          "500227200": {
+            "label": "T13-Qinglonghu",
+            "n_blocks": 158,
+            "swaps_used": 22,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 7.608738145968975,
+            "farmland_area_ha": 2577.527028424126
+          }
+        },
+        "seed": 2
+      },
+      {
+        "method": "Random-Block",
+        "slope_change_pct": 0.1771792160378617,
+        "cont_change": 0.018511455234317076,
+        "baimu_count_change": -1,
+        "baimu_area_change_ha": 192.70839524555205,
+        "completed_swaps": 323,
+        "elapsed": 0.019455671310424805,
+        "initial_slope": 9.615713046605176,
+        "final_slope": 9.63275009161532,
+        "initial_cont": 3.585221349200295,
+        "final_cont": 3.603732804434612,
+        "initial_baimu_count": 109,
+        "final_baimu_count": 108,
+        "per_township": {
+          "500227001": {
+            "label": "T01-Bishan",
+            "n_blocks": 202,
+            "swaps_used": 15,
+            "blocks_invested": 6,
+            "avg_farmland_slope": 10.644041644458248,
+            "farmland_area_ha": 2798.551488849053
+          },
+          "500227002": {
+            "label": "T02-Qinggang",
+            "n_blocks": 269,
+            "swaps_used": 28,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 7.595602379412261,
+            "farmland_area_ha": 3988.534397855386
+          },
+          "500227100": {
+            "label": "T03-Hechuan",
+            "n_blocks": 112,
+            "swaps_used": 14,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 11.303891562659057,
+            "farmland_area_ha": 3216.6028207396766
+          },
+          "500227101": {
+            "label": "T04-Laifeng",
+            "n_blocks": 142,
+            "swaps_used": 15,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 10.000800068414566,
+            "farmland_area_ha": 3389.0998816577694
+          },
+          "500227102": {
+            "label": "T05-Guangpu",
+            "n_blocks": 291,
+            "swaps_used": 32,
+            "blocks_invested": 10,
+            "avg_farmland_slope": 11.055650981705977,
+            "farmland_area_ha": 5993.754656257871
+          },
+          "500227103": {
+            "label": "T06-Daxing",
+            "n_blocks": 179,
+            "swaps_used": 33,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 12.74310351509723,
+            "farmland_area_ha": 2718.9037862256528
+          },
+          "500227104": {
+            "label": "T07-Zhengxing",
+            "n_blocks": 120,
+            "swaps_used": 20,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 12.604637262332112,
+            "farmland_area_ha": 1831.853668998435
+          },
+          "500227105": {
+            "label": "T08-Dalukou",
+            "n_blocks": 338,
+            "swaps_used": 41,
+            "blocks_invested": 10,
+            "avg_farmland_slope": 9.63212583622657,
+            "farmland_area_ha": 5756.903669760044
+          },
+          "500227106": {
+            "label": "T09-Hebian",
+            "n_blocks": 282,
+            "swaps_used": 49,
+            "blocks_invested": 16,
+            "avg_farmland_slope": 8.359883596311311,
+            "farmland_area_ha": 4652.464841881126
+          },
+          "500227107": {
+            "label": "T10-Shihe",
+            "n_blocks": 297,
+            "swaps_used": 32,
+            "blocks_invested": 10,
+            "avg_farmland_slope": 7.725713253788882,
+            "farmland_area_ha": 5935.835620616166
+          },
+          "500227108": {
+            "label": "T11-Baxian",
+            "n_blocks": 132,
+            "swaps_used": 19,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 9.136624117987152,
+            "farmland_area_ha": 3385.25920622069
+          },
+          "500227109": {
+            "label": "T12-Jianlong",
+            "n_blocks": 78,
+            "swaps_used": 14,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 9.808310323330664,
+            "farmland_area_ha": 2104.421570355598
+          },
+          "500227200": {
+            "label": "T13-Qinglonghu",
+            "n_blocks": 158,
+            "swaps_used": 11,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 7.611775468796267,
+            "farmland_area_ha": 2573.7717260485215
+          }
+        },
+        "seed": 3
+      },
+      {
+        "method": "Random-Block",
+        "slope_change_pct": -0.17675860569921703,
+        "cont_change": 0.014595570473211694,
+        "baimu_count_change": 3,
+        "baimu_area_change_ha": 56.92789589321613,
+        "completed_swaps": 307,
+        "elapsed": 0.013086795806884766,
+        "initial_slope": 9.615713046605176,
+        "final_slope": 9.598716446278283,
+        "initial_cont": 3.585221349200295,
+        "final_cont": 3.599816919673507,
+        "initial_baimu_count": 109,
+        "final_baimu_count": 112,
+        "per_township": {
+          "500227001": {
+            "label": "T01-Bishan",
+            "n_blocks": 202,
+            "swaps_used": 8,
+            "blocks_invested": 3,
+            "avg_farmland_slope": 10.65934860925986,
+            "farmland_area_ha": 2824.1777936331505
+          },
+          "500227002": {
+            "label": "T02-Qinggang",
+            "n_blocks": 269,
+            "swaps_used": 26,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 7.611937511897246,
+            "farmland_area_ha": 4003.8493226753235
+          },
+          "500227100": {
+            "label": "T03-Hechuan",
+            "n_blocks": 112,
+            "swaps_used": 13,
+            "blocks_invested": 5,
+            "avg_farmland_slope": 11.005759610538423,
+            "farmland_area_ha": 3147.7890779443865
+          },
+          "500227101": {
+            "label": "T04-Laifeng",
+            "n_blocks": 142,
+            "swaps_used": 9,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 9.981524827139017,
+            "farmland_area_ha": 3354.8088672832446
+          },
+          "500227102": {
+            "label": "T05-Guangpu",
+            "n_blocks": 291,
+            "swaps_used": 31,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 11.021732519598016,
+            "farmland_area_ha": 5959.16998775453
+          },
+          "500227103": {
+            "label": "T06-Daxing",
+            "n_blocks": 179,
+            "swaps_used": 17,
+            "blocks_invested": 4,
+            "avg_farmland_slope": 12.74785885102984,
+            "farmland_area_ha": 2707.2121494087314
+          },
+          "500227104": {
+            "label": "T07-Zhengxing",
+            "n_blocks": 120,
+            "swaps_used": 21,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 12.593205660066003,
+            "farmland_area_ha": 1832.2550066196382
+          },
+          "500227105": {
+            "label": "T08-Dalukou",
+            "n_blocks": 338,
+            "swaps_used": 64,
+            "blocks_invested": 19,
+            "avg_farmland_slope": 9.640034618824933,
+            "farmland_area_ha": 5793.394006108323
+          },
+          "500227106": {
+            "label": "T09-Hebian",
+            "n_blocks": 282,
+            "swaps_used": 30,
+            "blocks_invested": 9,
+            "avg_farmland_slope": 8.270622960997157,
+            "farmland_area_ha": 4603.990908233404
+          },
+          "500227107": {
+            "label": "T10-Shihe",
+            "n_blocks": 297,
+            "swaps_used": 20,
+            "blocks_invested": 6,
+            "avg_farmland_slope": 7.7362543489215705,
+            "farmland_area_ha": 5940.363298069316
+          },
+          "500227108": {
+            "label": "T11-Baxian",
+            "n_blocks": 132,
+            "swaps_used": 26,
+            "blocks_invested": 7,
+            "avg_farmland_slope": 9.096070956546198,
+            "farmland_area_ha": 3347.192427805967
+          },
+          "500227109": {
+            "label": "T12-Jianlong",
+            "n_blocks": 78,
+            "swaps_used": 4,
+            "blocks_invested": 2,
+            "avg_farmland_slope": 9.881357958349655,
+            "farmland_area_ha": 2121.6814185423605
+          },
+          "500227200": {
+            "label": "T13-Qinglonghu",
+            "n_blocks": 158,
+            "swaps_used": 38,
+            "blocks_invested": 13,
+            "avg_farmland_slope": 7.590771900044997,
+            "farmland_area_ha": 2601.863774908081
+          }
+        },
+        "seed": 4
+      }
+    ]
+  },
+  "round_robin": {
+    "method": "Round-Robin",
+    "slope_change_pct": 0.3433378384102412,
+    "cont_change": 0.012357922038294333,
+    "baimu_count_change": 0,
+    "baimu_area_change_ha": 338.49430963816644,
+    "completed_swaps": 301,
+    "elapsed": 0.017652034759521484,
+    "initial_slope": 9.615713046605176,
+    "final_slope": 9.648727427961456,
+    "initial_cont": 3.585221349200295,
+    "final_cont": 3.5975792712385894,
+    "initial_baimu_count": 109,
+    "final_baimu_count": 109,
+    "per_township": {
+      "500227001": {
+        "label": "T01-Bishan",
+        "n_blocks": 202,
+        "swaps_used": 301,
+        "blocks_invested": 96,
+        "avg_farmland_slope": 11.077270098194981,
+        "farmland_area_ha": 3093.602134855457
+      },
+      "500227002": {
+        "label": "T02-Qinggang",
+        "n_blocks": 269,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.629097398449441,
+        "farmland_area_ha": 4009.3745738742978
+      },
+      "500227100": {
+        "label": "T03-Hechuan",
+        "n_blocks": 112,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 11.089214637202016,
+        "farmland_area_ha": 3166.380828044935
+      },
+      "500227101": {
+        "label": "T04-Laifeng",
+        "n_blocks": 142,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.995739645030328,
+        "farmland_area_ha": 3378.156811762856
+      },
+      "500227102": {
+        "label": "T05-Guangpu",
+        "n_blocks": 291,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 11.031983128856467,
+        "farmland_area_ha": 5942.0527120835795
+      },
+      "500227103": {
+        "label": "T06-Daxing",
+        "n_blocks": 179,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 12.756595704695384,
+        "farmland_area_ha": 2702.5611216708558
+      },
+      "500227104": {
+        "label": "T07-Zhengxing",
+        "n_blocks": 120,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 12.582373056740188,
+        "farmland_area_ha": 1810.405420482122
+      },
+      "500227105": {
+        "label": "T08-Dalukou",
+        "n_blocks": 338,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.647492811440731,
+        "farmland_area_ha": 5760.052865983431
+      },
+      "500227106": {
+        "label": "T09-Hebian",
+        "n_blocks": 282,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 8.293213386225498,
+        "farmland_area_ha": 4605.230875309148
+      },
+      "500227107": {
+        "label": "T10-Shihe",
+        "n_blocks": 297,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.739960532785415,
+        "farmland_area_ha": 5941.703251668085
+      },
+      "500227108": {
+        "label": "T11-Baxian",
+        "n_blocks": 132,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.157342547935652,
+        "farmland_area_ha": 3384.655501414646
+      },
+      "500227109": {
+        "label": "T12-Jianlong",
+        "n_blocks": 78,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 9.879585143554415,
+        "farmland_area_ha": 2117.6086864504923
+      },
+      "500227200": {
+        "label": "T13-Qinglonghu",
+        "n_blocks": 158,
+        "swaps_used": 0,
+        "blocks_invested": 0,
+        "avg_farmland_slope": 7.623543465088504,
+        "farmland_area_ha": 2577.4236645804226
+      }
+    }
+  }
+}
