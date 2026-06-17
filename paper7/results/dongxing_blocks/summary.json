@@ -1,0 +1,28 @@
+{
+  "unit_field": "ZLDWDM",
+  "n_swappable_parcels": 76378,
+  "n_blocks": 2978,
+  "n_units_processed": 429,
+  "n_units_with_blocks": 424,
+  "min_parcels": 3,
+  "max_parcels": 30,
+  "min_area_ha": 0.5,
+  "has_complete_slope_for_swap": false,
+  "slope_gap": "forest slope values are missing",
+  "slope_mode": "slope_grade_proxy",
+  "readiness": {
+    "can_build_block_inputs": true,
+    "can_run_slope_swap_environment": false,
+    "can_build_external_environment": false,
+    "slope_mode": "slope_grade_proxy",
+    "block_input_blockers": [],
+    "blockers": [
+      "forest parcels lack slope values"
+    ],
+    "notes": [
+      "GDPDJ is treated as a slope-grade proxy unless a DEM-derived continuous slope field is supplied.",
+      "External validation should report Dongxing results separately if slope uses grade rather than continuous percent.",
+      "A paired slope-swap environment requires slope values for both farmland and forest parcels."
+    ]
+  }
+}

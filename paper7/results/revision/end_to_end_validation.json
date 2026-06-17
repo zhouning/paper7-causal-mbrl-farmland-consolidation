@@ -1,0 +1,250 @@
+{
+  "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
+  "generated_utc": "2026-06-17T13:24:47.242064+00:00",
+  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
+  "core_assets": {
+    "trajectories": [
+      {
+        "path": "paper7\\trajectories\\greedy_seed0.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:49:55.322765+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\greedy_seed1.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:52:22.197656+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\greedy_seed2.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:54:48.513161+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed0.npz",
+        "exists": true,
+        "bytes": 277469428,
+        "modified_utc": "2026-04-06T15:49:55.360669+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed1.npz",
+        "exists": true,
+        "bytes": 277473860,
+        "modified_utc": "2026-04-06T15:52:21.724897+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed2.npz",
+        "exists": true,
+        "bytes": 277447664,
+        "modified_utc": "2026-04-06T15:54:48.054826+00:00"
+      }
+    ],
+    "transition_model": {
+      "path": "paper7\\models\\transition_model.pt",
+      "exists": true,
+      "bytes": 956643,
+      "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+    },
+    "training_history": {
+      "path": "paper7\\models\\training_history.json",
+      "exists": true,
+      "bytes": 5210,
+      "modified_utc": "2026-04-06T18:27:17.813452+00:00"
+    },
+    "dongxing_slope_gpkg": {
+      "path": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
+      "exists": true,
+      "bytes": 184639488,
+      "modified_utc": "2026-06-17T09:30:06.737925+00:00"
+    }
+  },
+  "evidence": {
+    "transition_training": {
+      "status": "supported",
+      "model": {
+        "path": "paper7\\models\\transition_model.pt",
+        "exists": true,
+        "bytes": 956643,
+        "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+      },
+      "history": {
+        "path": "paper7\\models\\training_history.json",
+        "exists": true,
+        "bytes": 5210,
+        "modified_utc": "2026-04-06T18:27:17.813452+00:00"
+      },
+      "epochs_recorded": 50,
+      "best_val_loss": 0.088109,
+      "final_val_loss": 0.109861,
+      "final_val_obs_cosine": 0.999794,
+      "final_val_reward_mse": 1.096993
+    },
+    "bishan_seed_chain": {
+      "status": "supported",
+      "seed_dir": "paper7\\results\\revision\\seeds",
+      "n_no_cal_files": 15,
+      "n_with_cal_files": 15,
+      "n_paired_seeds": 15,
+      "paired_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "balanced_pairs": true,
+      "no_cal_mean": -0.975683,
+      "no_cal_std": 0.129237,
+      "with_cal_mean": -1.102462,
+      "with_cal_std": 0.099865,
+      "improvement_pct": 12.993898
+    },
+    "alpha_grid": {
+      "status": "supported",
+      "grid_path": "paper7\\results\\revision\\alpha_grid\\grid_results.json",
+      "n_runs": 40,
+      "n_alphas": 8,
+      "best_alpha": 0.2,
+      "best_slope_mean": -1.209028,
+      "pre_specified_alpha": 0.185,
+      "nearest_grid_alpha_to_pre_specified": 0.185,
+      "pre_specified_slope_mean": -1.17129,
+      "relative_gap_pct": 3.121407,
+      "alpha_means": {
+        "0.100": -1.123064,
+        "0.150": -1.120063,
+        "0.185": -1.17129,
+        "0.200": -1.209028,
+        "0.300": -1.170816,
+        "0.500": -1.042767,
+        "0.700": -0.991087,
+        "1.000": -0.958935
+      }
+    },
+    "transition_rollout": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\transition_rollout_diagnostics.json",
+      "n_transitions_loaded": 12000,
+      "n_starts": 120,
+      "horizon_1_reward_mae": 0.135618,
+      "horizon_100_reward_mae": 0.234012,
+      "horizon_100_global_mae": 0.048621,
+      "horizon_100_mask_agreement": 0.997384,
+      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation"
+    },
+    "policy_induced_diagnostics": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\policy_induced_diagnostics.json",
+      "support_size": 12000,
+      "n_policy_episodes": 3,
+      "policy_induced_selected_block_mae_mean": 0.075143,
+      "policy_induced_all_block_mae_mean": 0.0027,
+      "policy_induced_global_mae_mean": 0.0521,
+      "policy_induced_reward_mae_mean": 0.601632,
+      "policy_induced_calibrated_reward_mae_mean": 0.111302,
+      "policy_induced_mask_agreement_mean": 0.997491,
+      "policy_induced_support_distance_mean": 0.011306,
+      "policy_induced_support_distance_q95": 0.016308,
+      "policy_induced_final_real_slope_pct_mean": -1.10901,
+      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment"
+    },
+    "calibration": {
+      "status": "supported_as_observational_regularization",
+      "calibration_path": "paper7\\results\\causal_calibration.json",
+      "sensitivity_path": "paper7\\results\\revision\\causal_sensitivity_diagnostics.json",
+      "empirical_att": 0.048967,
+      "predicted_att": 0.264682,
+      "calibration_factor": 0.185005,
+      "mixed_median_common_support": 0.45625,
+      "mixed_median_trimmed_att": 0.022118,
+      "mixed_median_ci_low": -0.098153,
+      "mixed_median_ci_high": 0.139981,
+      "interpretation": "observational treatment-effect-informed reward regularization; not definitive causal identification"
+    },
+    "bishan_non_learning_baselines": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\bishan_strong_baselines.json",
+      "budget": 500,
+      "random_slope_mean": 0.089326,
+      "random_budget_completion": 0.612,
+      "slope_gap_greedy_slope": 1.10799,
+      "area_weighted_greedy_slope": 4.696778,
+      "immediate_slope_delta_slope": -0.15191,
+      "immediate_slope_delta_budget_completion": 0.036,
+      "interpretation": "strong local non-learning rules do not match the calibrated learned policy under the Bishan real-environment evaluation"
+    },
+    "dongxing_dynamic": {
+      "status": "supported",
+      "audit_path": "paper7\\results\\dongxing_data_audit_slope.json",
+      "block_summary_path": "paper7\\results\\dongxing_blocks_slope\\summary.json",
+      "dynamic_path": "paper7\\results\\dongxing_dynamic_baselines.json",
+      "n_parcels": 134369,
+      "n_blocks": 2978,
+      "slope_coverage_farmland": 1.0,
+      "slope_coverage_forest": 1.0,
+      "has_complete_slope_for_swap": true,
+      "dynamic_slope_gap_pct": -1.217577,
+      "dynamic_area_weighted_pct": -0.882685,
+      "random_dynamic_mean_pct": -0.357665,
+      "random_dynamic_n": 200,
+      "has_learned_policy": false,
+      "interpretation": "external data, action-space, and dynamic non-RL feasibility; not learned-policy transfer"
+    }
+  },
+  "claim_scope": [
+    {
+      "id": "bishan_model_based_policy_e2e",
+      "claim": "Bishan model-based policies are trained in a learned environment and evaluated in the real parcel-simulation environment.",
+      "status": "supported",
+      "evidence_level": "end_to_end_result_chain",
+      "n_paired_seeds": 15
+    },
+    {
+      "id": "calibration_scope",
+      "claim": "The calibration factor improves learned-environment policy training.",
+      "status": "supported_as_observational_regularization",
+      "evidence_level": "observational_regularization_plus_downstream_evaluation",
+      "causal_identification_claimed": false,
+      "interpretation": "observational treatment-effect-informed reward regularization; not definitive causal identification"
+    },
+    {
+      "id": "transition_surrogate_scope",
+      "claim": "The learned transition model can be used as an approximate training surrogate.",
+      "status": "supported",
+      "evidence_level": "one_step_training_metrics_plus_multistep_rollout_diagnostics",
+      "standalone_simulator_for_final_outcomes": false,
+      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation"
+    },
+    {
+      "id": "policy_induced_surrogate_scope",
+      "claim": "The trained learned-environment policy remains evaluable under synchronized learned-vs-real rollouts.",
+      "status": "supported",
+      "evidence_level": "trained_policy_induced_learned_vs_real_diagnostics",
+      "n_policy_episodes": 3,
+      "standalone_simulator_for_final_outcomes": false,
+      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment"
+    },
+    {
+      "id": "dongxing_external_scope",
+      "claim": "Dongxing supports external-county portability.",
+      "status": "supported_as_external_feasibility",
+      "evidence_level": "external_data_action_space_dynamic_non_rl",
+      "policy_transfer_tested": false,
+      "interpretation": "external data, action-space, and dynamic non-RL feasibility; not learned-policy transfer"
+    }
+  ],
+  "overall_status": "supported_with_bounded_external_scope",
+  "external_policy_transfer_tested": false
+}

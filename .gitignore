@@ -17,3 +17,6 @@ Thumbs.db
 # Large reproducibility assets are distributed as GitHub Release assets.
 paper7/trajectories/*.npz
 dem_slope_analysis/output/DLTB_with_slope.gpkg
+paper7/data/dongxing_DLTB_with_slope.gpkg
+paper7/data/dongxing_dem_srtmgl1.tif
+paper7/data/dongxing_dem_tiles/

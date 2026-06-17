@@ -1,10 +1,10 @@
-# Paper 7: Causal MBRL for Farmland Consolidation
+# Paper 7: Treatment-Effect-Informed MBRL for Farmland Consolidation
 
 This repository contains the complete local research package for Paper 7:
 
-**A Causally Calibrated Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning**
+**A Treatment-Effect-Informed Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning**
 
-The repository is organized to let reviewers inspect and reproduce the Paper 7 pipeline: county-level farmland consolidation environment, trajectory collection, learned transition model training, causal reward calibration, model-based policy training, ablation results, and the CEUS submission package.
+The repository is organized to let reviewers inspect and reproduce the Paper 7 pipeline: county-level farmland consolidation environment, trajectory collection, learned transition model training, observational reward calibration, model-based policy training, ablation results, external-county feasibility checks, and the CEUS submission package.
 
 ## Repository Map
 
@@ -15,6 +15,8 @@ The repository is organized to let reviewers inspect and reproduce the Paper 7 p
 | `parcel_scoring_policy.py` | Maskable PPO custom scoring policy used by model-free/model-based policies. |
 | `dem_slope_analysis/output/` | Required geospatial input for the county environment. |
 | `results_real/blocks/` | Required block definitions and per-township block metadata for the real environment. |
+| `paper7/results/revision/end_to_end_validation.json` | Evidence audit that checks stored assets and classifies which manuscript claims are fully end-to-end, diagnostic, or external-feasibility only. |
+| `paper7/results/revision/policy_induced_diagnostics.json` | Synchronized learned-vs-real diagnostics for trained calibrated policies, used to test policy-induced distribution shift. |
 | `submission/ceus/` | CEUS submission package: anonymous manuscript, title page, highlights, cover letter, declarations, supplementary notes, and editable LaTeX sources. |
 | `docs/` | Paper 7 implementation plan and pre-submission review notes. |
 
@@ -24,10 +26,11 @@ The largest trajectory and geospatial input files are distributed as GitHub Rele
 
 - `paper7/trajectories/*.npz`
 - `dem_slope_analysis/output/DLTB_with_slope.gpkg`
+- Dongxing external-feasibility assets, if reproducing Section 4's external-county check
 
 After cloning, download the release assets and place them at the paths listed in `DATA_ASSETS.md`.
 
-If these files are missing, the learned-environment training and real-environment reproduction steps will not be complete. The repository keeps all code, manuscripts, result summaries, trained policy artifacts, and small supporting data in Git.
+If these files are missing, the learned-environment training and real-environment reproduction steps will not be complete. The repository keeps all code, manuscripts, result summaries, trained policy artifacts, and small supporting data in Git. Dongxing is reported as external data/action-space/dynamic non-RL feasibility evidence, not as cross-county learned-policy transfer.
 
 ## Reproduction Overview
 
@@ -44,7 +47,7 @@ The main workflow is:
    python paper7/train_learned_env.py --epochs 100 --policies random greedy
    ```
 
-3. Estimate causal reward calibration:
+3. Estimate observational reward calibration:
    ```bash
    python paper7/causal_reward_calibration.py
    ```
@@ -59,6 +62,18 @@ The main workflow is:
    python paper7/ablation_experiments.py
    python paper7/ablation_geofm.py
    ```
+
+6. Run policy-induced learned-vs-real diagnostics:
+   ```bash
+   python paper7/policy_induced_diagnostics.py --output paper7/results/revision/policy_induced_diagnostics.json
+   ```
+
+7. Audit the stored end-to-end evidence chain:
+   ```bash
+   python paper7/end_to_end_validation.py --out paper7/results/revision/end_to_end_validation.json
+   ```
+
+The policy-induced diagnostic replays actions selected by trained calibrated policies in both learned and real environments. The audit does not retrain the expensive RL policies. It checks the recorded Bishan data-to-result chain, includes the policy-induced diagnostic output, and explicitly classifies Dongxing as external feasibility evidence rather than learned-policy transfer.
 
 See `REPRODUCIBILITY.md` for environment setup, expected inputs, and result locations.
 

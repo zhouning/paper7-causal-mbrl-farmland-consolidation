@@ -1,0 +1,213 @@
+{
+  "source": {
+    "path": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
+    "record_count": 134369,
+    "crs": "EPSG:2359",
+    "bounds": [
+      35498003.2,
+      3258492.7,
+      35540742.4,
+      3303551.1
+    ]
+  },
+  "schema": {
+    "columns": [
+      "BSM",
+      "YSDM",
+      "TBYBH",
+      "TBBH",
+      "DLBM",
+      "DLMC",
+      "QSXZ",
+      "QSDWDM",
+      "QSDWMC",
+      "ZLDWDM",
+      "ZLDWMC",
+      "GDLX",
+      "KCLX",
+      "DLBZ",
+      "GDPDJ",
+      "KCDLBM",
+      "TKXS",
+      "TBMJ",
+      "XZDWMJ",
+      "LXDWMJ",
+      "TKMJ",
+      "TBDLMJ",
+      "PZWH",
+      "BGJLH",
+      "BGRQ",
+      "SHAPE_Leng",
+      "SHAPE_Area",
+      "XZGDJFLY",
+      "slope_mean",
+      "geometry"
+    ],
+    "required_fields": [
+      "DLBM",
+      "DLMC",
+      "TBMJ"
+    ],
+    "missing_required_fields": [],
+    "has_required_fields": true,
+    "area_field": "TBMJ"
+  },
+  "land_use": {
+    "farmland": {
+      "count": 45735,
+      "area_m2": 782281274.49,
+      "area_share": 0.662878
+    },
+    "forest": {
+      "count": 30643,
+      "area_m2": 185574579.1,
+      "area_share": 0.157249
+    },
+    "other": {
+      "count": 57991,
+      "area_m2": 212273451.81,
+      "area_share": 0.179873
+    }
+  },
+  "slope": {
+    "field": "slope_mean",
+    "mode": "continuous_or_grade",
+    "non_null_count": 134369,
+    "unique_count": 34689,
+    "unique_values": [
+      {
+        "value": "0.8379977948750442",
+        "count": 976
+      },
+      {
+        "value": "0.5300190167710289",
+        "count": 928
+      },
+      {
+        "value": "0.8379977948750801",
+        "count": 911
+      },
+      {
+        "value": "1.0599473382449263",
+        "count": 878
+      },
+      {
+        "value": "1.185023357240831",
+        "count": 847
+      },
+      {
+        "value": "1.5449272464537762",
+        "count": 844
+      },
+      {
+        "value": "1.1850233572408988",
+        "count": 841
+      },
+      {
+        "value": "1.3510767222423532",
+        "count": 840
+      },
+      {
+        "value": "1.351076722242316",
+        "count": 830
+      },
+      {
+        "value": "1.6756372230821206",
+        "count": 771
+      },
+      {
+        "value": "1.5896943622071276",
+        "count": 766
+      },
+      {
+        "value": "1.5449272464538737",
+        "count": 764
+      },
+      {
+        "value": "1.6756372230821923",
+        "count": 752
+      },
+      {
+        "value": "1.9103570308293005",
+        "count": 725
+      },
+      {
+        "value": "1.8732858813643467",
+        "count": 725
+      },
+      {
+        "value": "1.8732858813643094",
+        "count": 708
+      },
+      {
+        "value": "1.910357030829174",
+        "count": 675
+      },
+      {
+        "value": "2.0174756511562686",
+        "count": 674
+      },
+      {
+        "value": "2.0174756511561642",
+        "count": 650
+      },
+      {
+        "value": "2.1191696723695013",
+        "count": 646
+      }
+    ],
+    "numeric_summary": {
+      "min": 0.0,
+      "mean": 4.554733,
+      "max": 55.853484
+    },
+    "by_land_use": {
+      "farmland": {
+        "count": 45735,
+        "non_null_count": 45735,
+        "coverage": 1.0
+      },
+      "forest": {
+        "count": 30643,
+        "non_null_count": 30643,
+        "coverage": 1.0
+      },
+      "other": {
+        "count": 57991,
+        "non_null_count": 57991,
+        "coverage": 1.0
+      }
+    }
+  },
+  "administrative_units": {
+    "ZLDWDM": {
+      "non_null_count": 134369,
+      "unique_count": 433
+    },
+    "ZLDWMC": {
+      "non_null_count": 134369,
+      "unique_count": 421
+    },
+    "QSDWDM": {
+      "non_null_count": 134369,
+      "unique_count": 439
+    },
+    "QSDWMC": {
+      "non_null_count": 134369,
+      "unique_count": 424
+    }
+  },
+  "readiness": {
+    "can_build_block_inputs": true,
+    "can_run_slope_swap_environment": true,
+    "can_build_external_environment": true,
+    "slope_mode": "continuous_slope",
+    "block_input_blockers": [],
+    "blockers": [],
+    "notes": [
+      "GDPDJ is treated as a slope-grade proxy unless a DEM-derived continuous slope field is supplied.",
+      "External validation should report Dongxing results separately if slope uses grade rather than continuous percent.",
+      "A paired slope-swap environment requires slope values for both farmland and forest parcels."
+    ]
+  }
+}

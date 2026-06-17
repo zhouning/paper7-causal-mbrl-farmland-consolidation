@@ -1,0 +1,92 @@
+{
+  "source": "AWS Terrain Tiles",
+  "provider": "aws-terrain",
+  "dem_type": "SRTMGL1",
+  "vector_path": "D:\\北大MEM\\内江东兴区（shp及行政区、权属单位）\\鍐呮睙涓滃叴鍖猴紙shp鍙婅鏀垮尯銆佹潈灞炲崟浣嶏級\\DLTB.shp",
+  "vector_bounds_wgs84": [
+    104.97933573,
+    29.44342038,
+    105.42162589,
+    29.85057429
+  ],
+  "request_bounds_wgs84": [
+    104.95933573,
+    29.42342038,
+    105.44162589,
+    29.87057429
+  ],
+  "url": null,
+  "output": "paper7\\data\\dongxing_dem_srtmgl1.tif",
+  "dry_run": false,
+  "download": {
+    "provider": "aws-terrain-tiles",
+    "zoom": 10,
+    "tile_count": 6,
+    "tiles": [
+      {
+        "z": 10,
+        "x": 810,
+        "y": 422
+      },
+      {
+        "z": 10,
+        "x": 810,
+        "y": 423
+      },
+      {
+        "z": 10,
+        "x": 810,
+        "y": 424
+      },
+      {
+        "z": 10,
+        "x": 811,
+        "y": 422
+      },
+      {
+        "z": 10,
+        "x": 811,
+        "y": 423
+      },
+      {
+        "z": 10,
+        "x": 811,
+        "y": 424
+      }
+    ],
+    "downloaded_tiles": [
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/810/422.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_810_422.tif",
+        "bytes": 186937
+      },
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/810/423.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_810_423.tif",
+        "bytes": 204942
+      },
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/810/424.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_810_424.tif",
+        "bytes": 187562
+      },
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/811/422.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_811_422.tif",
+        "bytes": 210696
+      },
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/811/423.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_811_423.tif",
+        "bytes": 196157
+      },
+      {
+        "url": "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/10/811/424.tif",
+        "output_path": "paper7\\data\\dongxing_dem_tiles\\10_811_424.tif",
+        "bytes": 167222
+      }
+    ],
+    "tile_dir": "paper7\\data\\dongxing_dem_tiles",
+    "output_path": "paper7\\data\\dongxing_dem_srtmgl1.tif"
+  }
+}

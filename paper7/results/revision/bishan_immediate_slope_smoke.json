@@ -1,0 +1,46 @@
+{
+  "description": "Bishan real-environment non-learning baselines.",
+  "budget": 500,
+  "swaps_per_step": 5,
+  "runs": [
+    {
+      "policy": "immediate_slope_delta",
+      "seed": 0,
+      "budget": 500,
+      "reward": -92.977847,
+      "initial_avg_slope": 9.615713,
+      "final_avg_slope": 9.601106,
+      "slope_change_pct": -0.15191,
+      "initial_contiguity": 3.585221,
+      "final_contiguity": 3.584713,
+      "cont_change": -0.000509,
+      "initial_baimu_count": 109,
+      "final_baimu_count": 109,
+      "baimu_count_change": 0,
+      "final_baimu_area_ha": 46802.572302,
+      "baimu_area_change_ha": -41.082543,
+      "budget_used": 18,
+      "steps": 100
+    }
+  ],
+  "summary": [
+    {
+      "policy": "immediate_slope_delta",
+      "n_runs": 1,
+      "reward_mean": -92.977847,
+      "reward_std": 0.0,
+      "slope_change_pct_mean": -0.15191,
+      "slope_change_pct_std": 0.0,
+      "cont_change_mean": -0.000509,
+      "cont_change_std": 0.0,
+      "baimu_count_change_mean": 0.0,
+      "baimu_count_change_std": 0.0,
+      "baimu_area_change_ha_mean": -41.082543,
+      "baimu_area_change_ha_std": 0.0,
+      "budget_used_mean": 18.0,
+      "budget_used_std": 0.0,
+      "budget_completion_mean": 0.036,
+      "budget_completion_std": 0.0
+    }
+  ]
+}

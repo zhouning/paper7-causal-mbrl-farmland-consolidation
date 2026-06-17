@@ -14,6 +14,36 @@ Download each asset and place it at the target path shown here.
 | `random_seed1.npz` | `paper7/trajectories/random_seed1.npz` | 264.62 MiB | `F47DEEDE36068D8B3ED92F49B561C4579AEBEA5A79366A170E7BB2FEEEB90334` |
 | `random_seed2.npz` | `paper7/trajectories/random_seed2.npz` | 264.59 MiB | `8753E76223B7E795039A80B63D1C4308B9469B94846A6715D88F8D3F30B13EB5` |
 
+## Additional Dongxing External-Feasibility Assets
+
+The CEUS revision includes an external-county feasibility check on Dongxing District. These files are separate from the Bishan learned-policy training assets above:
+
+| Asset | Target path | Current local size | Role |
+|---|---|---:|---|
+| Dongxing cadastral layer with DEM-derived slope | `paper7/data/dongxing_DLTB_with_slope.gpkg` | 176.09 MiB | External data audit, block construction, and dynamic non-RL baselines |
+| Dongxing public DEM mosaic | `paper7/data/dongxing_dem_srtmgl1.tif` | 1.31 MiB | Source raster for continuous parcel slope enrichment |
+| Dongxing DEM source tiles | `paper7/data/dongxing_dem_tiles/` | 1.10 MiB | Public DEM tile inputs used to build the mosaic |
+
+Dongxing outputs are reported as external data/action-space/dynamic non-RL feasibility evidence. They do not constitute cross-county learned-policy transfer, because Dongxing trajectories, transition-model training, reward calibration, and learned-policy evaluation were not run.
+
+## Evidence Audit Output
+
+After the assets and stored result files are in place, run:
+
+```bash
+python paper7/end_to_end_validation.py --out paper7/results/revision/end_to_end_validation.json
+```
+
+The audit verifies the stored Bishan data-to-result chain and classifies Dongxing as external feasibility evidence. It does not retrain all policies.
+
+The policy-induced diagnostic used by the audit can be regenerated with:
+
+```bash
+python paper7/policy_induced_diagnostics.py --output paper7/results/revision/policy_induced_diagnostics.json
+```
+
+This diagnostic depends on the Bishan trajectory assets, transition-model checkpoint, trained calibrated policy checkpoints under `paper7/results/revision/seeds/`, and the real-environment geospatial assets.
+
 ## Download With GitHub CLI
 
 From the repository root:

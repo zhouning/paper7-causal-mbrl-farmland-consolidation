@@ -1,0 +1,350 @@
+{
+  "description": "Observational treatment-effect diagnostics for reward calibration. Treatment is whether the selected block's best-swap-gain feature exceeds a within-state percentile.",
+  "trajectory_dir": "paper7\\trajectories",
+  "thresholds": [
+    {
+      "treatment_percentile": 40.0,
+      "covariates": [
+        "budget_remaining",
+        "global_slope_norm",
+        "global_contiguity_norm",
+        "step_frac",
+        "slope_improvement",
+        "contiguity_improvement",
+        "baimu_count_norm",
+        "baimu_area_frac",
+        "blocks_invested_frac",
+        "investment_entropy",
+        "max_township_frac",
+        "block_farm_slope_norm",
+        "block_forest_slope_norm",
+        "block_slope_gap_norm",
+        "block_farm_slope_std_norm",
+        "block_farm_area_norm",
+        "block_forest_area_norm",
+        "block_swap_potential_norm",
+        "block_compactness",
+        "block_area_norm",
+        "block_neighbor_invested_frac",
+        "block_neighbor_farm_area_norm",
+        "block_current_farm_area_norm",
+        "block_invested",
+        "policy_greedy"
+      ],
+      "overlap": {
+        "n": 1800,
+        "treated": 1494,
+        "control": 306,
+        "treated_share": 0.83,
+        "ps_min": 0.006586,
+        "ps_q05": 0.101933,
+        "ps_median": 0.986594,
+        "ps_q95": 0.995994,
+        "ps_max": 0.997528,
+        "common_support_low": 0.036281,
+        "common_support_high": 0.986562,
+        "common_support_share": 0.49
+      },
+      "smd": {
+        "budget_remaining": {
+          "before": -0.048437,
+          "after_att_weighting": -0.03026
+        },
+        "global_slope_norm": {
+          "before": 0.878653,
+          "after_att_weighting": 0.904471
+        },
+        "global_contiguity_norm": {
+          "before": 0.873727,
+          "after_att_weighting": 0.849501
+        },
+        "step_frac": {
+          "before": 0.048437,
+          "after_att_weighting": 0.03026
+        },
+        "slope_improvement": {
+          "before": -0.878652,
+          "after_att_weighting": -0.90447
+        },
+        "contiguity_improvement": {
+          "before": 0.873726,
+          "after_att_weighting": 0.849501
+        },
+        "baimu_count_norm": {
+          "before": -1.053507,
+          "after_att_weighting": -1.07417
+        },
+        "baimu_area_frac": {
+          "before": 0.546962,
+          "after_att_weighting": 0.497168
+        },
+        "blocks_invested_frac": {
+          "before": 0.091282,
+          "after_att_weighting": 0.070672
+        },
+        "investment_entropy": {
+          "before": 0.043006,
+          "after_att_weighting": -0.047496
+        },
+        "max_township_frac": {
+          "before": -0.203858,
+          "after_att_weighting": -0.154039
+        },
+        "block_farm_slope_norm": {
+          "before": 1.174534,
+          "after_att_weighting": 0.398762
+        },
+        "block_forest_slope_norm": {
+          "before": 0.913574,
+          "after_att_weighting": 0.219348
+        },
+        "block_slope_gap_norm": {
+          "before": 0.066396,
+          "after_att_weighting": 0.177902
+        },
+        "block_farm_slope_std_norm": {
+          "before": 1.607163,
+          "after_att_weighting": 0.677298
+        },
+        "block_farm_area_norm": {
+          "before": 0.220654,
+          "after_att_weighting": 0.223171
+        },
+        "block_forest_area_norm": {
+          "before": 0.463281,
+          "after_att_weighting": -0.31468
+        },
+        "block_swap_potential_norm": {
+          "before": 0.966622,
+          "after_att_weighting": 0.111764
+        },
+        "block_compactness": {
+          "before": -0.321009,
+          "after_att_weighting": -0.160674
+        },
+        "block_area_norm": {
+          "before": 0.5398,
+          "after_att_weighting": -0.279296
+        },
+        "block_neighbor_invested_frac": {
+          "before": 0.159544,
+          "after_att_weighting": 0.311692
+        },
+        "block_neighbor_farm_area_norm": {
+          "before": -0.1864,
+          "after_att_weighting": -0.281383
+        },
+        "block_current_farm_area_norm": {
+          "before": 0.215124,
+          "after_att_weighting": 0.222164
+        },
+        "block_invested": {
+          "before": -0.231714,
+          "after_att_weighting": -0.090898
+        },
+        "policy_greedy": {
+          "before": 1.740777,
+          "after_att_weighting": 1.740777
+        },
+        "max_abs_before": 1.740777,
+        "max_abs_after_att_weighting": 1.740777,
+        "mean_abs_before": 0.573874,
+        "mean_abs_after_att_weighting": 0.424873
+      },
+      "att_untrimmed": {
+        "att": -0.301505,
+        "treated_mean": 0.059173,
+        "weighted_control_mean": 0.360678,
+        "n_used": 1800,
+        "n_treated": 1494,
+        "n_control": 306
+      },
+      "att_trimmed": {
+        "att": -0.148988,
+        "treated_mean": 0.084568,
+        "weighted_control_mean": 0.233556,
+        "n_used": 585,
+        "n_treated": 324,
+        "n_control": 261,
+        "n_bootstrap": 50,
+        "ci_low": -0.446689,
+        "ci_high": 0.07899,
+        "bootstrap_se": 0.136552,
+        "trim_low": 0.05,
+        "trim_high": 0.95
+      }
+    },
+    {
+      "treatment_percentile": 50.0,
+      "covariates": [
+        "budget_remaining",
+        "global_slope_norm",
+        "global_contiguity_norm",
+        "step_frac",
+        "slope_improvement",
+        "contiguity_improvement",
+        "baimu_count_norm",
+        "baimu_area_frac",
+        "blocks_invested_frac",
+        "investment_entropy",
+        "max_township_frac",
+        "block_farm_slope_norm",
+        "block_forest_slope_norm",
+        "block_slope_gap_norm",
+        "block_farm_slope_std_norm",
+        "block_farm_area_norm",
+        "block_forest_area_norm",
+        "block_swap_potential_norm",
+        "block_compactness",
+        "block_area_norm",
+        "block_neighbor_invested_frac",
+        "block_neighbor_farm_area_norm",
+        "block_current_farm_area_norm",
+        "block_invested",
+        "policy_greedy"
+      ],
+      "overlap": {
+        "n": 1800,
+        "treated": 1410,
+        "control": 390,
+        "treated_share": 0.783333,
+        "ps_min": 0.009811,
+        "ps_q05": 0.061063,
+        "ps_median": 0.981361,
+        "ps_q95": 0.995946,
+        "ps_max": 0.997606,
+        "common_support_low": 0.031626,
+        "common_support_high": 0.984063,
+        "common_support_share": 0.49
+      },
+      "smd": {
+        "budget_remaining": {
+          "before": -0.013255,
+          "after_att_weighting": 0.14155
+        },
+        "global_slope_norm": {
+          "before": 0.93012,
+          "after_att_weighting": 0.951844
+        },
+        "global_contiguity_norm": {
+          "before": 0.888043,
+          "after_att_weighting": 0.832629
+        },
+        "step_frac": {
+          "before": 0.013255,
+          "after_att_weighting": -0.14155
+        },
+        "slope_improvement": {
+          "before": -0.930119,
+          "after_att_weighting": -0.951842
+        },
+        "contiguity_improvement": {
+          "before": 0.888043,
+          "after_att_weighting": 0.832628
+        },
+        "baimu_count_norm": {
+          "before": -1.125824,
+          "after_att_weighting": -1.102126
+        },
+        "baimu_area_frac": {
+          "before": 0.556815,
+          "after_att_weighting": 0.60918
+        },
+        "blocks_invested_frac": {
+          "before": 0.057397,
+          "after_att_weighting": -0.085293
+        },
+        "investment_entropy": {
+          "before": 0.042788,
+          "after_att_weighting": -0.134926
+        },
+        "max_township_frac": {
+          "before": -0.140515,
+          "after_att_weighting": 0.004153
+        },
+        "block_farm_slope_norm": {
+          "before": 1.255445,
+          "after_att_weighting": 0.317571
+        },
+        "block_forest_slope_norm": {
+          "before": 1.026864,
+          "after_att_weighting": 0.22696
+        },
+        "block_slope_gap_norm": {
+          "before": -0.002411,
+          "after_att_weighting": 0.061997
+        },
+        "block_farm_slope_std_norm": {
+          "before": 1.68161,
+          "after_att_weighting": 0.690186
+        },
+        "block_farm_area_norm": {
+          "before": 0.17094,
+          "after_att_weighting": 0.111615
+        },
+        "block_forest_area_norm": {
+          "before": 0.527073,
+          "after_att_weighting": -0.109568
+        },
+        "block_swap_potential_norm": {
+          "before": 0.888019,
+          "after_att_weighting": 0.257519
+        },
+        "block_compactness": {
+          "before": -0.230344,
+          "after_att_weighting": -0.009106
+        },
+        "block_area_norm": {
+          "before": 0.579294,
+          "after_att_weighting": -0.08355
+        },
+        "block_neighbor_invested_frac": {
+          "before": 0.16844,
+          "after_att_weighting": 0.093984
+        },
+        "block_neighbor_farm_area_norm": {
+          "before": -0.17483,
+          "after_att_weighting": -0.127438
+        },
+        "block_current_farm_area_norm": {
+          "before": 0.166596,
+          "after_att_weighting": 0.11086
+        },
+        "block_invested": {
+          "before": -0.204658,
+          "after_att_weighting": -0.101559
+        },
+        "policy_greedy": {
+          "before": 1.878673,
+          "after_att_weighting": 1.878673
+        },
+        "max_abs_before": 1.878673,
+        "max_abs_after_att_weighting": 1.878673,
+        "mean_abs_before": 0.581655,
+        "mean_abs_after_att_weighting": 0.398732
+      },
+      "att_untrimmed": {
+        "att": -0.249837,
+        "treated_mean": 0.050648,
+        "weighted_control_mean": 0.300485,
+        "n_used": 1800,
+        "n_treated": 1410,
+        "n_control": 390
+      },
+      "att_trimmed": {
+        "att": 0.01553,
+        "treated_mean": 0.114359,
+        "weighted_control_mean": 0.098829,
+        "n_used": 675,
+        "n_treated": 365,
+        "n_control": 310,
+        "n_bootstrap": 50,
+        "ci_low": -0.129205,
+        "ci_high": 0.124418,
+        "bootstrap_se": 0.069778,
+        "trim_low": 0.05,
+        "trim_high": 0.95
+      }
+    }
+  ]
+}

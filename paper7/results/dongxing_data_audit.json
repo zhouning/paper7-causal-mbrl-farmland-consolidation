@@ -1,0 +1,154 @@
+{
+  "source": {
+    "path": "D:\\北大MEM\\内江东兴区（shp及行政区、权属单位）\\鍐呮睙涓滃叴鍖猴紙shp鍙婅鏀垮尯銆佹潈灞炲崟浣嶏級\\DLTB.shp",
+    "record_count": 134369,
+    "crs": "EPSG:2359",
+    "bounds": [
+      35498003.2,
+      3258492.7,
+      35540742.4,
+      3303551.1
+    ]
+  },
+  "schema": {
+    "columns": [
+      "BSM",
+      "YSDM",
+      "TBYBH",
+      "TBBH",
+      "DLBM",
+      "DLMC",
+      "QSXZ",
+      "QSDWDM",
+      "QSDWMC",
+      "ZLDWDM",
+      "ZLDWMC",
+      "GDLX",
+      "KCLX",
+      "DLBZ",
+      "GDPDJ",
+      "KCDLBM",
+      "TKXS",
+      "TBMJ",
+      "XZDWMJ",
+      "LXDWMJ",
+      "TKMJ",
+      "TBDLMJ",
+      "PZWH",
+      "BGJLH",
+      "BGRQ",
+      "SHAPE_Leng",
+      "SHAPE_Area",
+      "XZGDJFLY",
+      "geometry"
+    ],
+    "required_fields": [
+      "DLBM",
+      "DLMC",
+      "TBMJ"
+    ],
+    "missing_required_fields": [],
+    "has_required_fields": true,
+    "area_field": "TBMJ"
+  },
+  "land_use": {
+    "farmland": {
+      "count": 45735,
+      "area_m2": 782281274.49,
+      "area_share": 0.662878
+    },
+    "forest": {
+      "count": 30643,
+      "area_m2": 185574579.1,
+      "area_share": 0.157249
+    },
+    "other": {
+      "count": 57991,
+      "area_m2": 212273451.81,
+      "area_share": 0.179873
+    }
+  },
+  "slope": {
+    "field": "GDPDJ",
+    "mode": "slope_grade_proxy",
+    "non_null_count": 45735,
+    "unique_count": 5,
+    "unique_values": [
+      {
+        "value": "3",
+        "count": 31068
+      },
+      {
+        "value": "2",
+        "count": 8889
+      },
+      {
+        "value": "4",
+        "count": 4606
+      },
+      {
+        "value": "1",
+        "count": 1110
+      },
+      {
+        "value": "5",
+        "count": 62
+      }
+    ],
+    "numeric_summary": {
+      "min": 1.0,
+      "mean": 2.860523,
+      "max": 5.0
+    },
+    "by_land_use": {
+      "farmland": {
+        "count": 45735,
+        "non_null_count": 45735,
+        "coverage": 1.0
+      },
+      "forest": {
+        "count": 30643,
+        "non_null_count": 0,
+        "coverage": 0.0
+      },
+      "other": {
+        "count": 57991,
+        "non_null_count": 0,
+        "coverage": 0.0
+      }
+    }
+  },
+  "administrative_units": {
+    "ZLDWDM": {
+      "non_null_count": 134369,
+      "unique_count": 433
+    },
+    "ZLDWMC": {
+      "non_null_count": 134369,
+      "unique_count": 421
+    },
+    "QSDWDM": {
+      "non_null_count": 134369,
+      "unique_count": 439
+    },
+    "QSDWMC": {
+      "non_null_count": 134369,
+      "unique_count": 424
+    }
+  },
+  "readiness": {
+    "can_build_block_inputs": true,
+    "can_run_slope_swap_environment": false,
+    "can_build_external_environment": false,
+    "slope_mode": "slope_grade_proxy",
+    "block_input_blockers": [],
+    "blockers": [
+      "forest parcels lack slope values"
+    ],
+    "notes": [
+      "GDPDJ is treated as a slope-grade proxy unless a DEM-derived continuous slope field is supplied.",
+      "External validation should report Dongxing results separately if slope uses grade rather than continuous percent.",
+      "A paired slope-swap environment requires slope values for both farmland and forest parcels."
+    ]
+  }
+}
