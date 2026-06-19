@@ -3,6 +3,7 @@ from shapely.geometry import box
 from paper7.dongxing_full_learned_policy import (
     compare_to_full_baselines,
     evaluate_preference_policy,
+    run_experiment,
     train_preference_policy,
 )
 from paper7.generic_county_env import GenericCountyEnv
@@ -39,7 +40,7 @@ def test_train_preference_policy_learns_positive_gain_weight():
     assert policy["training"]["episodes"] == 12
 
 
-def test_train_preference_policy_reuses_env_per_train_seed():
+def test_train_preference_policy_reuses_single_env_across_training():
     calls = {"n": 0}
 
     def factory() -> GenericCountyEnv:
@@ -54,6 +55,29 @@ def test_train_preference_policy_reuses_env_per_train_seed():
         epsilon=0.25,
     )
 
+    assert calls["n"] == 1
+
+
+def test_run_experiment_reuses_train_and_eval_envs(tmp_path):
+    baseline_path = tmp_path / "baselines.json"
+    baseline_path.write_text('{"policy_summaries": {"random": {"reward_mean": 0.0}}}', encoding="utf-8")
+    calls = {"n": 0}
+
+    def factory() -> GenericCountyEnv:
+        calls["n"] += 1
+        return _toy_env()
+
+    result = run_experiment(
+        env_factory=factory,
+        baseline_path=baseline_path,
+        train_seeds=[0, 1],
+        eval_seeds=[0, 1, 2],
+        episodes=2,
+        learning_rate=0.05,
+        epsilon=0.25,
+    )
+
+    assert result["learned_policy"]["summary"]["n"] == 3
     assert calls["n"] == 2
 
 

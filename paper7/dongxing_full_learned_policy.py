@@ -56,9 +56,9 @@ def train_preference_policy(
 ) -> dict[str, Any]:
     weights = np.zeros(K_BLOCK_GENERIC, dtype=np.float64)
     history: list[dict[str, Any]] = []
+    env = env_factory()
     for seed in train_seeds:
         rng = np.random.default_rng(int(seed))
-        env = env_factory()
         for episode in range(int(episodes)):
             obs, _ = env.reset(seed=int(seed) * 100_000 + episode)
             total_reward = 0.0
@@ -184,8 +184,9 @@ def run_experiment(
         epsilon=epsilon,
     )
     training_time_s = time.time() - t0
+    eval_env = env_factory()
     runs = [
-        evaluate_preference_policy(env_factory(), policy, seed=int(seed))
+        evaluate_preference_policy(eval_env, policy, seed=int(seed))
         for seed in eval_seeds
     ]
     summary = summarize_runs(runs)
