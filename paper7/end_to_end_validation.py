@@ -26,7 +26,7 @@ DEFAULT_OUT = PAPER7_DIR / "results" / "revision" / "end_to_end_validation.json"
 
 
 def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -451,6 +451,28 @@ def summarize_dongxing_rl_lite(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_dongxing_full_baselines(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    return {
+        "status": payload.get("status", "supported_as_full_real_environment_baseline_pilot"),
+        "path": display_path(path),
+        "n_runs": payload.get("n_runs"),
+        "n_policies": payload.get("n_policies"),
+        "policies": payload.get("policies", []),
+        "seeds": payload.get("seeds", []),
+        "has_full_reward_metrics": True,
+        "policy_summaries": payload.get("policy_summaries", {}),
+        "learned_policy_tested": False,
+        "interpretation": (
+            "Dongxing full real-environment baseline pilot with slope, "
+            "contiguity, baimu, and scalar reward; not learned-policy transfer "
+            "and not final statistical superiority evidence"
+        ),
+    }
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -459,6 +481,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     rollout = evidence.get("transition_rollout", {})
     policy_shift = evidence.get("policy_induced_diagnostics", {})
     dongxing_rl = evidence.get("dongxing_rl_lite", {})
+    dongxing_full = evidence.get("dongxing_full_baselines", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -549,6 +572,23 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": reward_sensitivity.get("interpretation"),
             }
         )
+    if dongxing_full.get("status") in {
+        "supported_as_full_real_environment_baselines",
+        "supported_as_full_real_environment_baseline_pilot",
+    }:
+        scopes.append(
+            {
+                "id": "dongxing_full_real_environment_scope",
+                "claim": (
+                    "Dongxing supports full multi-objective real-environment "
+                    "baseline evaluation."
+                ),
+                "status": dongxing_full.get("status"),
+                "evidence_level": "external_full_real_environment_baseline_pilot",
+                "learned_policy_tested": False,
+                "interpretation": dongxing_full.get("interpretation"),
+            }
+        )
     return scopes
 
 
@@ -616,6 +656,9 @@ def build_validation_report(
     )
     evidence["dongxing_rl_lite"] = summarize_dongxing_rl_lite(
         paper7_dir / "results" / "revision" / "dongxing_rl_lite.json"
+    )
+    evidence["dongxing_full_baselines"] = summarize_dongxing_full_baselines(
+        paper7_dir / "results" / "full_rigor" / "dongxing_full_baselines.json"
     )
 
     return {

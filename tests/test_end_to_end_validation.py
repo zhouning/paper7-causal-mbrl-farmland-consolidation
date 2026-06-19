@@ -7,9 +7,11 @@ import pytest
 
 from paper7.end_to_end_validation import (
     classify_claim_scope,
+    load_json,
     select_policy_induced_diagnostics_path,
     summarize_alpha_grid,
     summarize_dongxing_rl_lite,
+    summarize_dongxing_full_baselines,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
     summarize_reward_scaling_comparator,
@@ -21,6 +23,13 @@ from paper7.end_to_end_validation import (
 def _write_json(path: Path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_load_json_accepts_utf8_bom_files(tmp_path):
+    path = tmp_path / "bom.json"
+    path.write_text('{"status": "ok"}', encoding="utf-8-sig")
+
+    assert load_json(path) == {"status": "ok"}
 
 
 def test_summarize_seed_evaluations_requires_balanced_calibrated_pairs(tmp_path):
@@ -238,6 +247,28 @@ def test_summarize_reward_weight_sensitivity_extracts_bounded_metrics(tmp_path):
     assert summary["n_policy_metric_summaries"] == 6
     assert summary["n_pareto_rows"] == 2
     assert summary["policy_retraining_under_all_weights"] is False
+
+
+def test_summarize_dongxing_full_baselines_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_full_baselines.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_full_real_environment_baseline_pilot",
+            "n_runs": 12,
+            "n_policies": 6,
+            "policy_summaries": {
+                "random": {"slope_change_pct_mean": -0.1},
+                "scalarized_default": {"slope_change_pct_mean": -0.5},
+            },
+        },
+    )
+
+    summary = summarize_dongxing_full_baselines(path)
+
+    assert summary["status"] == "supported_as_full_real_environment_baseline_pilot"
+    assert summary["n_runs"] == 12
+    assert summary["has_full_reward_metrics"] is True
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():
