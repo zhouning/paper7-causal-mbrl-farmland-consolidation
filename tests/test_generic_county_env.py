@@ -58,6 +58,131 @@ def test_generic_env_counts_baimu_components_from_adjacency():
     assert info["baimu_area_ha"] == 0.02
 
 
+def test_generic_env_step_updates_metrics_without_full_recompute(monkeypatch):
+    env = GenericCountyEnv(
+        parcels=_toy_parcels(),
+        block_compositions={"0": [0, 1], "1": [2, 3]},
+        block_ids=[0, 1],
+        total_budget=2,
+        swaps_per_step=1,
+        baimu_threshold_m2=150.0,
+    )
+    env.reset(seed=0)
+
+    def fail_full_recompute():
+        raise AssertionError("step should update core metrics incrementally")
+
+    monkeypatch.setattr(env, "_compute_metrics_full", fail_full_recompute)
+
+    _, reward, terminated, truncated, info = env.step(0)
+
+    assert reward > 0
+    assert terminated is True
+    assert truncated is False
+    assert info["completed_swaps"] == 1
+
+
+def test_generic_env_incremental_metrics_match_full_recompute():
+    env = GenericCountyEnv(
+        parcels=[
+            {"land_use": "farmland", "area_m2": 100.0, "slope": 10.0, "geometry": box(0, 0, 1, 1)},
+            {"land_use": "forest", "area_m2": 80.0, "slope": 2.0, "geometry": box(1, 0, 2, 1)},
+            {"land_use": "farmland", "area_m2": 120.0, "slope": 8.0, "geometry": box(2, 0, 3, 1)},
+            {"land_use": "forest", "area_m2": 90.0, "slope": 1.0, "geometry": box(3, 0, 4, 1)},
+            {"land_use": "farmland", "area_m2": 110.0, "slope": 7.0, "geometry": box(4, 0, 5, 1)},
+            {"land_use": "forest", "area_m2": 130.0, "slope": 3.0, "geometry": box(5, 0, 6, 1)},
+        ],
+        block_compositions={"0": [0, 1, 2, 3], "1": [4, 5]},
+        block_ids=[0, 1],
+        total_budget=4,
+        swaps_per_step=1,
+        baimu_threshold_m2=150.0,
+    )
+    env.reset(seed=0)
+
+    for action in [0, 0, 1]:
+        _, _, terminated, _, _ = env.step(action)
+        incremental = (
+            env.n_farmland,
+            env.total_farm_area,
+            env.total_weighted_slope,
+            env.total_farmland_adj,
+            env.farmland_nbr_count.copy(),
+        )
+        env._compute_metrics_full()
+        assert incremental[0] == env.n_farmland
+        assert incremental[1] == env.total_farm_area
+        assert incremental[2] == env.total_weighted_slope
+        assert incremental[3] == env.total_farmland_adj
+        assert incremental[4].tolist() == env.farmland_nbr_count.tolist()
+        if terminated:
+            break
+
+
+def test_generic_env_step_refreshes_only_dirty_block_feature_rows(monkeypatch):
+    parcels = [
+        {"land_use": "farmland", "area_m2": 100.0, "slope": 10.0, "geometry": box(0, 0, 1, 1)},
+        {"land_use": "forest", "area_m2": 100.0, "slope": 2.0, "geometry": box(1, 0, 2, 1)},
+        {"land_use": "farmland", "area_m2": 100.0, "slope": 5.0, "geometry": box(2, 0, 3, 1)},
+        {"land_use": "forest", "area_m2": 100.0, "slope": 4.0, "geometry": box(3, 0, 4, 1)},
+        {"land_use": "farmland", "area_m2": 100.0, "slope": 7.0, "geometry": box(10, 0, 11, 1)},
+        {"land_use": "forest", "area_m2": 100.0, "slope": 1.0, "geometry": box(11, 0, 12, 1)},
+    ]
+    env = GenericCountyEnv(
+        parcels=parcels,
+        block_compositions={"0": [0, 1], "1": [2, 3], "2": [4, 5]},
+        block_ids=[0, 1, 2],
+        total_budget=3,
+        swaps_per_step=1,
+        baimu_threshold_m2=150.0,
+    )
+    env.reset(seed=0)
+    original = env._compute_block_feature_row
+    calls = []
+
+    def counted_row(position, block_id):
+        calls.append(int(block_id))
+        return original(position, block_id)
+
+    monkeypatch.setattr(env, "_compute_block_feature_row", counted_row)
+
+    env.step(0)
+
+    assert 0 in calls
+    assert 1 in calls
+    assert 2 not in calls
+    assert len(calls) < env.n_blocks
+
+
+def test_generic_env_cached_block_features_match_full_recompute():
+    env = GenericCountyEnv(
+        parcels=[
+            {"land_use": "farmland", "area_m2": 100.0, "slope": 10.0, "geometry": box(0, 0, 1, 1)},
+            {"land_use": "forest", "area_m2": 80.0, "slope": 2.0, "geometry": box(1, 0, 2, 1)},
+            {"land_use": "farmland", "area_m2": 120.0, "slope": 8.0, "geometry": box(2, 0, 3, 1)},
+            {"land_use": "forest", "area_m2": 90.0, "slope": 1.0, "geometry": box(3, 0, 4, 1)},
+            {"land_use": "farmland", "area_m2": 110.0, "slope": 7.0, "geometry": box(10, 0, 11, 1)},
+            {"land_use": "forest", "area_m2": 130.0, "slope": 3.0, "geometry": box(11, 0, 12, 1)},
+        ],
+        block_compositions={"0": [0, 1, 2, 3], "1": [4, 5]},
+        block_ids=[0, 1],
+        total_budget=4,
+        swaps_per_step=1,
+        baimu_threshold_m2=150.0,
+    )
+    env.reset(seed=0)
+
+    for action in [0, 0, 1]:
+        cached = env.block_feature_matrix()
+        full = env._compute_block_feature_matrix_full()
+        assert cached.tolist() == full.tolist()
+        _, _, terminated, _, _ = env.step(action)
+        if terminated:
+            break
+
+    assert env.block_feature_matrix().tolist() == env._compute_block_feature_matrix_full().tolist()
+
+
 def test_dongxing_loader_uses_swappable_index_order(tmp_path):
     import geopandas as gpd
     import pandas as pd

@@ -12,7 +12,7 @@ from typing import Any, Callable
 import numpy as np
 
 from paper7.dongxing_full_env import build_dongxing_full_env
-from paper7.generic_county_env import GenericCountyEnv
+from paper7.generic_county_env import GenericCountyEnv, K_BLOCK_GENERIC
 
 
 POLICIES = (
@@ -64,18 +64,18 @@ def choose_full_env_action(
 
 def run_policy_episode(env: GenericCountyEnv, policy: str, seed: int) -> dict[str, Any]:
     rng = np.random.default_rng(seed)
-    _, _ = env.reset(seed=seed)
+    obs, _ = env.reset(seed=seed)
     done = False
     total_reward = 0.0
     selected_blocks: list[int] = []
     last_info: dict[str, Any] = {}
     while not done:
-        mask = env.action_masks()
+        features = _block_features_from_obs(obs, env.n_blocks)
+        mask = features[:, 0] > 0.0
         if not bool(mask.any()):
             break
-        features = env.block_feature_matrix()
         action = choose_full_env_action(policy, features, mask, rng)
-        _, reward, terminated, truncated, info = env.step(action)
+        obs, reward, terminated, truncated, info = env.step(action)
         total_reward += float(reward)
         done = terminated or truncated
         last_info = info
@@ -95,6 +95,13 @@ def run_policy_episode(env: GenericCountyEnv, policy: str, seed: int) -> dict[st
         "unique_blocks": len(set(selected_blocks)),
         "selected_blocks_head": selected_blocks[:20],
     }
+
+
+def _block_features_from_obs(obs: np.ndarray, n_blocks: int) -> np.ndarray:
+    return np.asarray(obs[: n_blocks * K_BLOCK_GENERIC], dtype=np.float32).reshape(
+        n_blocks,
+        K_BLOCK_GENERIC,
+    )
 
 
 def summarize_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:

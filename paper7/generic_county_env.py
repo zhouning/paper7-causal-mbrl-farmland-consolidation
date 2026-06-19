@@ -62,6 +62,10 @@ class GenericCountyEnv(gym.Env):
         self.slopes = np.asarray([float(parcel["slope"]) for parcel in self.parcels], dtype=np.float64)
         self.geometries = [parcel.get("geometry") for parcel in self.parcels]
         self.adjacency = _build_geometry_adjacency(self.geometries)
+        self.parcel_to_block_ids: list[set[int]] = [set() for _ in range(self.n_parcels)]
+        for block_id in self.block_ids:
+            for index in self.block_compositions[str(block_id)]:
+                self.parcel_to_block_ids[int(index)].add(int(block_id))
 
         self.max_block_area = max(
             [sum(self.areas[index] for index in self.block_compositions[str(block_id)]) for block_id in self.block_ids]
@@ -90,6 +94,8 @@ class GenericCountyEnv(gym.Env):
         self.step_count = 0
         self.budget_used = 0
         self.swaps_in_block = {int(block_id): 0 for block_id in self.block_ids}
+        self._block_feature_cache = np.zeros((self.n_blocks, K_BLOCK_GENERIC), dtype=np.float32)
+        self._dirty_block_ids = set(self.block_ids)
 
         self._compute_metrics_full()
         self.baimu_count, self.baimu_total_area = self._count_baimu_fang()
@@ -114,34 +120,54 @@ class GenericCountyEnv(gym.Env):
         return self.total_farmland_adj / max(self.n_farmland, 1)
 
     def action_masks(self) -> np.ndarray:
-        return np.asarray([self._block_feasible_gain(block_id) > 0 for block_id in self.block_ids], dtype=bool)
+        return self.block_feature_matrix()[:, 0] > 0.0
 
     def block_feature_matrix(self) -> np.ndarray:
+        self._refresh_block_feature_cache()
+        self._block_feature_cache[:, 7] = 1.0 - self.step_count / max(1, self.max_steps)
+        return self._block_feature_cache.copy()
+
+    def _refresh_block_feature_cache(self) -> None:
+        if not self._dirty_block_ids:
+            return
+        for block_id in sorted(self._dirty_block_ids):
+            position = self.block_positions[int(block_id)]
+            self._block_feature_cache[position] = self._compute_block_feature_row(
+                position,
+                int(block_id),
+            )
+        self._dirty_block_ids.clear()
+
+    def _compute_block_feature_row(self, position: int, block_id: int) -> np.ndarray:
+        del position
+        indices = self.block_compositions[str(block_id)]
+        farm = [i for i in indices if self.land_use[i] == FARMLAND and not self.swapped[i]]
+        forest = [i for i in indices if self.land_use[i] == FOREST and not self.swapped[i]]
+        all_farm = [i for i in indices if self.land_use[i] == FARMLAND]
+        gain = self._block_feasible_gain(block_id)
+        farm_area = float(self.areas[farm].sum()) if farm else 0.0
+        forest_area = float(self.areas[forest].sum()) if forest else 0.0
+        current_farm_area = float(self.areas[all_farm].sum()) if all_farm else 0.0
+        neighbor_context = self._neighbor_farmland_context(block_id)
+        used_share = self.swaps_in_block[int(block_id)] / max(1, self.total_budget)
+        return np.asarray(
+            [
+                max(0.0, gain) / self.initial_max_gain,
+                min(farm_area, forest_area) / max(self.max_block_area, 1e-8),
+                farm_area / max(self.max_block_area, 1e-8),
+                forest_area / max(self.max_block_area, 1e-8),
+                current_farm_area / max(self.max_block_area, 1e-8),
+                neighbor_context,
+                used_share,
+                1.0 - self.step_count / max(1, self.max_steps),
+            ],
+            dtype=np.float32,
+        )
+
+    def _compute_block_feature_matrix_full(self) -> np.ndarray:
         features = np.zeros((self.n_blocks, K_BLOCK_GENERIC), dtype=np.float32)
         for position, block_id in enumerate(self.block_ids):
-            indices = self.block_compositions[str(block_id)]
-            farm = [i for i in indices if self.land_use[i] == FARMLAND and not self.swapped[i]]
-            forest = [i for i in indices if self.land_use[i] == FOREST and not self.swapped[i]]
-            all_farm = [i for i in indices if self.land_use[i] == FARMLAND]
-            gain = self._block_feasible_gain(block_id)
-            farm_area = float(self.areas[farm].sum()) if farm else 0.0
-            forest_area = float(self.areas[forest].sum()) if forest else 0.0
-            current_farm_area = float(self.areas[all_farm].sum()) if all_farm else 0.0
-            neighbor_context = self._neighbor_farmland_context(block_id)
-            used_share = self.swaps_in_block[int(block_id)] / max(1, self.total_budget)
-            features[position] = np.asarray(
-                [
-                    max(0.0, gain) / self.initial_max_gain,
-                    min(farm_area, forest_area) / max(self.max_block_area, 1e-8),
-                    farm_area / max(self.max_block_area, 1e-8),
-                    forest_area / max(self.max_block_area, 1e-8),
-                    current_farm_area / max(self.max_block_area, 1e-8),
-                    neighbor_context,
-                    used_share,
-                    1.0 - self.step_count / max(1, self.max_steps),
-                ],
-                dtype=np.float32,
-            )
+            features[position] = self._compute_block_feature_row(position, block_id)
         return features
 
     def step(self, action: int):
@@ -155,7 +181,6 @@ class GenericCountyEnv(gym.Env):
             self.swaps_in_block[int(block_id)] += completed
         self.step_count += 1
 
-        self._compute_metrics_full()
         baimu_interval = max(1, self.max_steps // 20)
         if self.step_count % baimu_interval == 0 or self.step_count >= self.max_steps:
             self.baimu_count, self.baimu_total_area = self._count_baimu_fang()
@@ -174,8 +199,9 @@ class GenericCountyEnv(gym.Env):
         self.prev_baimu_count = self.baimu_count
         self.prev_baimu_area = self.baimu_total_area
 
+        obs = self._get_obs()
         terminated = self.step_count >= self.max_steps
-        if not terminated and not self.action_masks().any():
+        if not terminated and not self._obs_has_valid_action(obs):
             terminated = True
         info = self._info()
         info.update(
@@ -185,10 +211,13 @@ class GenericCountyEnv(gym.Env):
                 "reward_components": component.to_dict(),
             }
         )
-        return self._get_obs(), float(reward), terminated, False, info
+        return obs, float(reward), terminated, False, info
 
     def _get_obs(self) -> np.ndarray:
         return np.concatenate([self.block_feature_matrix().reshape(-1), self._global_features()]).astype(np.float32)
+
+    def _obs_has_valid_action(self, obs: np.ndarray) -> bool:
+        return bool(obs[: self.n_blocks * K_BLOCK_GENERIC : K_BLOCK_GENERIC].max(initial=0.0) > 0.0)
 
     def _info(self) -> dict[str, Any]:
         return {
@@ -277,12 +306,75 @@ class GenericCountyEnv(gym.Env):
             best_forest = min(forest, key=lambda i: (self.slopes[i], -self.areas[i]))
             if self.slopes[best_farm] <= self.slopes[best_forest]:
                 break
-            self.land_use[best_farm] = FOREST
-            self.land_use[best_forest] = FARMLAND
-            self.swapped[best_farm] = True
-            self.swapped[best_forest] = True
+            self._apply_paired_swap(best_farm, best_forest)
             completed += 1
         return completed
+
+    def _apply_paired_swap(self, farm_to_forest: int, forest_to_farm: int) -> None:
+        farm_to_forest = int(farm_to_forest)
+        forest_to_farm = int(forest_to_farm)
+        self.total_farm_area += float(self.areas[forest_to_farm] - self.areas[farm_to_forest])
+        self.total_weighted_slope += float(
+            self.slopes[forest_to_farm] * self.areas[forest_to_farm]
+            - self.slopes[farm_to_forest] * self.areas[farm_to_forest]
+        )
+        self.total_farmland_adj += self._paired_swap_farmland_adj_delta(
+            farm_to_forest,
+            forest_to_farm,
+        )
+
+        self.land_use[farm_to_forest] = FOREST
+        self.land_use[forest_to_farm] = FARMLAND
+        self.swapped[farm_to_forest] = True
+        self.swapped[forest_to_farm] = True
+        self._refresh_local_farmland_neighbor_counts(
+            {farm_to_forest, forest_to_farm}
+        )
+        self._mark_dirty_blocks_for_changed_parcels({farm_to_forest, forest_to_farm})
+
+    def _paired_swap_farmland_adj_delta(self, farm_to_forest: int, forest_to_farm: int) -> int:
+        changed = {int(farm_to_forest), int(forest_to_farm)}
+        edges: set[tuple[int, int]] = set()
+        for i in changed:
+            for j in self.adjacency[i]:
+                left, right = sorted((i, int(j)))
+                edges.add((left, right))
+
+        delta_edges = 0
+        for left, right in edges:
+            old_left = int(self.land_use[left])
+            old_right = int(self.land_use[right])
+            new_left = self._land_use_after_pair(left, farm_to_forest, forest_to_farm)
+            new_right = self._land_use_after_pair(right, farm_to_forest, forest_to_farm)
+            old_is_farmland_edge = old_left == FARMLAND and old_right == FARMLAND
+            new_is_farmland_edge = new_left == FARMLAND and new_right == FARMLAND
+            delta_edges += int(new_is_farmland_edge) - int(old_is_farmland_edge)
+        return int(2 * delta_edges)
+
+    def _land_use_after_pair(self, index: int, farm_to_forest: int, forest_to_farm: int) -> int:
+        if index == farm_to_forest:
+            return FOREST
+        if index == forest_to_farm:
+            return FARMLAND
+        return int(self.land_use[index])
+
+    def _refresh_local_farmland_neighbor_counts(self, changed: set[int]) -> None:
+        affected = set(changed)
+        for i in changed:
+            affected.update(int(j) for j in self.adjacency[i])
+        for i in affected:
+            neighbors = self.adjacency[i]
+            self.farmland_nbr_count[i] = (
+                int((self.land_use[neighbors] == FARMLAND).sum())
+                if len(neighbors)
+                else 0
+            )
+
+    def _mark_dirty_blocks_for_changed_parcels(self, changed: set[int]) -> None:
+        for i in changed:
+            self._dirty_block_ids.update(self.parcel_to_block_ids[int(i)])
+            for j in self.adjacency[int(i)]:
+                self._dirty_block_ids.update(self.parcel_to_block_ids[int(j)])
 
     def _block_feasible_gain(self, block_id: int) -> float:
         indices = self.block_compositions[str(block_id)]
