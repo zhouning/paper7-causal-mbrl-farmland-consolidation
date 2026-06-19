@@ -271,6 +271,24 @@ def test_summarize_dongxing_full_baselines_extracts_scope(tmp_path):
     assert summary["has_full_reward_metrics"] is True
 
 
+def test_classify_claim_scope_marks_dongxing_full_baseline_level():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_full_baselines": {
+                "status": "supported_as_full_real_environment_baselines",
+                "interpretation": "full baseline evidence",
+            }
+        }
+    )
+
+    dongxing_full = next(
+        item for item in scopes if item["id"] == "dongxing_full_real_environment_scope"
+    )
+
+    assert dongxing_full["status"] == "supported_as_full_real_environment_baselines"
+    assert dongxing_full["evidence_level"] == "external_full_real_environment_baselines"
+
+
 def test_end_to_end_validation_script_help_runs_from_repo_root():
     repo_root = Path(__file__).resolve().parents[1]
     result = subprocess.run(

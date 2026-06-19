@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T13:07:29.319298+00:00",
+  "generated_utc": "2026-06-19T13:35:23.579430+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -277,9 +277,9 @@
       "interpretation": "external slope-only learned block-selection actionability; not full cross-county learned-policy transfer and not Bishan full-reward validation"
     },
     "dongxing_full_baselines": {
-      "status": "supported_as_full_real_environment_baseline_pilot",
+      "status": "supported_as_full_real_environment_baselines",
       "path": "paper7\\results\\full_rigor\\dongxing_full_baselines.json",
-      "n_runs": 12,
+      "n_runs": 60,
       "n_policies": 6,
       "policies": [
         "random",
@@ -291,43 +291,51 @@
       ],
       "seeds": [
         0,
-        1
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
       ],
       "has_full_reward_metrics": true,
       "policy_summaries": {
         "random": {
-          "n": 2,
-          "slope_change_pct_mean": -0.347569,
-          "slope_change_pct_sd": 0.003459,
-          "slope_change_pct_min": -0.351028,
-          "slope_change_pct_max": -0.344111,
-          "cont_change_mean": -0.009445,
-          "cont_change_sd": 0.00328,
-          "cont_change_min": -0.012725,
-          "cont_change_max": -0.006166,
-          "baimu_count_change_mean": 0.5,
-          "baimu_count_change_sd": 3.5,
-          "baimu_count_change_min": -3.0,
+          "n": 10,
+          "slope_change_pct_mean": -0.342367,
+          "slope_change_pct_sd": 0.082712,
+          "slope_change_pct_min": -0.514002,
+          "slope_change_pct_max": -0.251058,
+          "cont_change_mean": -0.009384,
+          "cont_change_sd": 0.002922,
+          "cont_change_min": -0.012769,
+          "cont_change_max": -0.004111,
+          "baimu_count_change_mean": -0.3,
+          "baimu_count_change_sd": 2.685144,
+          "baimu_count_change_min": -4.0,
           "baimu_count_change_max": 4.0,
-          "baimu_area_change_ha_mean": -474.698435,
-          "baimu_area_change_ha_sd": 66.58408,
-          "baimu_area_change_ha_min": -541.282515,
-          "baimu_area_change_ha_max": -408.114356,
-          "reward_mean": 0.82245,
-          "reward_sd": 13.276584,
+          "baimu_area_change_ha_mean": -460.816916,
+          "baimu_area_change_ha_sd": 88.948206,
+          "baimu_area_change_ha_min": -602.192755,
+          "baimu_area_change_ha_max": -339.05969,
+          "reward_mean": 10.623817,
+          "reward_sd": 10.277235,
           "reward_min": -12.454134,
-          "reward_max": 14.099034,
-          "completed_swaps_mean": 432.5,
-          "completed_swaps_sd": 1.5,
-          "completed_swaps_min": 431.0,
-          "completed_swaps_max": 434.0,
-          "unique_blocks_mean": 98.5,
-          "unique_blocks_sd": 1.5,
+          "reward_max": 26.268877,
+          "completed_swaps_mean": 427.9,
+          "completed_swaps_sd": 10.044401,
+          "completed_swaps_min": 409.0,
+          "completed_swaps_max": 442.0,
+          "unique_blocks_mean": 98.8,
+          "unique_blocks_sd": 1.32665,
           "unique_blocks_min": 97.0,
           "unique_blocks_max": 100.0
         },
         "dynamic_slope_gap": {
-          "n": 2,
+          "n": 10,
           "slope_change_pct_mean": -1.217577,
           "slope_change_pct_sd": 0.0,
           "slope_change_pct_min": -1.217577,
@@ -358,7 +366,7 @@
           "unique_blocks_max": 100.0
         },
         "area_weighted_slope_gap": {
-          "n": 2,
+          "n": 10,
           "slope_change_pct_mean": -0.882685,
           "slope_change_pct_sd": 0.0,
           "slope_change_pct_min": -0.882685,
@@ -389,7 +397,7 @@
           "unique_blocks_max": 99.0
         },
         "contiguity_aware": {
-          "n": 2,
+          "n": 10,
           "slope_change_pct_mean": -0.855075,
           "slope_change_pct_sd": 0.0,
           "slope_change_pct_min": -0.855075,
@@ -420,7 +428,7 @@
           "unique_blocks_max": 100.0
         },
         "baimu_aware": {
-          "n": 2,
+          "n": 10,
           "slope_change_pct_mean": -2.260631,
           "slope_change_pct_sd": 0.0,
           "slope_change_pct_min": -2.260631,
@@ -451,7 +459,7 @@
           "unique_blocks_max": 100.0
         },
         "scalarized_default": {
-          "n": 2,
+          "n": 10,
           "slope_change_pct_mean": -2.061333,
           "slope_change_pct_sd": 0.0,
           "slope_change_pct_min": -2.061333,
@@ -539,8 +547,8 @@
     {
       "id": "dongxing_full_real_environment_scope",
       "claim": "Dongxing supports full multi-objective real-environment baseline evaluation.",
-      "status": "supported_as_full_real_environment_baseline_pilot",
-      "evidence_level": "external_full_real_environment_baseline_pilot",
+      "status": "supported_as_full_real_environment_baselines",
+      "evidence_level": "external_full_real_environment_baselines",
       "learned_policy_tested": false,
       "interpretation": "Dongxing full real-environment baseline pilot with slope, contiguity, baimu, and scalar reward; not learned-policy transfer and not final statistical superiority evidence"
     }

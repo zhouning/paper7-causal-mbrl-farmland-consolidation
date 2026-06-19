@@ -576,6 +576,11 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         "supported_as_full_real_environment_baselines",
         "supported_as_full_real_environment_baseline_pilot",
     }:
+        evidence_level = (
+            "external_full_real_environment_baselines"
+            if dongxing_full.get("status") == "supported_as_full_real_environment_baselines"
+            else "external_full_real_environment_baseline_pilot"
+        )
         scopes.append(
             {
                 "id": "dongxing_full_real_environment_scope",
@@ -584,7 +589,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                     "baseline evaluation."
                 ),
                 "status": dongxing_full.get("status"),
-                "evidence_level": "external_full_real_environment_baseline_pilot",
+                "evidence_level": evidence_level,
                 "learned_policy_tested": False,
                 "interpretation": dongxing_full.get("interpretation"),
             }
