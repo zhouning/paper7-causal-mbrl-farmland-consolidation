@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.25)  17 JUN 2026 21:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.25)  19 JUN 2026 17:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -390,13 +390,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 28.
 
 (d:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Overfull \hbox (22.38963pt too wide) in paragraph at lines 30--31
-\OT1/cmr/m/n/10 ploita-tion in the learned en-vi-ron-ment, we in-tro-duce ob-se
-r-va-tional treatment-
- []
-
-[1
+) [1
 
 {d:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
 Overfull \hbox (4.08377pt too wide) in paragraph at lines 52--53
@@ -410,19 +404,19 @@ Overfull \hbox (13.88226pt too wide) in paragraph at lines 52--53
 ol-icy optimization---
  []
 
-[3]
+
 Overfull \hbox (1.07378pt too wide) in paragraph at lines 67--68
 []\OT1/cmr/m/n/10.95 Our ap-proach dif-fers from Dreamer-style meth-ods in a ke
 y re-spect: rather
  []
 
-[4] [5] [6] [7]
+[3] [4] [5] [6]
 Overfull \hbox (1.35121pt too wide) in paragraph at lines 156--157
 \OT1/cmr/m/n/10.95 The \OT1/cmr/m/it/10.95 Learned-Coun-tyEnv \OT1/cmr/m/n/10.9
 5 wraps the trained tran-si-tion model as a Gymnasium-
  []
 
-[8] [9]
+[7] [8] [9]
 Overfull \hbox (9.87659pt too wide) in paragraph at lines 197--198
 []\OT1/cmr/bx/n/10.95 Non-learning block base-lines\OT1/cmr/m/n/10.95 : ran-dom
  valid-block se-lec-tion (5 seeds),
@@ -434,7 +428,7 @@ Overfull \hbox (12.69579pt too wide) in paragraph at lines 197--198
 aware greedy,
  []
 
-[10]
+
 Overfull \hbox (3.50983pt too wide) in paragraph at lines 200--201
 []\OT1/cmr/bx/n/10.95 Model-Based \OT1/cmr/m/n/10.95 (ours): Mask-able PPO on L
 earned-Coun-tyEnv, 15 seeds,
@@ -446,7 +440,7 @@ Overfull \hbox (9.25679pt too wide) in paragraph at lines 205--206
 /n/10.95 paper7 / end _ to _ end _ validation .
  []
 
-
+[10]
 Underfull \hbox (badness 10000) in paragraph at lines 217--218
 []\OT1/cmr/m/n/9 End-to-end Bis-han re-sult
  []
@@ -497,7 +491,7 @@ Overfull \hbox (40.37515pt too wide) in paragraph at lines 255--256
 -anced cal-i-brated/uncalibrated
  []
 
-[12]
+
 Overfull \hbox (1.04623pt too wide) in paragraph at lines 260--261
 \OT1/cmr/m/n/10.95 We added real-environment non-learning base-lines to test wh
 ether the county
@@ -508,7 +502,7 @@ Overfull \hbox (8.66158pt too wide) in paragraph at lines 268--280
  [][]
  []
 
-[13] [14] [15] [16] [17]
+[12] [13] [14] [15] [16]
 Overfull \hbox (21.72964pt too wide) in paragraph at lines 432--433
 \OT1/cmr/m/n/10.95 We tested aug-ment-ing the tran-si-tion model's per-block in
 -put with 64-dimensional
@@ -525,19 +519,19 @@ Overfull \hbox (2.45656pt too wide) in paragraph at lines 448--449
 n loss by 40% (0.051
  []
 
-
+[17]
 Overfull \hbox (11.81378pt too wide) in paragraph at lines 453--454
 \OT1/cmr/m/n/10.95 We tested whether the geospa-tial pre-pro-cess-ing and block
 -construction pipeline
  []
 
-[18] [19] [20] [21] [22] [23]
+[18] [19] [20] [21] [22]
 Overfull \hbox (1.16795pt too wide) in paragraph at lines 574--575
 \OT1/cmr/m/n/10.95 with treatment-effect-informed re-ward cal-i-bra-tion, can r
 e-duce com-pu-ta-tional
  []
 
-
+[23]
 Overfull \hbox (10.293pt too wide) in paragraph at lines 577--578
 \OT1/cmr/m/n/10.95 parameter tran-si-tion model trained on 12,000 tra-jec-tory
 sam-ples achieves
@@ -572,11 +566,11 @@ Package rerunfilecheck Info: File `manuscript.out' has not changed.
 Here is how much of TeX's memory you used:
  11818 strings out of 468830
  183039 string characters out of 5454207
- 600127 words of memory out of 5000000
+ 600118 words of memory out of 5000000
  40454 multiletter control sequences out of 15000+600000
  641724 words of font info for 94 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 75i,10n,79p,2773b,554s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,1845b,555s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <c:/Users/zn198/.texlive2026/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.
 600pk><d:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><d:
 /texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><d:/texlive/
@@ -594,10 +588,9 @@ blic/amsfonts/cm/cmsy8.pfb><d:/texlive/2026/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmti10.pfb><d:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 tt10.pfb><d:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10
 .pfb>
-Output written on manuscript.pdf (26 pages, 294398 bytes).
+Output written on manuscript.pdf (26 pages, 293646 bytes).
 PDF statistics:
  426 PDF objects out of 1000 (max. 8388607)
  359 compressed objects within 4 object streams
  99 named destinations out of 1000 (max. 500000)
  225 words of extra memory for PDF output out of 10000 (max. 10000000)
-

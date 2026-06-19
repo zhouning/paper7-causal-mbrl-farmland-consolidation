@@ -28,7 +28,7 @@ Figure staging folder. No standalone figure files were present in the source `pa
 
 `06_latex_source_editable/`
 
-Signed source copy and anonymous source copy for editable-source upload or later editorial use.
+Signed source copy and anonymous source copy for editable-source upload or later editorial use. Use `CEUS_paper7_latex_source_anonymous.zip` for the anonymous editable-source upload.
 
 `07_declarations_and_checks/`
 
@@ -65,15 +65,16 @@ Original English and Chinese Word files plus the original LaTeX source. Do not u
 
 ## Build and Verification Snapshot
 
-Checked on 2026-06-07.
+Anonymous manuscript and evidence-chain refresh checked on 2026-06-19.
 
-- Anonymous manuscript compiled successfully: `01_main_document_anonymous/manuscript.pdf`, 16 pages.
-- Signed source compiled successfully: `06_latex_source_editable/manuscript_signed.pdf`, 16 pages.
-- Title page compiled successfully: `02_title_page_author_info/title_page.pdf`, 1 page.
-- Abstract length after CEUS retargeting and review-driven revision: 198 words.
+- Anonymous manuscript compiled successfully after two `pdflatex` passes: `01_main_document_anonymous/manuscript.pdf`, 26 pages.
+- Abstract length after CEUS retargeting and policy-induced diagnostic revision: 224 words.
+- Policy-induced learned-vs-real diagnostic expanded to 15 calibrated policy seeds and validated in `paper7/results/revision/policy_induced_diagnostics_15seed.json`.
+- End-to-end evidence audit refreshed in `paper7/results/revision/end_to_end_validation.json`; the Bishan learned-policy chain is supported and Dongxing remains bounded as external data/action-space/dynamic feasibility evidence, not learned-policy transfer.
 - Highlights: five bullets; each is under 85 characters including the bullet marker.
 - Anonymous source grep: no exact hits for `Ning`, `Zhou`, `Xiang`, `Jing`, `Peking`, `pku`, `jingxiang`, or `School of Software`.
 - Self-citation grep: no hits for `zhou2026`, `Author(s)`, `Anonymized self-citation`, or related unpublished-self-citation markers.
 - LaTeX log scan: no undefined citations, undefined references, fatal errors, or emergency stops.
-- Anonymous source zip prepared: `CEUS_paper7_latex_source_anonymous.zip`.
+- Anonymous source copy synchronized with the main anonymous manuscript, and anonymous source zip prepared: `CEUS_paper7_latex_source_anonymous.zip`.
+- Title page and signed source files were not changed in the 2026-06-19 anonymous evidence-chain refresh.
 - Remaining nonblocking issue: only minor overfull `hbox` warnings remain; no blocking LaTeX errors were found.

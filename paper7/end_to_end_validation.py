@@ -30,6 +30,14 @@ def load_json(path: Path) -> Any:
         return json.load(f)
 
 
+def display_path(path: Path) -> str:
+    """Return a stable path string for repo files and temporary test files."""
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def file_sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as f:
@@ -44,7 +52,7 @@ def file_sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:
 def describe_file(path: Path, hash_files: bool = False) -> dict[str, Any]:
     exists = path.exists()
     item: dict[str, Any] = {
-        "path": str(path.relative_to(REPO_ROOT) if path.is_absolute() else path),
+        "path": display_path(path) if path.is_absolute() else str(path),
         "exists": exists,
     }
     if exists and path.is_file():
@@ -91,7 +99,7 @@ def summarize_seed_evaluations(seed_dir: Path) -> dict[str, Any]:
 
     return {
         "status": "supported" if paired else "missing",
-        "seed_dir": str(seed_dir.relative_to(REPO_ROOT)),
+        "seed_dir": display_path(seed_dir),
         "n_no_cal_files": len(no_cal),
         "n_with_cal_files": len(with_cal),
         "n_paired_seeds": len(paired),
@@ -132,7 +140,7 @@ def summarize_alpha_grid(
 
     return {
         "status": "supported",
-        "grid_path": str(grid_path.relative_to(REPO_ROOT)),
+        "grid_path": display_path(grid_path),
         "n_runs": len(rows),
         "n_alphas": len(means),
         "best_alpha": round(best_alpha, 6),
@@ -168,7 +176,7 @@ def summarize_rollout_diagnostics(path: Path) -> dict[str, Any]:
     h1 = payload["horizons"]["1"]
     return {
         "status": "supported",
-        "path": str(path.relative_to(REPO_ROOT)),
+        "path": display_path(path),
         "n_transitions_loaded": payload.get("n_transitions_loaded"),
         "n_starts": payload.get("n_starts"),
         "horizon_1_reward_mae": h1["reward_mae"],
@@ -186,9 +194,9 @@ def summarize_policy_induced_diagnostics(path: Path) -> dict[str, Any]:
     """Summarize learned-vs-real diagnostics under trained policy actions."""
     payload = load_json(path)
     aggregate = payload["aggregate"]
-    return {
+    summary = {
         "status": "supported",
-        "path": str(path.relative_to(REPO_ROOT)),
+        "path": display_path(path),
         "support_size": int(payload.get("support_size", 0)),
         "n_policy_episodes": int(aggregate["n_episodes"]),
         "policy_induced_selected_block_mae_mean": aggregate[
@@ -214,6 +222,29 @@ def summarize_policy_induced_diagnostics(path: Path) -> dict[str, Any]:
             "still measured in the real parcel-simulation environment"
         ),
     }
+    validation = payload.get("validation")
+    if validation:
+        summary["validation_passes_all_thresholds"] = bool(
+            validation.get("passes_all_thresholds", False)
+        )
+        summary["validation_passes_mask_agreement_threshold"] = bool(
+            validation.get("passes_mask_agreement_threshold", False)
+        )
+        summary["validation_passes_support_distance_threshold"] = bool(
+            validation.get("passes_support_distance_threshold", False)
+        )
+        summary["validation_passes_reward_calibration_check"] = bool(
+            validation.get("passes_reward_calibration_check", False)
+        )
+    return summary
+
+
+def select_policy_induced_diagnostics_path(paper7_dir: Path) -> Path:
+    """Prefer the expanded 15-seed diagnostic when available."""
+    revision_dir = paper7_dir / "results" / "revision"
+    expanded = revision_dir / "policy_induced_diagnostics_15seed.json"
+    legacy = revision_dir / "policy_induced_diagnostics.json"
+    return expanded if expanded.exists() else legacy
 
 
 def summarize_calibration(path: Path, sensitivity_path: Path) -> dict[str, Any]:
@@ -225,8 +256,8 @@ def summarize_calibration(path: Path, sensitivity_path: Path) -> dict[str, Any]:
     )
     return {
         "status": "supported_as_observational_regularization",
-        "calibration_path": str(path.relative_to(REPO_ROOT)),
-        "sensitivity_path": str(sensitivity_path.relative_to(REPO_ROOT)),
+        "calibration_path": display_path(path),
+        "sensitivity_path": display_path(sensitivity_path),
         "empirical_att": round(float(calibration["empirical_att"]), 6),
         "predicted_att": round(float(calibration["predicted_att"]), 6),
         "calibration_factor": round(float(calibration["calibration_factor"]), 6),
@@ -246,7 +277,7 @@ def summarize_bishan_baselines(path: Path) -> dict[str, Any]:
     by_policy = {row["policy"]: row for row in payload["summary"]}
     return {
         "status": "supported",
-        "path": str(path.relative_to(REPO_ROOT)),
+        "path": display_path(path),
         "budget": payload.get("budget"),
         "random_slope_mean": by_policy["random"]["slope_change_pct_mean"],
         "random_budget_completion": by_policy["random"]["budget_completion_mean"],
@@ -277,9 +308,9 @@ def summarize_dongxing(
     dynamic = load_json(dynamic_path)
     return {
         "status": "supported",
-        "audit_path": str(audit_path.relative_to(REPO_ROOT)),
-        "block_summary_path": str(block_summary_path.relative_to(REPO_ROOT)),
-        "dynamic_path": str(dynamic_path.relative_to(REPO_ROOT)),
+        "audit_path": display_path(audit_path),
+        "block_summary_path": display_path(block_summary_path),
+        "dynamic_path": display_path(dynamic_path),
         "n_parcels": audit["source"]["record_count"],
         "n_blocks": blocks["n_blocks"],
         "slope_coverage_farmland": audit["slope"]["by_land_use"]["farmland"][
@@ -414,7 +445,7 @@ def build_validation_report(
         paper7_dir / "results" / "revision" / "transition_rollout_diagnostics.json"
     )
     evidence["policy_induced_diagnostics"] = summarize_policy_induced_diagnostics(
-        paper7_dir / "results" / "revision" / "policy_induced_diagnostics.json"
+        select_policy_induced_diagnostics_path(paper7_dir)
     )
     evidence["calibration"] = summarize_calibration(
         paper7_dir / "results" / "causal_calibration.json",

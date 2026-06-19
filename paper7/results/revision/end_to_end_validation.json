@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-17T13:24:47.242064+00:00",
+  "generated_utc": "2026-06-19T09:24:25.557140+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -51,7 +51,7 @@
       "path": "paper7\\models\\training_history.json",
       "exists": true,
       "bytes": 5210,
-      "modified_utc": "2026-04-06T18:27:17.813452+00:00"
+      "modified_utc": "2026-06-17T13:49:39.725010+00:00"
     },
     "dongxing_slope_gpkg": {
       "path": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
@@ -73,7 +73,7 @@
         "path": "paper7\\models\\training_history.json",
         "exists": true,
         "bytes": 5210,
-        "modified_utc": "2026-04-06T18:27:17.813452+00:00"
+        "modified_utc": "2026-06-17T13:49:39.725010+00:00"
       },
       "epochs_recorded": 50,
       "best_val_loss": 0.088109,
@@ -146,19 +146,23 @@
     },
     "policy_induced_diagnostics": {
       "status": "supported",
-      "path": "paper7\\results\\revision\\policy_induced_diagnostics.json",
+      "path": "paper7\\results\\revision\\policy_induced_diagnostics_15seed.json",
       "support_size": 12000,
-      "n_policy_episodes": 3,
-      "policy_induced_selected_block_mae_mean": 0.075143,
-      "policy_induced_all_block_mae_mean": 0.0027,
-      "policy_induced_global_mae_mean": 0.0521,
-      "policy_induced_reward_mae_mean": 0.601632,
-      "policy_induced_calibrated_reward_mae_mean": 0.111302,
-      "policy_induced_mask_agreement_mean": 0.997491,
-      "policy_induced_support_distance_mean": 0.011306,
-      "policy_induced_support_distance_q95": 0.016308,
-      "policy_induced_final_real_slope_pct_mean": -1.10901,
-      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment"
+      "n_policy_episodes": 15,
+      "policy_induced_selected_block_mae_mean": 0.07493,
+      "policy_induced_all_block_mae_mean": 0.00269,
+      "policy_induced_global_mae_mean": 0.051974,
+      "policy_induced_reward_mae_mean": 0.580874,
+      "policy_induced_calibrated_reward_mae_mean": 0.107462,
+      "policy_induced_mask_agreement_mean": 0.997629,
+      "policy_induced_support_distance_mean": 0.012601,
+      "policy_induced_support_distance_q95": 0.020688,
+      "policy_induced_final_real_slope_pct_mean": -1.105524,
+      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment",
+      "validation_passes_all_thresholds": true,
+      "validation_passes_mask_agreement_threshold": true,
+      "validation_passes_support_distance_threshold": true,
+      "validation_passes_reward_calibration_check": true
     },
     "calibration": {
       "status": "supported_as_observational_regularization",
@@ -232,7 +236,7 @@
       "claim": "The trained learned-environment policy remains evaluable under synchronized learned-vs-real rollouts.",
       "status": "supported",
       "evidence_level": "trained_policy_induced_learned_vs_real_diagnostics",
-      "n_policy_episodes": 3,
+      "n_policy_episodes": 15,
       "standalone_simulator_for_final_outcomes": false,
       "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment"
     },

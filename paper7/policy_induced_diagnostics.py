@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -285,6 +286,103 @@ def summarize_policy_diagnostics(episodes: list[dict[str, Any]]) -> dict[str, An
     return aggregate
 
 
+def validate_policy_induced_payload(
+    payload: dict[str, Any],
+    expected_seeds: list[int],
+    mask_threshold: float = 0.995,
+    support_q95_threshold: float = 0.05,
+) -> dict[str, Any]:
+    """Validate policy-induced diagnostics before using them as evidence."""
+    episodes = payload.get("episodes", [])
+    if len(episodes) != len(expected_seeds):
+        raise ValueError(f"Expected {len(expected_seeds)} episodes, found {len(episodes)}")
+
+    expected_seed_set = {int(seed) for seed in expected_seeds}
+    observed_seeds: list[int] = []
+    required_metrics = [
+        "n_steps",
+        "selected_block_mae_mean",
+        "all_block_mae_mean",
+        "global_mae_mean",
+        "reward_mae_mean",
+        "calibrated_reward_mae_mean",
+        "mask_agreement_mean",
+        "support_distance_mean",
+        "support_distance_q95",
+        "final_real_slope_change_pct",
+    ]
+    for idx, episode in enumerate(episodes):
+        summary = episode.get("summary", {})
+        if "seed" not in summary:
+            raise ValueError(f"Episode {idx} is missing seed")
+        observed_seeds.append(int(summary["seed"]))
+        for metric in required_metrics:
+            if metric not in summary:
+                raise ValueError(f"Episode seed {summary['seed']} is missing metric {metric}")
+            value = float(summary[metric])
+            if not np.isfinite(value):
+                raise ValueError(f"Episode seed {summary['seed']} has non-finite metric {metric}")
+
+    observed_seed_set = set(observed_seeds)
+    if observed_seed_set != expected_seed_set:
+        missing = sorted(expected_seed_set - observed_seed_set)
+        extra = sorted(observed_seed_set - expected_seed_set)
+        raise ValueError(f"Seed coverage mismatch: missing={missing}, extra={extra}")
+
+    aggregate = payload.get("aggregate") or summarize_policy_diagnostics(episodes)
+    mask_agreement = float(aggregate["mask_agreement_mean_mean"])
+    support_q95 = float(aggregate["support_distance_q95_mean"])
+    raw_reward = float(aggregate["reward_mae_mean_mean"])
+    calibrated_reward = float(aggregate["calibrated_reward_mae_mean_mean"])
+    validation = {
+        "n_episodes": len(episodes),
+        "expected_seeds": sorted(expected_seed_set),
+        "observed_seeds": sorted(observed_seed_set),
+        "mask_agreement_mean": round(mask_agreement, 6),
+        "support_distance_q95_mean": round(support_q95, 6),
+        "reward_mae_mean": round(raw_reward, 6),
+        "calibrated_reward_mae_mean": round(calibrated_reward, 6),
+        "passes_mask_agreement_threshold": bool(mask_agreement >= float(mask_threshold)),
+        "passes_support_distance_threshold": bool(support_q95 < float(support_q95_threshold)),
+        "passes_reward_calibration_check": bool(calibrated_reward < raw_reward),
+    }
+    validation["passes_all_thresholds"] = bool(
+        validation["passes_mask_agreement_threshold"]
+        and validation["passes_support_distance_threshold"]
+        and validation["passes_reward_calibration_check"]
+    )
+    return validation
+
+
+def _parse_seed_list(raw: str | None) -> list[int] | None:
+    if raw is None:
+        return None
+    seeds = [int(item) for item in str(raw).split(",") if item.strip()]
+    if not seeds:
+        raise ValueError("--seeds must contain at least one integer seed")
+    return seeds
+
+
+def _infer_seed_from_policy_path(path: Path) -> int | None:
+    match = re.search(r"_seed(\d+)\.zip$", path.name)
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def _policy_paths_from_args(args: argparse.Namespace) -> tuple[list[Path], list[int | None]]:
+    seeds = _parse_seed_list(args.seeds)
+    if seeds is not None:
+        paths = [
+            Path(args.policy_dir) / f"{args.label}_model_seed{seed}.zip"
+            for seed in seeds
+        ]
+        return paths, seeds
+    paths = [Path(path) for path in args.policy_models]
+    seeds = [_infer_seed_from_policy_path(path) for path in paths]
+    return paths, seeds
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -297,6 +395,9 @@ def parse_args() -> argparse.Namespace:
             Path("paper7/results/revision/seeds/with_cal_model_seed2.zip"),
         ],
     )
+    parser.add_argument("--policy-dir", type=Path, default=Path("paper7/results/revision/seeds"))
+    parser.add_argument("--label", default="with_cal")
+    parser.add_argument("--seeds", default=None, help="Comma-separated seed list, e.g. 0,1,2")
     parser.add_argument("--transition-model", type=Path, default=Path("paper7/models/transition_model.pt"))
     parser.add_argument("--trajectory-dir", type=Path, default=Path("paper7/trajectories"))
     parser.add_argument("--reward-scale", type=float, default=0.185)
@@ -312,9 +413,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    policy_paths, expected_seeds = _policy_paths_from_args(args)
     support_globals = _support_global_features(args.trajectory_dir, max_support=args.max_support)
-    episodes = [
-        run_policy_diagnostic_episode(
+    episodes = []
+    for path, seed in zip(policy_paths, expected_seeds):
+        episode = run_policy_diagnostic_episode(
             policy_model_path=path,
             transition_model_path=args.transition_model,
             trajectory_dir=args.trajectory_dir,
@@ -322,8 +425,9 @@ def main() -> None:
             max_steps=args.max_steps,
             support_globals=support_globals,
         )
-        for path in args.policy_models
-    ]
+        if seed is not None:
+            episode["summary"]["seed"] = int(seed)
+        episodes.append(episode)
     result = {
         "description": (
             "Policy-induced diagnostics: trained model-based policies choose actions "
@@ -337,9 +441,14 @@ def main() -> None:
         "episodes": episodes,
         "aggregate": summarize_policy_diagnostics(episodes),
     }
+    validation_seeds = [int(seed) for seed in expected_seeds if seed is not None]
+    if len(validation_seeds) == len(policy_paths):
+        result["validation"] = validate_policy_induced_payload(result, expected_seeds=validation_seeds)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(result["aggregate"], indent=2))
+    if "validation" in result:
+        print(json.dumps(result["validation"], indent=2))
 
 
 if __name__ == "__main__":

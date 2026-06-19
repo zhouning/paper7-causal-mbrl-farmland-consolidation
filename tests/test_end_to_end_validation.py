@@ -7,6 +7,7 @@ import pytest
 
 from paper7.end_to_end_validation import (
     classify_claim_scope,
+    select_policy_induced_diagnostics_path,
     summarize_alpha_grid,
     summarize_policy_induced_diagnostics,
     summarize_seed_evaluations,
@@ -76,6 +77,12 @@ def test_summarize_policy_induced_diagnostics_reports_policy_shift_metrics(tmp_p
                 "support_distance_q95_mean": 0.016308,
                 "final_real_slope_change_pct_mean": -1.10901,
             },
+            "validation": {
+                "passes_all_thresholds": True,
+                "passes_mask_agreement_threshold": True,
+                "passes_support_distance_threshold": True,
+                "passes_reward_calibration_check": True,
+            },
         },
     )
 
@@ -88,6 +95,19 @@ def test_summarize_policy_induced_diagnostics_reports_policy_shift_metrics(tmp_p
     assert summary["policy_induced_global_mae_mean"] == pytest.approx(0.0521)
     assert summary["policy_induced_calibrated_reward_mae_mean"] == pytest.approx(0.111302)
     assert summary["policy_induced_final_real_slope_pct_mean"] == pytest.approx(-1.10901)
+    assert summary["validation_passes_all_thresholds"] is True
+
+
+def test_select_policy_induced_diagnostics_path_prefers_15_seed_file(tmp_path):
+    revision_dir = tmp_path / "results" / "revision"
+    legacy = revision_dir / "policy_induced_diagnostics.json"
+    expanded = revision_dir / "policy_induced_diagnostics_15seed.json"
+    _write_json(legacy, {"aggregate": {"n_episodes": 3}})
+    _write_json(expanded, {"aggregate": {"n_episodes": 15}})
+
+    selected = select_policy_induced_diagnostics_path(tmp_path)
+
+    assert selected == expanded
 
 
 def test_classify_claim_scope_marks_dongxing_as_feasibility_not_policy_transfer():

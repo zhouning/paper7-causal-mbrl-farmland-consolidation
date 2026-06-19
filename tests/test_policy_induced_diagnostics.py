@@ -1,15 +1,18 @@
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from paper7.policy_induced_diagnostics import (
+    _policy_paths_from_args,
     compute_nearest_neighbor_distances,
     compute_policy_step_metrics,
     summarize_policy_diagnostics,
     summarize_episode_metrics,
+    validate_policy_induced_payload,
 )
 
 
@@ -119,6 +122,76 @@ def test_summarize_policy_diagnostics_aggregates_block_error_metrics():
     assert aggregate["selected_block_mae_mean_mean"] == pytest.approx(0.08)
     assert aggregate["all_block_mae_mean_mean"] == pytest.approx(0.003)
     assert aggregate["global_mae_mean_mean"] == pytest.approx(0.06)
+
+
+def _synthetic_policy_episode(seed, mask=0.998, support=0.01, raw=0.6, calibrated=0.11):
+    return {
+        "summary": {
+            "seed": seed,
+            "n_steps": 100,
+            "selected_block_mae_mean": 0.075,
+            "all_block_mae_mean": 0.0027,
+            "global_mae_mean": 0.05 + seed * 0.001,
+            "reward_mae_mean": raw,
+            "calibrated_reward_mae_mean": calibrated,
+            "mask_agreement_mean": mask,
+            "support_distance_mean": support,
+            "support_distance_q95": support + 0.005,
+            "final_real_slope_change_pct": -1.0 - seed * 0.01,
+        },
+        "step_metrics_head": [],
+    }
+
+
+def test_validate_policy_induced_payload_rejects_missing_seed_entries():
+    payload = {
+        "episodes": [_synthetic_policy_episode(seed) for seed in range(14)],
+        "aggregate": {},
+    }
+
+    with pytest.raises(ValueError, match="Expected 15 episodes"):
+        validate_policy_induced_payload(payload, expected_seeds=list(range(15)))
+
+
+def test_validate_policy_induced_payload_rejects_non_finite_metrics():
+    episodes = [_synthetic_policy_episode(seed) for seed in range(15)]
+    episodes[4]["summary"]["support_distance_mean"] = np.nan
+    payload = {"episodes": episodes, "aggregate": summarize_policy_diagnostics(episodes)}
+
+    with pytest.raises(ValueError, match="non-finite"):
+        validate_policy_induced_payload(payload, expected_seeds=list(range(15)))
+
+
+def test_validate_policy_induced_payload_accepts_complete_15_seed_payload():
+    episodes = [_synthetic_policy_episode(seed) for seed in range(15)]
+    payload = {"episodes": episodes, "aggregate": summarize_policy_diagnostics(episodes)}
+
+    validation = validate_policy_induced_payload(payload, expected_seeds=list(range(15)))
+
+    assert validation["n_episodes"] == 15
+    assert validation["passes_mask_agreement_threshold"] is True
+    assert validation["passes_support_distance_threshold"] is True
+    assert validation["passes_reward_calibration_check"] is True
+
+
+def test_policy_paths_from_args_keeps_models_without_inferred_seeds():
+    args = SimpleNamespace(
+        seeds=None,
+        policy_models=[
+            Path("paper7/results/revision/seeds/with_cal_model_seed0.zip"),
+            Path("custom_policy.zip"),
+        ],
+        policy_dir=Path("unused"),
+        label="with_cal",
+    )
+
+    paths, seeds = _policy_paths_from_args(args)
+
+    assert paths == [
+        Path("paper7/results/revision/seeds/with_cal_model_seed0.zip"),
+        Path("custom_policy.zip"),
+    ]
+    assert seeds == [0, None]
 
 
 def test_policy_induced_diagnostics_script_help_runs_from_repo_root():
