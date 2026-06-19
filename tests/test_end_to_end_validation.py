@@ -13,6 +13,7 @@ from paper7.end_to_end_validation import (
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
     summarize_reward_scaling_comparator,
+    summarize_reward_weight_sensitivity,
     summarize_seed_evaluations,
 )
 
@@ -151,6 +152,23 @@ def test_classify_claim_scope_marks_dongxing_rl_lite_as_slope_only_not_transfer(
     assert dongxing["status"] == "supported_as_external_slope_only_actionability"
 
 
+def test_reward_rigor_scope_is_bounded_when_weight_sensitivity_exists():
+    evidence = {
+        "reward_weight_sensitivity": {
+            "status": "supported_as_fixed_policy_reward_sensitivity",
+            "n_episodes": 60,
+            "n_weight_settings": 14,
+            "interpretation": "fixed-policy reward-component replay",
+        }
+    }
+
+    scopes = classify_claim_scope(evidence)
+    reward_scope = next(item for item in scopes if item["id"] == "reward_function_scope")
+
+    assert reward_scope["status"] == "supported_as_fixed_policy_reward_sensitivity"
+    assert reward_scope["policy_retraining_under_all_weights"] is False
+
+
 def test_new_evidence_summarizers_extract_core_metrics(tmp_path):
     reward_path = tmp_path / "reward.json"
     planning_path = tmp_path / "planning.json"
@@ -196,6 +214,30 @@ def test_new_evidence_summarizers_extract_core_metrics(tmp_path):
     assert planning["n_paired_seeds"] == 15
     assert dongxing["status"] == "supported_as_slope_only_rl_actionability"
     assert dongxing["learned_slope_change_pct_mean"] == -2.0
+
+
+def test_summarize_reward_weight_sensitivity_extracts_bounded_metrics(tmp_path):
+    path = tmp_path / "reward_weight_sensitivity.json"
+    _write_json(
+        path,
+        {
+            "n_episodes": 60,
+            "n_weight_settings": 14,
+            "policy_weight_summaries": [{"policy": "a"}] * 84,
+            "policy_metric_summaries": [{"policy": "a"}] * 6,
+            "pareto_front": [{"policy": "a"}, {"policy": "b"}],
+            "best_policy_by_weight": [{"weight_name": "default", "policy": "a"}],
+        },
+    )
+
+    summary = summarize_reward_weight_sensitivity(path)
+
+    assert summary["status"] == "supported_as_fixed_policy_reward_sensitivity"
+    assert summary["n_episodes"] == 60
+    assert summary["n_weight_settings"] == 14
+    assert summary["n_policy_metric_summaries"] == 6
+    assert summary["n_pareto_rows"] == 2
+    assert summary["policy_retraining_under_all_weights"] is False
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():

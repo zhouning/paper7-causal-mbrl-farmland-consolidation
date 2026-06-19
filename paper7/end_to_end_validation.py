@@ -326,6 +326,28 @@ def summarize_reward_scaling_comparator(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_reward_weight_sensitivity(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    return {
+        "status": "supported_as_fixed_policy_reward_sensitivity",
+        "path": display_path(path),
+        "n_episodes": payload.get("n_episodes"),
+        "n_weight_settings": payload.get("n_weight_settings"),
+        "n_policy_weight_summaries": len(payload.get("policy_weight_summaries", [])),
+        "n_policy_metric_summaries": len(payload.get("policy_metric_summaries", [])),
+        "n_pareto_rows": len(payload.get("pareto_front", [])),
+        "n_best_policy_by_weight": len(payload.get("best_policy_by_weight", [])),
+        "policy_retraining_under_all_weights": False,
+        "interpretation": (
+            "fixed-policy reward-component replay; supports reward preference "
+            "analysis but does not prove retrained-policy robustness under every "
+            "weight setting"
+        ),
+    }
+
+
 def summarize_planning_significance(path: Path) -> dict[str, Any]:
     payload = load_json(path)
     effects = payload["paired_calibration_effects"]
@@ -437,11 +459,12 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     rollout = evidence.get("transition_rollout", {})
     policy_shift = evidence.get("policy_induced_diagnostics", {})
     dongxing_rl = evidence.get("dongxing_rl_lite", {})
+    reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
     )
 
-    return [
+    scopes = [
         {
             "id": "bishan_model_based_policy_e2e",
             "claim": (
@@ -512,6 +535,21 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
             ),
         },
     ]
+    if reward_sensitivity.get("status") == "supported_as_fixed_policy_reward_sensitivity":
+        scopes.append(
+            {
+                "id": "reward_function_scope",
+                "claim": (
+                    "The reward function has been tested through fixed-policy "
+                    "component replay across alternative weight settings."
+                ),
+                "status": "supported_as_fixed_policy_reward_sensitivity",
+                "evidence_level": "fixed_policy_reward_component_replay",
+                "policy_retraining_under_all_weights": False,
+                "interpretation": reward_sensitivity.get("interpretation"),
+            }
+        )
+    return scopes
 
 
 def build_validation_report(
@@ -551,6 +589,9 @@ def build_validation_report(
     )
     evidence["reward_scaling_comparator"] = summarize_reward_scaling_comparator(
         paper7_dir / "results" / "revision" / "reward_scaling_comparator.json"
+    )
+    evidence["reward_weight_sensitivity"] = summarize_reward_weight_sensitivity(
+        paper7_dir / "results" / "full_rigor" / "reward_weight_sensitivity.json"
     )
     evidence["planning_significance"] = summarize_planning_significance(
         paper7_dir / "results" / "revision" / "planning_significance_audit.json"

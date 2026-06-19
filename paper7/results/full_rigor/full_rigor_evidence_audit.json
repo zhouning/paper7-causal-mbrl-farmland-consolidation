@@ -1,0 +1,334 @@
+{
+  "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
+  "generated_utc": "2026-06-19T11:59:36.282376+00:00",
+  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
+  "core_assets": {
+    "trajectories": [
+      {
+        "path": "paper7\\trajectories\\greedy_seed0.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:49:55.322765+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\greedy_seed1.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:52:22.197656+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\greedy_seed2.npz",
+        "exists": true,
+        "bytes": 277372243,
+        "modified_utc": "2026-04-06T15:54:48.513161+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed0.npz",
+        "exists": true,
+        "bytes": 277469428,
+        "modified_utc": "2026-04-06T15:49:55.360669+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed1.npz",
+        "exists": true,
+        "bytes": 277473860,
+        "modified_utc": "2026-04-06T15:52:21.724897+00:00"
+      },
+      {
+        "path": "paper7\\trajectories\\random_seed2.npz",
+        "exists": true,
+        "bytes": 277447664,
+        "modified_utc": "2026-04-06T15:54:48.054826+00:00"
+      }
+    ],
+    "transition_model": {
+      "path": "paper7\\models\\transition_model.pt",
+      "exists": true,
+      "bytes": 956643,
+      "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+    },
+    "training_history": {
+      "path": "paper7\\models\\training_history.json",
+      "exists": true,
+      "bytes": 5210,
+      "modified_utc": "2026-06-17T13:49:39.725010+00:00"
+    },
+    "dongxing_slope_gpkg": {
+      "path": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
+      "exists": true,
+      "bytes": 184639488,
+      "modified_utc": "2026-06-17T09:30:06.737925+00:00"
+    }
+  },
+  "evidence": {
+    "transition_training": {
+      "status": "supported",
+      "model": {
+        "path": "paper7\\models\\transition_model.pt",
+        "exists": true,
+        "bytes": 956643,
+        "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+      },
+      "history": {
+        "path": "paper7\\models\\training_history.json",
+        "exists": true,
+        "bytes": 5210,
+        "modified_utc": "2026-06-17T13:49:39.725010+00:00"
+      },
+      "epochs_recorded": 50,
+      "best_val_loss": 0.088109,
+      "final_val_loss": 0.109861,
+      "final_val_obs_cosine": 0.999794,
+      "final_val_reward_mse": 1.096993
+    },
+    "bishan_seed_chain": {
+      "status": "supported",
+      "seed_dir": "paper7\\results\\revision\\seeds",
+      "n_no_cal_files": 15,
+      "n_with_cal_files": 15,
+      "n_paired_seeds": 15,
+      "paired_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "balanced_pairs": true,
+      "no_cal_mean": -0.975683,
+      "no_cal_std": 0.129237,
+      "with_cal_mean": -1.102462,
+      "with_cal_std": 0.099865,
+      "improvement_pct": 12.993898
+    },
+    "alpha_grid": {
+      "status": "supported",
+      "grid_path": "paper7\\results\\revision\\alpha_grid\\grid_results.json",
+      "n_runs": 40,
+      "n_alphas": 8,
+      "best_alpha": 0.2,
+      "best_slope_mean": -1.209028,
+      "pre_specified_alpha": 0.185,
+      "nearest_grid_alpha_to_pre_specified": 0.185,
+      "pre_specified_slope_mean": -1.17129,
+      "relative_gap_pct": 3.121407,
+      "alpha_means": {
+        "0.100": -1.123064,
+        "0.150": -1.120063,
+        "0.185": -1.17129,
+        "0.200": -1.209028,
+        "0.300": -1.170816,
+        "0.500": -1.042767,
+        "0.700": -0.991087,
+        "1.000": -0.958935
+      }
+    },
+    "reward_scaling_comparator": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\reward_scaling_comparator.json",
+      "pre_specified_rank_by_slope": 2,
+      "best_scale": 0.2,
+      "pre_specified_scale": 0.185,
+      "pre_vs_best_relative_gap_pct": 3.12135,
+      "pre_vs_unscaled_slope_gain_pct": 22.144879,
+      "interpretation": "pre-specified observational alpha is compared against ordinary heuristic reward scaling and the unscaled learned reward"
+    },
+    "reward_weight_sensitivity": {
+      "status": "supported_as_fixed_policy_reward_sensitivity",
+      "path": "paper7\\results\\full_rigor\\reward_weight_sensitivity.json",
+      "n_episodes": 60,
+      "n_weight_settings": 14,
+      "n_policy_weight_summaries": 84,
+      "n_policy_metric_summaries": 6,
+      "n_pareto_rows": 6,
+      "n_best_policy_by_weight": 14,
+      "policy_retraining_under_all_weights": false,
+      "interpretation": "fixed-policy reward-component replay; supports reward preference analysis but does not prove retrained-policy robustness under every weight setting"
+    },
+    "planning_significance": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\planning_significance_audit.json",
+      "n_paired_seeds": 15,
+      "calibrated_slope_change_pct_mean": -1.102462,
+      "uncalibrated_slope_change_pct_mean": -0.975683,
+      "slope_delta_with_minus_no_mean": -0.126779,
+      "contiguity_delta_with_minus_no_mean": -0.001977,
+      "baimu_count_delta_with_minus_no_mean": -0.2,
+      "baimu_area_delta_with_minus_no_mean": -67.208419,
+      "action_concentration_status": "head_only_available",
+      "interpretation": "planning outcomes include slope, contiguity, baimu, reward, budget, and available action-concentration diagnostics"
+    },
+    "transition_rollout": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\transition_rollout_diagnostics.json",
+      "n_transitions_loaded": 12000,
+      "n_starts": 120,
+      "horizon_1_reward_mae": 0.135618,
+      "horizon_100_reward_mae": 0.234012,
+      "horizon_100_global_mae": 0.048621,
+      "horizon_100_mask_agreement": 0.997384,
+      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation",
+      "horizon_100_slope_contiguity_mae": 0.040126,
+      "horizon_100_baimu_mae": 0.052163,
+      "horizon_100_investment_spread_mae": 0.069254,
+      "horizon_100_budget_progress_mae": 0.020802
+    },
+    "policy_induced_diagnostics": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\policy_induced_diagnostics_15seed.json",
+      "support_size": 12000,
+      "n_policy_episodes": 15,
+      "policy_induced_selected_block_mae_mean": 0.07493,
+      "policy_induced_all_block_mae_mean": 0.00269,
+      "policy_induced_global_mae_mean": 0.051974,
+      "policy_induced_reward_mae_mean": 0.580874,
+      "policy_induced_calibrated_reward_mae_mean": 0.107462,
+      "policy_induced_mask_agreement_mean": 0.997629,
+      "policy_induced_support_distance_mean": 0.012601,
+      "policy_induced_support_distance_q95": 0.020688,
+      "policy_induced_final_real_slope_pct_mean": -1.105524,
+      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment",
+      "validation_passes_all_thresholds": true,
+      "validation_passes_mask_agreement_threshold": true,
+      "validation_passes_support_distance_threshold": true,
+      "validation_passes_reward_calibration_check": true
+    },
+    "calibration": {
+      "status": "supported_as_observational_regularization",
+      "calibration_path": "paper7\\results\\causal_calibration.json",
+      "sensitivity_path": "paper7\\results\\revision\\causal_sensitivity_diagnostics.json",
+      "empirical_att": 0.048967,
+      "predicted_att": 0.264682,
+      "calibration_factor": 0.185005,
+      "mixed_median_common_support": 0.45625,
+      "mixed_median_trimmed_att": 0.022118,
+      "mixed_median_ci_low": -0.098153,
+      "mixed_median_ci_high": 0.139981,
+      "interpretation": "observational treatment-effect-informed reward regularization; not definitive causal identification"
+    },
+    "bishan_non_learning_baselines": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\bishan_strong_baselines.json",
+      "budget": 500,
+      "random_slope_mean": 0.089326,
+      "random_budget_completion": 0.612,
+      "slope_gap_greedy_slope": 1.10799,
+      "area_weighted_greedy_slope": 4.696778,
+      "immediate_slope_delta_slope": -0.15191,
+      "immediate_slope_delta_budget_completion": 0.036,
+      "interpretation": "strong local non-learning rules do not match the calibrated learned policy under the Bishan real-environment evaluation"
+    },
+    "dongxing_dynamic": {
+      "status": "supported",
+      "audit_path": "paper7\\results\\dongxing_data_audit_slope.json",
+      "block_summary_path": "paper7\\results\\dongxing_blocks_slope\\summary.json",
+      "dynamic_path": "paper7\\results\\dongxing_dynamic_baselines.json",
+      "n_parcels": 134369,
+      "n_blocks": 2978,
+      "slope_coverage_farmland": 1.0,
+      "slope_coverage_forest": 1.0,
+      "has_complete_slope_for_swap": true,
+      "dynamic_slope_gap_pct": -1.217577,
+      "dynamic_area_weighted_pct": -0.882685,
+      "random_dynamic_mean_pct": -0.357665,
+      "random_dynamic_n": 200,
+      "has_learned_policy": false,
+      "interpretation": "external data, action-space, and dynamic non-RL feasibility; not learned-policy transfer"
+    },
+    "dongxing_rl_lite": {
+      "status": "supported_as_slope_only_rl_actionability",
+      "path": "paper7\\results\\revision\\dongxing_rl_lite.json",
+      "learner_type": "tabular_preference_fallback",
+      "n_blocks": 2978,
+      "n_parcels": 76378,
+      "train_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "eval_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "training_time_s": 1558.231316,
+      "learned_slope_change_pct_mean": -1.996004,
+      "learned_completed_pairs_mean": 482.0,
+      "learned_unique_blocks_mean": 93.0,
+      "learned_minus_random_slope_change_pct": -1.563499,
+      "learned_minus_dynamic_slope_gap_slope_change_pct": -0.778427,
+      "learned_minus_dynamic_area_weighted_gap_slope_change_pct": -1.113319,
+      "policy_transfer_tested": false,
+      "slope_only_rl_actionability_tested": true,
+      "interpretation": "external slope-only learned block-selection actionability; not full cross-county learned-policy transfer and not Bishan full-reward validation"
+    }
+  },
+  "claim_scope": [
+    {
+      "id": "bishan_model_based_policy_e2e",
+      "claim": "Bishan model-based policies are trained in a learned environment and evaluated in the real parcel-simulation environment.",
+      "status": "supported",
+      "evidence_level": "end_to_end_result_chain",
+      "n_paired_seeds": 15
+    },
+    {
+      "id": "calibration_scope",
+      "claim": "The calibration factor improves learned-environment policy training.",
+      "status": "supported_as_observational_regularization",
+      "evidence_level": "observational_regularization_plus_downstream_evaluation",
+      "causal_identification_claimed": false,
+      "interpretation": "observational treatment-effect-informed reward regularization; not definitive causal identification"
+    },
+    {
+      "id": "transition_surrogate_scope",
+      "claim": "The learned transition model can be used as an approximate training surrogate.",
+      "status": "supported",
+      "evidence_level": "one_step_training_metrics_plus_multistep_rollout_diagnostics",
+      "standalone_simulator_for_final_outcomes": false,
+      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation"
+    },
+    {
+      "id": "policy_induced_surrogate_scope",
+      "claim": "The trained learned-environment policy remains evaluable under synchronized learned-vs-real rollouts.",
+      "status": "supported",
+      "evidence_level": "trained_policy_induced_learned_vs_real_diagnostics",
+      "n_policy_episodes": 15,
+      "standalone_simulator_for_final_outcomes": false,
+      "interpretation": "trained-policy actions induce states close to the recorded trajectory support and retain high action-mask agreement; final outcomes are still measured in the real parcel-simulation environment"
+    },
+    {
+      "id": "dongxing_external_scope",
+      "claim": "Dongxing supports external-county portability.",
+      "status": "supported_as_external_slope_only_actionability",
+      "evidence_level": "external_data_action_space_dynamic_non_rl_plus_slope_only_rl_lite",
+      "policy_transfer_tested": false,
+      "slope_only_rl_actionability_tested": true,
+      "interpretation": "external slope-only learned block-selection actionability; not full cross-county learned-policy transfer and not Bishan full-reward validation"
+    },
+    {
+      "id": "reward_function_scope",
+      "claim": "The reward function has been tested through fixed-policy component replay across alternative weight settings.",
+      "status": "supported_as_fixed_policy_reward_sensitivity",
+      "evidence_level": "fixed_policy_reward_component_replay",
+      "policy_retraining_under_all_weights": false,
+      "interpretation": "fixed-policy reward-component replay; supports reward preference analysis but does not prove retrained-policy robustness under every weight setting"
+    }
+  ],
+  "overall_status": "supported_with_bounded_external_scope",
+  "external_policy_transfer_tested": false,
+  "external_slope_only_rl_actionability_tested": true
+}
