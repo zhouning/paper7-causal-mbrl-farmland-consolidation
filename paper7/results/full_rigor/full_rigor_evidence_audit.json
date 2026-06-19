@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T15:31:37.504579+00:00",
+  "generated_utc": "2026-06-19T16:08:27.209754+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -666,6 +666,28 @@
       "policy_transfer_tested": false,
       "multi_step_mbrl_planning_tested": false,
       "interpretation": "Local Dongxing one-step model-based action selection; this is not cross-county policy transfer and not multi-step MBRL planning."
+    },
+    "dongxing_model_based_optimization": {
+      "status": "supported_as_dongxing_model_based_scoring_optimization",
+      "path": "paper7\\results\\full_rigor\\dongxing_model_based_optimization.json",
+      "n_training_transitions": 3000,
+      "n_candidates": 10,
+      "best_candidate": "reward_slope_bonus_x2",
+      "n_eval_seeds": 5,
+      "heldout_reward_mean": 116.547453,
+      "heldout_slope_change_pct_mean": -2.237549,
+      "heldout_cont_change_mean": -0.036515,
+      "heldout_baimu_area_change_ha_mean": -2506.355936,
+      "model_based_minus_scalarized_default_reward_mean": 8.009931,
+      "model_based_minus_baimu_aware_reward_mean": -15.182639,
+      "beats_scalarized_default_reward": true,
+      "beats_baimu_aware_reward": false,
+      "selection_eval_split": true,
+      "planning_horizon": 1,
+      "mbrl_transition_model_used": true,
+      "policy_transfer_tested": false,
+      "multi_step_mbrl_planning_tested": false,
+      "interpretation": "Local Dongxing one-step model-based scoring optimization with held-out evaluation; not cross-county transfer and not multi-step MBRL."
     }
   },
   "claim_scope": [
@@ -759,6 +781,20 @@
       "policy_transfer_tested": false,
       "multi_step_mbrl_planning_tested": false,
       "interpretation": "Local Dongxing one-step model-based action selection; this is not cross-county policy transfer and not multi-step MBRL planning."
+    },
+    {
+      "id": "dongxing_model_based_optimization_scope",
+      "claim": "Dongxing supports held-out one-step model-based scoring optimization in the full real environment.",
+      "status": "supported_as_dongxing_model_based_scoring_optimization",
+      "evidence_level": "external_full_heldout_scoring_optimization",
+      "best_candidate": "reward_slope_bonus_x2",
+      "n_eval_seeds": 5,
+      "selection_eval_split": true,
+      "beats_scalarized_default_reward": true,
+      "beats_baimu_aware_reward": false,
+      "policy_transfer_tested": false,
+      "multi_step_mbrl_planning_tested": false,
+      "interpretation": "Local Dongxing one-step model-based scoring optimization with held-out evaluation; not cross-county transfer and not multi-step MBRL."
     }
   ],
   "overall_status": "supported_with_bounded_external_scope",

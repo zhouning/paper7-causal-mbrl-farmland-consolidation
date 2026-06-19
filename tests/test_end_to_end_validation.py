@@ -14,6 +14,7 @@ from paper7.end_to_end_validation import (
     summarize_dongxing_full_baselines,
     summarize_dongxing_full_learned_policy,
     summarize_dongxing_full_model_based_policy,
+    summarize_dongxing_model_based_optimization,
     summarize_dongxing_transition_diagnostics,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
@@ -453,6 +454,67 @@ def test_classify_claim_scope_marks_model_based_policy_as_one_step_bounded():
     assert scope["status"] == "supported_as_dongxing_full_one_step_model_based_policy"
     assert scope["evidence_level"] == "external_full_one_step_model_based_policy"
     assert scope["planning_horizon"] == 1
+    assert scope["policy_transfer_tested"] is False
+    assert scope["multi_step_mbrl_planning_tested"] is False
+
+
+def test_summarize_dongxing_model_based_optimization_extracts_best_heldout_result(tmp_path):
+    path = tmp_path / "dongxing_model_based_optimization.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_model_based_scoring_optimization",
+            "n_training_transitions": 3000,
+            "selection_eval_split": True,
+            "best_candidate": {"name": "reward_slope_bonus_x2"},
+            "candidate_selection_summaries": [{"candidate": "a"}, {"candidate": "b"}],
+            "heldout_eval": {
+                "summary": {
+                    "n": 5,
+                    "reward_mean": 116.5,
+                    "slope_change_pct_mean": -2.2,
+                }
+            },
+            "comparisons": {
+                "model_based_minus_scalarized_default_reward_mean": 8.0,
+                "model_based_minus_baimu_aware_reward_mean": -15.0,
+            },
+            "planning_horizon": 1,
+            "mbrl_transition_model_used": True,
+            "policy_transfer_tested": False,
+            "claim_boundary": "held-out one-step scoring optimization",
+        },
+    )
+
+    summary = summarize_dongxing_model_based_optimization(path)
+
+    assert summary["status"] == "supported_as_dongxing_model_based_scoring_optimization"
+    assert summary["best_candidate"] == "reward_slope_bonus_x2"
+    assert summary["n_candidates"] == 2
+    assert summary["heldout_reward_mean"] == 116.5
+    assert summary["beats_scalarized_default_reward"] is True
+    assert summary["beats_baimu_aware_reward"] is False
+    assert summary["selection_eval_split"] is True
+
+
+def test_classify_claim_scope_marks_scoring_optimization_as_heldout_bounded():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_model_based_optimization": {
+                "status": "supported_as_dongxing_model_based_scoring_optimization",
+                "best_candidate": "reward_slope_bonus_x2",
+                "n_eval_seeds": 5,
+                "selection_eval_split": True,
+                "interpretation": "held-out one-step scoring optimization",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_model_based_optimization_scope")
+
+    assert scope["status"] == "supported_as_dongxing_model_based_scoring_optimization"
+    assert scope["evidence_level"] == "external_full_heldout_scoring_optimization"
+    assert scope["selection_eval_split"] is True
     assert scope["policy_transfer_tested"] is False
     assert scope["multi_step_mbrl_planning_tested"] is False
 

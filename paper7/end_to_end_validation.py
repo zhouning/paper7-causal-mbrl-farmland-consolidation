@@ -596,6 +596,44 @@ def summarize_dongxing_full_model_based_policy(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_dongxing_model_based_optimization(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    heldout_summary = payload.get("heldout_eval", {}).get("summary", {})
+    comparisons = payload.get("comparisons", {})
+    scalarized_delta = comparisons.get("model_based_minus_scalarized_default_reward_mean")
+    baimu_delta = comparisons.get("model_based_minus_baimu_aware_reward_mean")
+    return {
+        "status": payload.get("status", "supported_as_dongxing_model_based_scoring_optimization"),
+        "path": display_path(path),
+        "n_training_transitions": payload.get("n_training_transitions"),
+        "n_candidates": len(payload.get("candidate_selection_summaries", [])),
+        "best_candidate": payload.get("best_candidate", {}).get("name"),
+        "n_eval_seeds": heldout_summary.get("n"),
+        "heldout_reward_mean": heldout_summary.get("reward_mean"),
+        "heldout_slope_change_pct_mean": heldout_summary.get("slope_change_pct_mean"),
+        "heldout_cont_change_mean": heldout_summary.get("cont_change_mean"),
+        "heldout_baimu_area_change_ha_mean": heldout_summary.get(
+            "baimu_area_change_ha_mean"
+        ),
+        "model_based_minus_scalarized_default_reward_mean": scalarized_delta,
+        "model_based_minus_baimu_aware_reward_mean": baimu_delta,
+        "beats_scalarized_default_reward": scalarized_delta is not None
+        and float(scalarized_delta) > 0.0,
+        "beats_baimu_aware_reward": baimu_delta is not None and float(baimu_delta) > 0.0,
+        "selection_eval_split": bool(payload.get("selection_eval_split", False)),
+        "planning_horizon": payload.get("planning_horizon"),
+        "mbrl_transition_model_used": bool(payload.get("mbrl_transition_model_used", False)),
+        "policy_transfer_tested": bool(payload.get("policy_transfer_tested", False)),
+        "multi_step_mbrl_planning_tested": False,
+        "interpretation": payload.get(
+            "claim_boundary",
+            "Held-out one-step model-based scoring optimization; not transfer or multi-step MBRL",
+        ),
+    }
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -608,6 +646,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_full_learned = evidence.get("dongxing_full_learned_policy", {})
     dongxing_transition = evidence.get("dongxing_transition_diagnostics", {})
     dongxing_model_based = evidence.get("dongxing_full_model_based_policy", {})
+    dongxing_model_optimization = evidence.get("dongxing_model_based_optimization", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -770,6 +809,35 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_model_based.get("interpretation"),
             }
         )
+    if (
+        dongxing_model_optimization.get("status")
+        == "supported_as_dongxing_model_based_scoring_optimization"
+    ):
+        scopes.append(
+            {
+                "id": "dongxing_model_based_optimization_scope",
+                "claim": (
+                    "Dongxing supports held-out one-step model-based scoring "
+                    "optimization in the full real environment."
+                ),
+                "status": dongxing_model_optimization.get("status"),
+                "evidence_level": "external_full_heldout_scoring_optimization",
+                "best_candidate": dongxing_model_optimization.get("best_candidate"),
+                "n_eval_seeds": dongxing_model_optimization.get("n_eval_seeds"),
+                "selection_eval_split": bool(
+                    dongxing_model_optimization.get("selection_eval_split", False)
+                ),
+                "beats_scalarized_default_reward": dongxing_model_optimization.get(
+                    "beats_scalarized_default_reward"
+                ),
+                "beats_baimu_aware_reward": dongxing_model_optimization.get(
+                    "beats_baimu_aware_reward"
+                ),
+                "policy_transfer_tested": False,
+                "multi_step_mbrl_planning_tested": False,
+                "interpretation": dongxing_model_optimization.get("interpretation"),
+            }
+        )
     return scopes
 
 
@@ -849,6 +917,9 @@ def build_validation_report(
     )
     evidence["dongxing_full_model_based_policy"] = summarize_dongxing_full_model_based_policy(
         paper7_dir / "results" / "full_rigor" / "dongxing_full_model_based_policy.json"
+    )
+    evidence["dongxing_model_based_optimization"] = summarize_dongxing_model_based_optimization(
+        paper7_dir / "results" / "full_rigor" / "dongxing_model_based_optimization.json"
     )
 
     return {
