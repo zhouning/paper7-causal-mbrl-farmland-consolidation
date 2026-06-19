@@ -159,9 +159,10 @@ def run_optimization_experiment(
     model = fit_one_step_model(rows, ridge=ridge)
 
     selection_summaries = []
+    selection_env = env_factory()
     for candidate in candidates:
         runs = [
-            evaluate_candidate_policy(env_factory(), model, candidate, seed=int(seed))
+            evaluate_candidate_policy(selection_env, model, candidate, seed=int(seed))
             for seed in selection_seeds
         ]
         summary = summarize_runs(runs)
@@ -172,8 +173,9 @@ def run_optimization_experiment(
     best_candidate = next(
         candidate for candidate in candidates if candidate["name"] == best_summary["candidate"]
     )
+    eval_env = env_factory()
     eval_runs = [
-        evaluate_candidate_policy(env_factory(), model, best_candidate, seed=int(seed))
+        evaluate_candidate_policy(eval_env, model, best_candidate, seed=int(seed))
         for seed in eval_seeds
     ]
     eval_summary, comparisons = summarize_model_based_runs(eval_runs, baseline_report)

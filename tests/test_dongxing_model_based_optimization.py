@@ -143,3 +143,44 @@ def test_run_optimization_experiment_separates_selection_and_eval(tmp_path):
     assert result["best_candidate"]["name"] in {"reward_only", "reward_slope_bonus"}
     assert result["heldout_eval"]["summary"]["n"] == 2
     assert len(result["candidate_selection_summaries"]) == 2
+
+
+def test_run_optimization_experiment_reuses_selection_and_eval_envs(tmp_path):
+    baseline_path = tmp_path / "baselines.json"
+    baseline_path.write_text('{"policy_summaries": {}}', encoding="utf-8")
+    calls = {"n": 0}
+
+    def factory() -> GenericCountyEnv:
+        calls["n"] += 1
+        return _toy_env()
+
+    run_optimization_experiment(
+        env_factory=factory,
+        baseline_path=baseline_path,
+        collection_policies=["dynamic_slope_gap", "random"],
+        train_seeds=[0, 1],
+        selection_seeds=[2, 3],
+        eval_seeds=[4, 5],
+        max_steps=2,
+        ridge=1e-3,
+        candidates=[
+            {
+                "name": "reward_only",
+                "reward_weight": 1.0,
+                "slope_weight": 0.0,
+                "current_farm_weight": 0.0,
+                "neighbor_weight": 0.0,
+                "diversity_penalty": 0.0,
+            },
+            {
+                "name": "reward_slope_bonus",
+                "reward_weight": 1.0,
+                "slope_weight": 10.0,
+                "current_farm_weight": 0.0,
+                "neighbor_weight": 0.0,
+                "diversity_penalty": 0.0,
+            },
+        ],
+    )
+
+    assert calls["n"] == 3
