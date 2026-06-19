@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T14:24:12.007223+00:00",
+  "generated_utc": "2026-06-19T14:45:52.083399+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -583,6 +583,46 @@
       "transfer_tested": false,
       "mbrl_transition_model_tested": false,
       "interpretation": "Local Dongxing full-reward learned actionability; not Bishan-to-Dongxing policy transfer and not learned-transition MBRL."
+    },
+    "dongxing_transition_diagnostics": {
+      "status": "supported_as_dongxing_full_transition_diagnostic",
+      "path": "paper7\\results\\full_rigor\\dongxing_transition_diagnostics.json",
+      "n_transitions": 3000,
+      "policies": [
+        "area_weighted_slope_gap",
+        "baimu_aware",
+        "contiguity_aware",
+        "dynamic_slope_gap",
+        "random",
+        "scalarized_default"
+      ],
+      "random_split_selected_feature_mae": 0.016495,
+      "random_split_selected_feature_persistence_mae": 0.044912,
+      "random_split_global_feature_mae": 0.000229,
+      "random_split_global_feature_persistence_mae": 0.002627,
+      "random_split_reward_mae": 0.887175,
+      "random_split_reward_persistence_mae": 0.950529,
+      "random_split_selected_beats_baseline": true,
+      "random_split_global_beats_baseline": true,
+      "random_split_reward_beats_baseline": true,
+      "policy_holdout_count": 6,
+      "policy_holdout_reward_beats_baseline_count": 2,
+      "policy_holdout_selected_beats_baseline_count": 6,
+      "policy_holdout_reward_beats_baseline_policies": [
+        "area_weighted_slope_gap",
+        "contiguity_aware"
+      ],
+      "policy_holdout_selected_beats_baseline_policies": [
+        "random",
+        "dynamic_slope_gap",
+        "area_weighted_slope_gap",
+        "contiguity_aware",
+        "baimu_aware",
+        "scalarized_default"
+      ],
+      "mbrl_policy_trained": false,
+      "policy_transfer_tested": false,
+      "interpretation": "Dongxing full real-environment transition learnability diagnostic. Random transition split metrics test local learnability; policy holdout metrics expose generalization limits. This artifact does not train an MBRL policy."
     }
   },
   "claim_scope": [
@@ -652,6 +692,18 @@
       "policy_transfer_tested": false,
       "mbrl_transition_model_tested": false,
       "interpretation": "Local Dongxing full-reward learned actionability; not Bishan-to-Dongxing policy transfer and not learned-transition MBRL."
+    },
+    {
+      "id": "dongxing_full_transition_diagnostic_scope",
+      "claim": "Dongxing supports local full-environment transition learnability diagnostics.",
+      "status": "supported_as_dongxing_full_transition_diagnostic",
+      "evidence_level": "external_full_transition_learnability_diagnostic",
+      "n_transitions": 3000,
+      "policy_holdout_reward_beats_baseline_count": 2,
+      "policy_holdout_count": 6,
+      "mbrl_policy_trained": false,
+      "policy_transfer_tested": false,
+      "interpretation": "Dongxing full real-environment transition learnability diagnostic. Random transition split metrics test local learnability; policy holdout metrics expose generalization limits. This artifact does not train an MBRL policy."
     }
   ],
   "overall_status": "supported_with_bounded_external_scope",

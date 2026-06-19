@@ -1,0 +1,351 @@
+{
+  "description": "Dongxing full real-environment transition diagnostic over selected block, global features, and scalar reward. This tests transition learnability only; no learned policy is trained in this artifact.",
+  "status": "supported_as_dongxing_full_transition_diagnostic",
+  "generated_utc": "2026-06-19T14:43:48.062376+00:00",
+  "n_transitions": 3000,
+  "policies": [
+    "area_weighted_slope_gap",
+    "baimu_aware",
+    "contiguity_aware",
+    "dynamic_slope_gap",
+    "random",
+    "scalarized_default"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "feature_dims": {
+    "selected_block": 8,
+    "global": 8
+  },
+  "model": {
+    "model_type": "ridge_selected_block_global_reward",
+    "ridge": 0.001,
+    "split": "seeded_random_transition_split",
+    "split_seed": 42,
+    "n_train": 2400,
+    "n_val": 600,
+    "feature_standardization": {
+      "enabled": true,
+      "constant_columns": 1,
+      "max_abs_mean": 4.581281,
+      "max_scale": 1.0
+    },
+    "selected_feature_mae": 0.016495,
+    "selected_feature_persistence_mae": 0.044912,
+    "global_feature_mae": 0.000229,
+    "global_feature_persistence_mae": 0.002627,
+    "reward_mae": 0.887175,
+    "reward_persistence_mae": 0.950529
+  },
+  "policy_holdout_diagnostics": [
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "random",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.575978,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.021365,
+      "selected_feature_persistence_mae": 0.027013,
+      "global_feature_mae": 0.00042,
+      "global_feature_persistence_mae": 0.002422,
+      "reward_mae": 2.084753,
+      "reward_persistence_mae": 0.912243
+    },
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "dynamic_slope_gap",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.580563,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.014609,
+      "selected_feature_persistence_mae": 0.045629,
+      "global_feature_mae": 0.000224,
+      "global_feature_persistence_mae": 0.002602,
+      "reward_mae": 0.722821,
+      "reward_persistence_mae": 0.716282
+    },
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "area_weighted_slope_gap",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.57892,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.019762,
+      "selected_feature_persistence_mae": 0.044937,
+      "global_feature_mae": 0.000252,
+      "global_feature_persistence_mae": 0.002621,
+      "reward_mae": 0.505224,
+      "reward_persistence_mae": 0.544377
+    },
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "contiguity_aware",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.579116,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.012206,
+      "selected_feature_persistence_mae": 0.03929,
+      "global_feature_mae": 0.000218,
+      "global_feature_persistence_mae": 0.002555,
+      "reward_mae": 0.752997,
+      "reward_persistence_mae": 0.762686
+    },
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "baimu_aware",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.587671,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.023182,
+      "selected_feature_persistence_mae": 0.057333,
+      "global_feature_mae": 0.000267,
+      "global_feature_persistence_mae": 0.002765,
+      "reward_mae": 1.587572,
+      "reward_persistence_mae": 1.492641
+    },
+    {
+      "model_type": "ridge_selected_block_global_reward",
+      "ridge": 0.001,
+      "split": "policy_holdout",
+      "holdout_policy": "scalarized_default",
+      "n_train": 2500,
+      "n_val": 500,
+      "feature_standardization": {
+        "enabled": true,
+        "constant_columns": 1,
+        "max_abs_mean": 4.585937,
+        "max_scale": 1.0
+      },
+      "selected_feature_mae": 0.020779,
+      "selected_feature_persistence_mae": 0.054682,
+      "global_feature_mae": 0.000243,
+      "global_feature_persistence_mae": 0.002739,
+      "reward_mae": 1.193096,
+      "reward_persistence_mae": 1.129126
+    }
+  ],
+  "policy_holdout_count": 6,
+  "mbrl_policy_trained": false,
+  "policy_transfer_tested": false,
+  "claim_boundary": "Local Dongxing transition learnability diagnostic; not a policy optimization result and not cross-county transfer evidence.",
+  "command_config": {
+    "dltb": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
+    "block_dir": "paper7\\results\\dongxing_blocks_slope",
+    "max_steps": 100,
+    "train_fraction": 0.8,
+    "ridge": 0.001,
+    "split_seed": 42,
+    "holdout_policies": [
+      "random",
+      "dynamic_slope_gap",
+      "area_weighted_slope_gap",
+      "contiguity_aware",
+      "baimu_aware",
+      "scalarized_default"
+    ],
+    "total_budget": 500,
+    "swaps_per_step": 5
+  },
+  "transitions_head": [
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 1,
+      "action": 2533,
+      "reward": 0.046564,
+      "slope_change_pct": -0.001852
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 2,
+      "action": 1904,
+      "reward": 0.049498,
+      "slope_change_pct": -0.003433
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 3,
+      "action": 1528,
+      "reward": 0.03068,
+      "slope_change_pct": -0.004544
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 4,
+      "action": 801,
+      "reward": 0.025407,
+      "slope_change_pct": -0.006554
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 5,
+      "action": 914,
+      "reward": -0.216674,
+      "slope_change_pct": -0.011975
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 6,
+      "action": 125,
+      "reward": -0.530353,
+      "slope_change_pct": -0.003014
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 7,
+      "action": 226,
+      "reward": -0.24582,
+      "slope_change_pct": 0.00038
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 8,
+      "action": 52,
+      "reward": 0.104276,
+      "slope_change_pct": -0.000851
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 9,
+      "action": 523,
+      "reward": 0.241812,
+      "slope_change_pct": -0.005693
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 10,
+      "action": 2423,
+      "reward": -2.314519,
+      "slope_change_pct": -0.007603
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 11,
+      "action": 1940,
+      "reward": 0.070213,
+      "slope_change_pct": -0.009187
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 12,
+      "action": 2718,
+      "reward": 0.273098,
+      "slope_change_pct": -0.014295
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 13,
+      "action": 1505,
+      "reward": 0.138868,
+      "slope_change_pct": -0.016563
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 14,
+      "action": 1811,
+      "reward": 0.240046,
+      "slope_change_pct": -0.022736
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 15,
+      "action": 2889,
+      "reward": -0.403852,
+      "slope_change_pct": -0.022564
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 16,
+      "action": 2176,
+      "reward": 0.175679,
+      "slope_change_pct": -0.027128
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 17,
+      "action": 1888,
+      "reward": -0.007898,
+      "slope_change_pct": -0.027275
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 18,
+      "action": 1621,
+      "reward": 0.240904,
+      "slope_change_pct": -0.032953
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 19,
+      "action": 1669,
+      "reward": 0.13929,
+      "slope_change_pct": -0.036951
+    },
+    {
+      "policy": "random",
+      "seed": 0,
+      "step": 20,
+      "action": 2782,
+      "reward": 5.276541,
+      "slope_change_pct": -0.055197
+    }
+  ]
+}

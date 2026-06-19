@@ -500,6 +500,74 @@ def summarize_dongxing_full_learned_policy(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_dongxing_transition_diagnostics(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    model = payload.get("model", {})
+    holdouts = payload.get("policy_holdout_diagnostics", [])
+    holdout_reward_wins = [
+        row
+        for row in holdouts
+        if float(row.get("reward_mae", math.inf))
+        < float(row.get("reward_persistence_mae", -math.inf))
+    ]
+    holdout_selected_wins = [
+        row
+        for row in holdouts
+        if float(row.get("selected_feature_mae", math.inf))
+        < float(row.get("selected_feature_persistence_mae", -math.inf))
+    ]
+    return {
+        "status": payload.get("status", "supported_as_dongxing_full_transition_diagnostic"),
+        "path": display_path(path),
+        "n_transitions": payload.get("n_transitions"),
+        "policies": payload.get("policies", []),
+        "random_split_selected_feature_mae": model.get("selected_feature_mae"),
+        "random_split_selected_feature_persistence_mae": model.get(
+            "selected_feature_persistence_mae"
+        ),
+        "random_split_global_feature_mae": model.get("global_feature_mae"),
+        "random_split_global_feature_persistence_mae": model.get(
+            "global_feature_persistence_mae"
+        ),
+        "random_split_reward_mae": model.get("reward_mae"),
+        "random_split_reward_persistence_mae": model.get("reward_persistence_mae"),
+        "random_split_selected_beats_baseline": _metric_beats_baseline(
+            model, "selected_feature_mae", "selected_feature_persistence_mae"
+        ),
+        "random_split_global_beats_baseline": _metric_beats_baseline(
+            model, "global_feature_mae", "global_feature_persistence_mae"
+        ),
+        "random_split_reward_beats_baseline": _metric_beats_baseline(
+            model, "reward_mae", "reward_persistence_mae"
+        ),
+        "policy_holdout_count": len(holdouts),
+        "policy_holdout_reward_beats_baseline_count": len(holdout_reward_wins),
+        "policy_holdout_selected_beats_baseline_count": len(holdout_selected_wins),
+        "policy_holdout_reward_beats_baseline_policies": [
+            row.get("holdout_policy") for row in holdout_reward_wins
+        ],
+        "policy_holdout_selected_beats_baseline_policies": [
+            row.get("holdout_policy") for row in holdout_selected_wins
+        ],
+        "mbrl_policy_trained": False,
+        "policy_transfer_tested": False,
+        "interpretation": (
+            "Dongxing full real-environment transition learnability diagnostic. "
+            "Random transition split metrics test local learnability; policy "
+            "holdout metrics expose generalization limits. This artifact does "
+            "not train an MBRL policy."
+        ),
+    }
+
+
+def _metric_beats_baseline(payload: dict[str, Any], metric: str, baseline: str) -> bool:
+    if metric not in payload or baseline not in payload:
+        return False
+    return float(payload[metric]) < float(payload[baseline])
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -510,6 +578,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_rl = evidence.get("dongxing_rl_lite", {})
     dongxing_full = evidence.get("dongxing_full_baselines", {})
     dongxing_full_learned = evidence.get("dongxing_full_learned_policy", {})
+    dongxing_transition = evidence.get("dongxing_transition_diagnostics", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -635,6 +704,23 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_full_learned.get("interpretation"),
             }
         )
+    if dongxing_transition.get("status") == "supported_as_dongxing_full_transition_diagnostic":
+        scopes.append(
+            {
+                "id": "dongxing_full_transition_diagnostic_scope",
+                "claim": "Dongxing supports local full-environment transition learnability diagnostics.",
+                "status": dongxing_transition.get("status"),
+                "evidence_level": "external_full_transition_learnability_diagnostic",
+                "n_transitions": dongxing_transition.get("n_transitions"),
+                "policy_holdout_reward_beats_baseline_count": dongxing_transition.get(
+                    "policy_holdout_reward_beats_baseline_count"
+                ),
+                "policy_holdout_count": dongxing_transition.get("policy_holdout_count"),
+                "mbrl_policy_trained": False,
+                "policy_transfer_tested": False,
+                "interpretation": dongxing_transition.get("interpretation"),
+            }
+        )
     return scopes
 
 
@@ -708,6 +794,9 @@ def build_validation_report(
     )
     evidence["dongxing_full_learned_policy"] = summarize_dongxing_full_learned_policy(
         paper7_dir / "results" / "full_rigor" / "dongxing_full_learned_policy.json"
+    )
+    evidence["dongxing_transition_diagnostics"] = summarize_dongxing_transition_diagnostics(
+        paper7_dir / "results" / "full_rigor" / "dongxing_transition_diagnostics.json"
     )
 
     return {

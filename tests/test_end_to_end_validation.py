@@ -13,6 +13,7 @@ from paper7.end_to_end_validation import (
     summarize_dongxing_rl_lite,
     summarize_dongxing_full_baselines,
     summarize_dongxing_full_learned_policy,
+    summarize_dongxing_transition_diagnostics,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
     summarize_reward_scaling_comparator,
@@ -329,6 +330,72 @@ def test_classify_claim_scope_marks_dongxing_full_learned_policy_as_local_not_tr
 
     assert scope["status"] == "supported_as_dongxing_full_reward_learned_policy"
     assert scope["evidence_level"] == "external_full_reward_local_learned_policy"
+    assert scope["policy_transfer_tested"] is False
+
+
+def test_summarize_dongxing_transition_diagnostics_extracts_bounded_metrics(tmp_path):
+    path = tmp_path / "dongxing_transition_diagnostics.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_full_transition_diagnostic",
+            "n_transitions": 3000,
+            "policies": ["random", "dynamic_slope_gap"],
+            "model": {
+                "selected_feature_mae": 0.01,
+                "selected_feature_persistence_mae": 0.03,
+                "global_feature_mae": 0.001,
+                "global_feature_persistence_mae": 0.004,
+                "reward_mae": 0.8,
+                "reward_persistence_mae": 1.0,
+            },
+            "policy_holdout_diagnostics": [
+                {
+                    "holdout_policy": "random",
+                    "selected_feature_mae": 0.02,
+                    "selected_feature_persistence_mae": 0.03,
+                    "reward_mae": 2.0,
+                    "reward_persistence_mae": 1.0,
+                },
+                {
+                    "holdout_policy": "dynamic_slope_gap",
+                    "selected_feature_mae": 0.02,
+                    "selected_feature_persistence_mae": 0.03,
+                    "reward_mae": 0.8,
+                    "reward_persistence_mae": 1.0,
+                },
+            ],
+        },
+    )
+
+    summary = summarize_dongxing_transition_diagnostics(path)
+
+    assert summary["status"] == "supported_as_dongxing_full_transition_diagnostic"
+    assert summary["n_transitions"] == 3000
+    assert summary["random_split_reward_beats_baseline"] is True
+    assert summary["policy_holdout_count"] == 2
+    assert summary["policy_holdout_reward_beats_baseline_count"] == 1
+    assert summary["mbrl_policy_trained"] is False
+
+
+def test_classify_claim_scope_marks_dongxing_transition_as_diagnostic_not_mbrl():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_transition_diagnostics": {
+                "status": "supported_as_dongxing_full_transition_diagnostic",
+                "n_transitions": 3000,
+                "policy_holdout_reward_beats_baseline_count": 3,
+                "policy_holdout_count": 6,
+                "interpretation": "transition learnability diagnostic",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_full_transition_diagnostic_scope")
+
+    assert scope["status"] == "supported_as_dongxing_full_transition_diagnostic"
+    assert scope["evidence_level"] == "external_full_transition_learnability_diagnostic"
+    assert scope["mbrl_policy_trained"] is False
     assert scope["policy_transfer_tested"] is False
 
 
