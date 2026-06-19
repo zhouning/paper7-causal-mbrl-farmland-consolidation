@@ -58,8 +58,8 @@ def train_preference_policy(
     history: list[dict[str, Any]] = []
     for seed in train_seeds:
         rng = np.random.default_rng(int(seed))
+        env = env_factory()
         for episode in range(int(episodes)):
-            env = env_factory()
             obs, _ = env.reset(seed=int(seed) * 100_000 + episode)
             total_reward = 0.0
             steps = 0

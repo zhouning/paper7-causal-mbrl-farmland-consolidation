@@ -39,6 +39,24 @@ def test_train_preference_policy_learns_positive_gain_weight():
     assert policy["training"]["episodes"] == 12
 
 
+def test_train_preference_policy_reuses_env_per_train_seed():
+    calls = {"n": 0}
+
+    def factory() -> GenericCountyEnv:
+        calls["n"] += 1
+        return _toy_env()
+
+    train_preference_policy(
+        env_factory=factory,
+        train_seeds=[0, 1],
+        episodes=4,
+        learning_rate=0.05,
+        epsilon=0.25,
+    )
+
+    assert calls["n"] == 2
+
+
 def test_evaluate_preference_policy_reports_full_metrics():
     policy = {
         "learner_type": "linear_preference_full_reward",
