@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T10:41:15.371767+00:00",
+  "generated_utc": "2026-06-19T11:05:26.994327+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -253,7 +253,7 @@
         3,
         4
       ],
-      "training_time_s": 97.223531,
+      "training_time_s": 1558.231316,
       "learned_slope_change_pct_mean": -1.996004,
       "learned_completed_pairs_mean": 482.0,
       "learned_unique_blocks_mean": 93.0,

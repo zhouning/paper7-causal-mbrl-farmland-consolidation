@@ -2,7 +2,7 @@
 
 Target journal: Computers, Environment and Urban Systems.
 
-Manuscript title: A Causally Calibrated Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning.
+Manuscript title: A Treatment-Effect-Informed Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning.
 
 ## Directory Structure
 
@@ -57,8 +57,8 @@ Original English and Chinese Word files plus the original LaTeX source. Do not u
 
 ## Notes
 
-- The source manuscript was retitled for CEUS positioning.
-- The abstract was shortened to satisfy the CEUS 250-word limit.
+- The source manuscript was retitled and revised for CEUS positioning.
+- The abstract was shortened to satisfy the CEUS 250-word limit after the added experimental evidence.
 - The anonymous manuscript uses manual `thebibliography` references, so BibTeX is not required.
 - The body no longer relies on four unpublished author self-citations; those bibliography entries were removed.
 - The manuscript defines `Fig.~\ref{fig:pipeline}` as an embedded placeholder pipeline figure. A standalone publication-quality pipeline figure is still recommended before final CEUS submission.
@@ -67,14 +67,19 @@ Original English and Chinese Word files plus the original LaTeX source. Do not u
 
 Anonymous manuscript and evidence-chain refresh checked on 2026-06-19.
 
-- Anonymous manuscript compiled successfully after two `pdflatex` passes: `01_main_document_anonymous/manuscript.pdf`, 26 pages.
-- Abstract length after CEUS retargeting and policy-induced diagnostic revision: 224 words.
+- Anonymous manuscript compiled successfully after two final `pdflatex` passes: `01_main_document_anonymous/manuscript.pdf`, 27 pages.
+- Abstract length after CEUS retargeting and experimental-strengthening revision: 238 words by repository preflight count.
 - Policy-induced learned-vs-real diagnostic expanded to 15 calibrated policy seeds and validated in `paper7/results/revision/policy_induced_diagnostics_15seed.json`.
-- End-to-end evidence audit refreshed in `paper7/results/revision/end_to_end_validation.json`; the Bishan learned-policy chain is supported and Dongxing remains bounded as external data/action-space/dynamic feasibility evidence, not learned-policy transfer.
+- New CEUS strengthening artifacts include `reward_scaling_comparator.json`, `planning_significance_audit.json`, expanded `transition_rollout_diagnostics.json`, and `dongxing_rl_lite.json`.
+- End-to-end evidence audit refreshed in `paper7/results/revision/end_to_end_validation.json`; the Bishan learned-policy chain is supported and Dongxing remains bounded as external slope-only actionability evidence, not full cross-county learned-policy transfer.
+- Verification command `python -m paper7.end_to_end_validation --out paper7/results/revision/end_to_end_validation.json` returned `supported_with_bounded_external_scope`.
+- Full test command `python -m pytest tests -q --basetemp .\.pytest-tmp-paper7-ceus-strengthening` returned exit code 0 with `64 passed`; pytest also reported one cache warning and the existing PyTorch Windows access-violation tail output during import of `torch`.
 - Highlights: five bullets; each is under 85 characters including the bullet marker.
 - Anonymous source grep: no exact hits for `Ning`, `Zhou`, `Xiang`, `Jing`, `Peking`, `pku`, `jingxiang`, or `School of Software`.
 - Self-citation grep: no hits for `zhou2026`, `Author(s)`, `Anonymized self-citation`, or related unpublished-self-citation markers.
 - LaTeX log scan: no undefined citations, undefined references, fatal errors, or emergency stops.
 - Anonymous source copy synchronized with the main anonymous manuscript, and anonymous source zip prepared: `CEUS_paper7_latex_source_anonymous.zip`.
-- Title page and signed source files were not changed in the 2026-06-19 anonymous evidence-chain refresh.
-- Remaining nonblocking issue: only minor overfull `hbox` warnings remain; no blocking LaTeX errors were found.
+- Title page PDF compiled successfully: `02_title_page_author_info/title_page.pdf`, 1 page.
+- Signed manuscript compiled successfully after two `pdflatex` passes: `06_latex_source_editable/manuscript_signed.pdf`, 28 pages.
+- Title page, cover letter, highlights, signed source, and anonymous source were synchronized with the treatment-effect-informed wording and the added experiment boundary.
+- Remaining nonblocking issue: overfull/underfull `hbox` warnings remain for long technical phrases, paths, and compact tables; no blocking LaTeX errors were found.

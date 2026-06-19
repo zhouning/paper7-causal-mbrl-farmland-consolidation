@@ -21,7 +21,7 @@
     3,
     4
   ],
-  "training_time_s": 97.223531,
+  "training_time_s": 1558.231316,
   "policy": {
     "learner_type": "tabular_preference_fallback",
     "feature_names": [

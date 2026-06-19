@@ -1,5 +1,5 @@
 ﻿% ============================================================================
-% Causally Calibrated Model-Based Reinforcement Learning for
+% Treatment-Effect-Informed Model-Based Reinforcement Learning for
 % Farmland Consolidation via Learned Environment Dynamics
 % ============================================================================
 % Target: Computers, Environment and Urban Systems (CEUS)
@@ -19,19 +19,20 @@
 
 \begin{document}
 
-\title{A Causally Calibrated Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning}
+\title{A Treatment-Effect-Informed Learned Environment for Reinforcement Learning-Based Farmland Consolidation Planning}
 
 \author{Ning Zhou$^{a}$ and Xiang Jing$^{a,\ast}$\thanks{$^\ast$Corresponding author. Email: jingxiang@pku.edu.cn}\\
-$^{a}${\em School of Software and Microelectronics, Peking University, Beijing 100871, China}}
+$^{a}${\em School of Software and Microelectronics,}\\
+{\em Peking University, Beijing 100871, China}}
 
 \date{}
 \maketitle
 
 \begin{abstract}
-Deep reinforcement learning (DRL) for spatial planning can be limited by expensive environment interactions: county-level farmland consolidation optimization requires 8--12 hours on A100 GPUs per training run, and some runs fail because policies drift toward reward-model exploitation. We propose a model-based geocomputational framework that replaces parcel-level simulation with a lightweight learned environment for reinforcement-learning-based farmland consolidation planning. A 237K-parameter transition model learns state dynamics from 12{,}000 trajectories collected under random and greedy behavioural policies and supports policy training on CPU. To reduce reward exploitation in the learned environment, we introduce causal reward calibration, which uses propensity-score-matched average treatment effect estimates from real trajectory data to rescale the reward differential between high- and low-quality actions. Experiments across 13 townships, 2{,}600 consolidation blocks and 52{,}515 parcels show that uncalibrated model-based policies achieve $-0.976\% \pm 0.129\%$ slope reduction on the real environment; GPU-trained model-free baselines evaluated under the same county-level task achieved $-0.84\%$ and $-0.79\%$. Causal calibration improves performance to $-1.102\% \pm 0.100\%$, a statistically significant 13.0\% gain over the uncalibrated learned environment ($p = 0.004$), and the causally derived calibration factor ($\alpha = 0.185$) is within 3\% of the grid-search optimum. The complete pipeline runs without GPU support in under 2 hours, providing a reproducible decision-support route for large-scale land-resource planning.
+County-level farmland consolidation is difficult for deep reinforcement learning because parcel simulation is slow and learned rewards can be exploited. We propose a model-based geocomputational framework that replaces parcel simulation during training with a lightweight learned environment, while evaluating final policies in the real county environment. A 237K-parameter transition model learns from 12{,}000 real-environment transitions, and an observational treatment-effect-informed factor ($\alpha=0.185$) rescales learned rewards. Across 13 townships, 2{,}600 consolidation blocks, and 52{,}515 parcels, uncalibrated model-based policies achieved $-0.976\% \pm 0.129\%$ slope change. Calibration improved performance to $-1.102\% \pm 0.100\%$, a 13.0\% gain over the uncalibrated learned environment ($p=0.004$). The pre-specified factor ranked second among eight reward scales, within 3.1\% of the grid-search optimum and 22.1\% stronger than no scaling. The CPU pipeline runs in about 2 hours, compared with 8--12 GPU-hours for model-free baselines. Recorded-action and 15-seed policy-induced learned-vs-real diagnostics bounded surrogate error: policy-induced rollouts retained 0.998 action-mask agreement, mean support distance of 0.013, and $-1.106\%$ real-environment slope change. Reward errors remained non-negligible, so learned rollouts are used only for training and diagnostics, not final outcome reporting. Propensity-score sensitivity checks frame calibration as observational regularization rather than definitive causal identification. On Dongxing District, a slope-only RL-lite learned block-preference policy achieved $-1.996\%$ slope change; this is external actionability evidence, not full cross-county learned-policy transfer. An executable audit verifies the stored Bishan and bounded Dongxing evidence chains.
 \end{abstract}
 
-\noindent\textbf{Keywords:} geocomputation; model-based reinforcement learning; learned environment; causal reward calibration; farmland consolidation; spatial planning; land-resource management
+\noindent\textbf{Keywords:} geocomputation; model-based reinforcement learning; learned environment; observational reward calibration; farmland consolidation; spatial planning; land-resource management
 
 
 % ============================================================================
@@ -46,12 +47,14 @@ Model-based reinforcement learning (MBRL) offers a principled solution: learn a 
 This paper makes three contributions:
 
 \begin{enumerate}
-\item \textbf{A learned environment for spatial planning.} We train a neural transition model (237K parameters) that predicts next-step observations and rewards from current state and action, achieving 0.9998 cosine similarity with ground-truth transitions. The model trains in 60 minutes on CPU from 12{,}000 trajectory samples.
+\item \textbf{A learned environment for spatial planning.} We train a neural transition model (237K parameters) that predicts next-step observations and rewards from current state and action, achieving 0.9998 cosine similarity with ground-truth transitions. The model trains in 60 minutes on CPU from 12{,}000 real-environment transitions.
 
-\item \textbf{Causal reward calibration.} We introduce a mechanism that uses propensity-score-matched average treatment effect (ATT) estimates from real trajectory data to calibrate the learned reward function. The calibration corrects a 5.4$\times$ overestimation of action quality differentials, reducing reward exploitation and improving downstream policy quality by 13.0\% ($p = 0.004$). A grid search over 8 reward scaling factors confirms that the causally derived $\alpha = 0.185$ falls within 3\% of the empirical optimum, supporting causal inference as a data-driven calibration method in this setting.
+\item \textbf{Treatment-effect-informed reward calibration.} We introduce a reward-scaling mechanism that uses observational treatment-effect estimates from real trajectory data to calibrate the learned reward function. The calibration corrects a 5.4$\times$ overestimation of action-quality differentials, reducing reward exploitation and improving downstream policy quality by 13.0\% ($p = 0.004$). A grid search over 8 reward scaling factors confirms that the pre-specified $\alpha = 0.185$ ranks second, falls within 3\% of the empirical optimum, and improves slope reduction by 22.1\% relative to unscaled learned rewards. New overlap, balance, bootstrap, and threshold-sensitivity diagnostics bound this result as observational reward regularization rather than definitive causal identification.
 
 \item \textbf{Order-of-magnitude compute reduction.} The complete pipeline---trajectory collection, transition model training, and policy optimization---requires no GPU and completes in under 2 hours, compared to 8--12 GPU-hours for model-free training. Model-based policies evaluated on the real environment achieve $-0.976\%$ slope reduction (without calibration) or $-1.102\%$ (with calibration). For context, the model-free baselines achieve $-0.84\%$ for MARL and $-0.79\%$ for centralized DRL; the formal statistical test in this paper is the 15-seed comparison between calibrated and uncalibrated learned-environment policies.
 \end{enumerate}
+
+To probe external validity beyond the Bishan training case, we additionally apply the geospatial preprocessing, public-DEM slope enrichment, block action-space construction, non-RL paired-swap dynamics, and a slope-only RL-lite learned block-preference policy to Dongxing District, Neijiang. This check is reported as external slope-only data/actionability evidence, not as full cross-county learned-policy performance under the Bishan multi-objective reward.
 
 
 % ============================================================================
@@ -67,15 +70,15 @@ Our approach differs from Dreamer-style methods in a key respect: rather than jo
 
 \subsection{Reward model exploitation}
 
-The problem of agents exploiting learned reward models is well-documented. \citet{amodei2016concrete} identified reward hacking as a key safety concern. In offline RL, \citet{levine2020offline} showed that out-of-distribution actions can exploit value function overestimation. Our causal calibration approach is related to reward model correction methods in RLHF \citep{bai2022training}, but uses causal inference rather than human feedback to ground the correction.
+The problem of agents exploiting learned reward models is well-documented. \citet{amodei2016concrete} identified reward hacking as a key safety concern. In offline RL, \citet{levine2020offline} showed that out-of-distribution actions can exploit value function overestimation. Our calibration approach is related to reward model correction methods in RLHF \citep{bai2022training}, but borrows observational treatment-effect tools rather than human feedback to ground the correction.
 
 \subsection{DRL for farmland consolidation}
 
 Farmland consolidation is a spatial resource-allocation problem with terrain, land-use, and contiguity constraints. Direct parcel-level decisions are difficult because cadastral parcels are numerous, irregular, and linked through adjacency relationships. This study therefore uses connected blocks of swappable farmland and forest parcels as planning units. The block abstraction keeps the action space tractable while retaining the parcel-level information needed to evaluate slope change, farmland contiguity, and large contiguous farmland patches. The model-free baselines in this paper use the same block-level county environment defined below, so the learned-environment results can be evaluated against policies trained directly on the real parcel-simulation environment.
 
-\subsection{Causal inference for reward calibration}
+\subsection{Observational treatment effects for reward calibration}
 
-Propensity score methods \citep{stuart2010matching} enable treatment effect estimation from observational data by balancing confounders between treated and control groups. We adapt this framework to the RL setting: ``treatment'' is the selection of a high-potential block, ``outcome'' is the resulting reward, and ``confounders'' are the global state features that influence both block selection and reward. This connection provides a data-driven way to estimate how strongly the learned environment overstates action-quality differences, without treating reward scaling as a manually tuned hyperparameter.
+Propensity score methods \citep{stuart2010matching} enable treatment-effect estimation from observational data by balancing measured confounders between treated and control groups. We adapt this framework to the RL setting: ``treatment'' is the selection of a high-potential block, ``outcome'' is the resulting reward, and ``confounders'' are the global and selected-block features that influence both block selection and reward. Because treatment assignment comes from behavioural trajectories rather than randomized intervention, we use these estimates as an observational calibration signal. The purpose is to bound reward scaling with empirical trajectory evidence, not to claim that all unmeasured confounding has been removed.
 
 
 % ============================================================================
@@ -101,15 +104,15 @@ Two model-free baselines are trained directly on this real environment. The cent
 \label{sec:methods}
 % ============================================================================
 
-Our approach consists of three stages (Fig.~\ref{fig:pipeline}): (1) trajectory collection from the real environment under diverse behavioural policies, (2) transition model training on collected trajectories, and (3) policy optimization on the learned environment with optional causal reward calibration.
+Our approach consists of three stages (Fig.~\ref{fig:pipeline}): (1) trajectory collection from the real environment under diverse behavioural policies, (2) transition model training on collected trajectories, and (3) policy optimization on the learned environment with optional observational reward calibration.
 
 \begin{figure}[htbp]
 \centering
 \fbox{\begin{minipage}{0.92\textwidth}
 \centering
-Real county environment $\rightarrow$ random and greedy trajectory collection $\rightarrow$ neural transition model $\rightarrow$ learned county environment $\rightarrow$ policy training with optional causal reward calibration $\rightarrow$ deterministic evaluation on the real county environment.
+Real county environment $\rightarrow$ random and greedy trajectory collection $\rightarrow$ neural transition model $\rightarrow$ learned county environment $\rightarrow$ policy training with optional observational reward calibration $\rightarrow$ deterministic evaluation on the real county environment.
 \end{minipage}}
-\caption{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with causal reward calibration applied during model-based training.}
+\caption{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -158,25 +161,27 @@ Policy optimization uses Maskable PPO with a block-scoring actor--critic policy.
 
 \textbf{Critical distinction}: the policy is trained on the learned environment but \textit{evaluated on the real environment}. All reported metrics (slope change, contiguity, \textit{baimu fang}) are measured on the real CountyLevelEnv with deterministic inference.
 
-\subsection{Causal reward calibration}
+\textbf{Policy-induced learned-vs-real diagnostics.} Recorded-action rollouts test transition error along behavioural trajectories, but they do not test the distribution induced by a trained learned-environment policy. We therefore added a stricter synchronized diagnostic. For each of the 15 calibrated policy seeds, the policy selected deterministic actions from the learned-environment state while the same actions were replayed in the real CountyLevelEnv. At each step, the valid action set was restricted to the intersection of the learned and real action masks to avoid comparing infeasible actions. We recorded selected-block MAE, all-block MAE, global-feature MAE, raw and calibrated reward absolute error, action-mask agreement, and the Euclidean nearest-neighbour distance from the real global state to the 12{,}000-transition trajectory support. This diagnostic tests policy-induced distribution shift; it is not used for training and does not replace final real-environment evaluation.
+
+\subsection{Observational reward calibration}
 \label{sec:calibration}
 
 A key failure mode of model-based RL is \textit{reward exploitation}: the policy learns to select actions that receive high reward from the learned model but perform poorly in the real environment. We observe this as systematic overestimation of the reward differential between ``good'' and ``bad'' actions---the learned model amplifies the quality gap by 5.4$\times$ compared to empirical data.
 
-To correct this, we estimate the true causal effect of action quality on reward using propensity score stratification on the trajectory dataset:
+To correct this, we estimate an observational action-quality effect on reward using propensity score weighting on the trajectory dataset:
 
 \textbf{Treatment definition.} For each transition, the ``treatment'' is binary: $T_t = 1$ if the selected block's slope gap (feature 3) exceeds the median across all blocks, $T_t = 0$ otherwise.
 
-\textbf{Confounders.} Global state features (budget remaining, current slope, contiguity, step fraction, slope improvement) and selected block features (farmland slope, forest slope, swap potential, investment status) serve as confounders that influence both treatment assignment and outcome.
+\textbf{Confounders.} Global state features (budget remaining, current slope, contiguity, step fraction, slope improvement, \textit{baimu fang} metrics, investment entropy) and selected block features (farmland and forest slope summaries, area, compactness, swap potential, neighbour investment context, and investment status) serve as measured confounders that influence both treatment assignment and outcome.
 
-\textbf{ATT estimation.} Propensity scores are estimated via gradient-boosted trees with 5-fold cross-validation. After trimming extreme scores ($\hat{e} \notin [0.05, 0.95]$), the ATT is computed via stratified matching across 5 propensity score strata with bootstrap standard errors (200 resamples). Covariate balance after matching was verified via standardized mean differences (all $< 0.1$; balance diagnostics available in supplementary materials).
+\textbf{ATT estimation and diagnostics.} Propensity scores are estimated via gradient-boosted trees with stratified cross-validation. The ATT is computed with ATT-style inverse-odds weighting, where treated observations receive weight 1 and controls receive $\hat{e}/(1-\hat{e})$. We report untrimmed estimates and trimmed estimates using $\hat{e} \in [0.05,0.95]$, bootstrap confidence intervals (200 resamples), propensity-overlap summaries, and standardized mean differences before and after weighting. We run threshold sensitivity at the 40th, 50th, 60th, and 70th percentile definitions of high-potential selection.
 
 \textbf{Calibration.} Let $\hat{\tau}_\text{ATT}$ be the empirical treatment effect and $\hat{\tau}_\text{model}$ be the learned model's predicted treatment effect (mean reward for high-potential blocks minus low-potential blocks). The calibration factor is:
 \begin{equation}
 \alpha = \text{clip}\left(\frac{\hat{\tau}_\text{ATT}}{\hat{\tau}_\text{model}},\; 0.1,\; 5.0\right)
 \end{equation}
 
-During model-based policy training, all rewards from the learned environment are scaled by $\alpha$. In our experiments, $\hat{\tau}_\text{ATT} = +0.049$, $\hat{\tau}_\text{model} = +0.265$, yielding $\alpha = 0.185$---the learned model overestimates the benefit of good actions by 5.4$\times$, and the calibration shrinks rewards accordingly.
+During model-based policy training, all rewards from the learned environment are scaled by $\alpha$. The calibration value used in the policy experiments was computed before the new sensitivity diagnostics: $\hat{\tau}_\text{ATT} = +0.049$ and $\hat{\tau}_\text{model} = +0.265$, yielding $\alpha = 0.185$. This indicates that the learned model overstated the empirical reward differential between high- and low-potential actions by 5.4$\times$. The diagnostic analysis in Section~\ref{sec:calibration_sensitivity} shows that this estimate should be interpreted as an observational regularization signal. In particular, mixed random--greedy trajectories show limited common support, and greedy-only trajectories contain no untreated observations under the tested thresholds.
 
 
 % ============================================================================
@@ -186,17 +191,40 @@ During model-based policy training, all rewards from the learned environment are
 
 \subsection{Experimental setup}
 
-All experiments use the same county-level farmland consolidation environment defined in Section~\ref{sec:problem}: 13 Bishan District townships, 2{,}600 blocks, 52{,}515 parcels, and a budget of 500 paired swaps. Model-based policies are trained in the learned environment and then evaluated in the real environment. Model-free baselines are trained and evaluated directly in the real environment under the same budget, reward, action mask, and deterministic evaluation protocol.
+All Bishan policy experiments use the same county-level farmland consolidation environment defined in Section~\ref{sec:problem}: 13 Bishan District townships, 2{,}600 blocks, 52{,}515 parcels, and a budget of 500 paired swaps. Model-based policies are trained in the learned environment and then evaluated in the real environment. Model-free baselines are trained and evaluated directly in the real environment under the same budget, reward, action mask, and deterministic evaluation protocol.
 
 \textbf{Methods compared:}
 \begin{itemize}
 \item \textbf{Greedy-Sequential}: deterministic baseline that visits valid blocks sorted by initial farmland slope, investing one step per block before cycling.
+\item \textbf{Non-learning block baselines}: random valid-block selection (5 seeds), dynamic slope-gap greedy, area-weighted greedy, contiguity-aware greedy, and an immediate county-slope-delta baseline. These policies run in the real environment without learning and test whether simple local rules can replace planning.
 \item \textbf{Centralized DRL} (model-free): Maskable PPO on the real county environment, 5 seeds, 500K steps, A100 GPU.
 \item \textbf{MARL DRL} (model-free): 13-agent turn-based shared-policy DRL on the real county environment, 4 seeds, 500K steps, A100 GPU.
 \item \textbf{Model-Based} (ours): Maskable PPO on LearnedCountyEnv, 15 seeds, 100K steps, CPU.
-\item \textbf{Model-Based + Calibration} (ours): same with causal reward calibration ($\alpha = 0.185$), 15 seeds.
+\item \textbf{Model-Based + Calibration} (ours): same with observational reward calibration ($\alpha = 0.185$), 15 seeds.
 \item \textbf{Heuristic Scaling} (ablation): reward scaled by the values tested in Section~\ref{sec:grid_search}, 5 seeds each.
 \end{itemize}
+
+\textbf{End-to-end evidence audit.} To make the verification boundary explicit, we added an executable audit script, \path{paper7/end_to_end_validation.py}, which reads the recorded assets and result files rather than retraining the expensive RL models. The audit checks the six trajectory assets, transition-model checkpoint and training history, 15 paired calibrated/uncalibrated real-environment evaluation seeds, the 40-run reward-scaling grid, the reward-scaling comparator, recorded-action rollout diagnostics, policy-induced learned-vs-real diagnostics, planning-significance audit, calibration sensitivity diagnostics, Bishan non-learning baselines, and Dongxing data/action-space/dynamic-baseline/RL-lite outputs. Its output, \path{paper7/results/revision/end_to_end_validation.json}, classifies each manuscript claim by evidence level (Table~\ref{tab:e2e_scope}). This audit verifies consistency of the data-to-result chain used in the paper; it does not replace full retraining when computational budgets allow.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Evidence scope verified by the end-to-end audit.}
+\label{tab:e2e_scope}
+\begin{tabular}{p{0.24\linewidth}p{0.33\linewidth}p{0.33\linewidth}}
+\toprule
+Claim area & Evidence checked & Supported scope \\
+\midrule
+Bishan learned policy & 15 paired real-env evaluation seeds & End-to-end Bishan result chain \\
+Reward calibration & Calibration, grid search, downstream evaluation & Observational reward regularization \\
+Transition surrogate & Checkpoint, training history, rollouts & Approximate training surrogate \\
+Policy-induced states & Synchronized learned-real rollouts & Diagnostic support, not final simulator \\
+Bishan non-learning rules & Real-env random and greedy baselines & Local rules do not match MB+calibration \\
+Dongxing external check & Data audit, DEM slopes, blocks, non-RL dynamics, slope-only RL-lite & External slope-only actionability, not full policy transfer \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Main results}
 
@@ -204,34 +232,63 @@ Table~\ref{tab:main} presents the main comparison.
 
 \begin{table}[htbp]
 \centering
-\caption{Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Asterisks indicate Mann-Whitney $U$ tests against Greedy-Sequential; comparisons with model-free DRL are reported descriptively because seed counts and training architectures differ. Best result in bold.}
+\caption{Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Comparisons with model-free DRL are reported descriptively because seed counts, training budgets, and training architectures differ. The formal test in this table is the 15-seed comparison between calibrated and uncalibrated model-based policies. Best mean slope result in bold.}
 \label{tab:main}
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccc}
 \toprule
-Method & Seeds & Slope (\%) & Sig. & Cont. & Time & Hardware \\
+Method & Seeds & Slope (\%) & Cont. & Time & Hardware \\
 \midrule
-Greedy-Sequential      & 1  & $-0.27$              & ---  & $+0.008$ & $10$\,s   & CPU \\
-Centralized DRL        & 5  & $-0.79 \pm 0.36$     &      & $+0.017$ & $8$\,h    & A100 \\
-MARL DRL               & 4  & $-0.84 \pm 0.07$     &      & $+0.017$ & $12$\,h   & A100 \\
+Greedy-Sequential      & 1  & $-0.27$              & $+0.008$ & $10$\,s   & CPU \\
+Centralized DRL        & 5  & $-0.79 \pm 0.36$     & $+0.017$ & $8$\,h    & A100 \\
+MARL DRL               & 4  & $-0.84 \pm 0.07$     & $+0.017$ & $12$\,h   & A100 \\
 \midrule
-Model-Based (ours)     & 15 & $-0.976 \pm 0.129$   & $**$ & $+0.013$ & $\sim$2\,h & CPU \\
-\textbf{MB + Calibration} & 15 & $\mathbf{-1.102 \pm 0.100}$ & $**$ & $+0.011$ & $\sim$2\,h & CPU \\
+Model-Based (ours)     & 15 & $-0.976 \pm 0.129$   & $+0.013$ & $\sim$2\,h & CPU \\
+\textbf{MB + Calibration} & 15 & $\mathbf{-1.102 \pm 0.100}$ & $+0.011$ & $\sim$2\,h & CPU \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Model-based RL improves mean slope reduction relative to model-free baselines.} Without calibration, model-based policies achieve $-0.976\%$ slope reduction across 15 seeds, compared with MARL ($-0.84\%$) and centralized DRL ($-0.79\%$). With causal calibration, performance improves to $-1.102\%$. The strongest formal test in this experiment is the paired methodological comparison between calibrated and uncalibrated learned environments: causal calibration improves model-based policy quality by 13.0\% ($p = 0.004$, Mann-Whitney $U$ test). The comparison with model-free baselines should be read as an external baseline comparison under the same task rather than as a fully balanced statistical test.
+\textbf{Model-based RL improves mean slope reduction relative to the descriptive model-free references.} Without calibration, model-based policies achieve $-0.976\%$ slope reduction across 15 seeds, compared with MARL ($-0.84\%$) and centralized DRL ($-0.79\%$). With observational calibration, performance improves to $-1.102\%$. The strongest formal test in this experiment is the methodological comparison between calibrated and uncalibrated learned environments: calibration improves model-based policy quality by 13.0\% ($p = 0.004$, Mann-Whitney $U$ test). The comparison with model-free baselines should be read as a descriptive reference under the same task rather than as a fully balanced statistical superiority claim.
 
 \textbf{Compute reduction.} The model-based pipeline completes in $\sim$2 hours on CPU (trajectory collection: $\sim$40\,min; transition model: $\sim$60\,min; policy: $\sim$45\,min), compared to 8--12 GPU-hours for model-free methods. This represents a $\sim$16$\times$ wall-clock speedup with no GPU requirement.
 
 \textbf{Improved reliability.} Model-based training exhibits no policy drift: all 15 seeds converge to consistent slope reduction ($-0.73\%$ to $-1.32\%$, std $= 0.129\%$). In contrast, model-free training shows 33\% failure rate (3/9 seeds across centralized and MARL architectures).
+
+\textbf{Audit result.} The end-to-end audit re-computes the seed-level summary from the stored evaluation files and returns 15 balanced calibrated/uncalibrated pairs: $-0.976\%$ without calibration and $-1.102\%$ with calibration, corresponding to a 12.99\% improvement. The same audit confirms that the reward-scaling grid contains 40 runs over eight $\alpha$ values, with the pre-specified $\alpha=0.185$ 3.12\% from the empirical optimum at $\alpha=0.200$. These checks support the Bishan result chain reported in Table~\ref{tab:main}, while explicitly separating it from the Dongxing external feasibility check in Section~\ref{sec:external_validation}.
+
+\subsection{Strong non-learning baselines in Bishan}
+\label{sec:bishan_nonlearning}
+
+We added real-environment non-learning baselines to test whether the county task can be solved by simple local rules without policy optimization. The random baseline uses five seeds. The deterministic baselines select blocks by dynamic slope-gap, area-weighted slope-gap, contiguity-aware slope-gap, or estimated immediate county-slope reduction. All baselines use the same 500-swap budget and 100-step episode structure as the learned policies.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\caption{Bishan real-environment non-learning baselines. Slope is percentage change in county area-weighted farmland slope; negative values indicate improvement. Budget completion is realized paired swaps divided by the 500-swap budget. Random values summarize five seeds; deterministic baselines use one deterministic episode.}
+\label{tab:bishan_nonlearning}
+\begin{tabular}{lccccc}
+\toprule
+Baseline & Runs & Reward & Slope (\%) & Cont. change & Budget comp. \\
+\midrule
+Random valid block & 5 & $17.284 \pm 9.595$ & $0.089 \pm 0.138$ & $0.016 \pm 0.002$ & $0.612 \pm 0.020$ \\
+Dynamic slope-gap greedy & 1 & $5.505$ & $1.108$ & $0.038$ & $0.838$ \\
+Area-weighted greedy & 1 & $-79.368$ & $4.697$ & $0.046$ & $0.832$ \\
+Contiguity-aware greedy & 1 & $9.124$ & $1.100$ & $0.037$ & $0.834$ \\
+Immediate slope-delta & 1 & $-92.978$ & $-0.152$ & $-0.001$ & $0.036$ \\
+MB + calibration & 15 & --- & $\mathbf{-1.102 \pm 0.100}$ & $0.011$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The additional baselines show why the problem is not equivalent to ranking blocks by a single local opportunity score. The local slope-gap, area-weighted, and contiguity-aware greedy rules used most of the budget but increased area-weighted county slope, because a large within-block slope gap does not guarantee improvement in the county-wide area-weighted metric. The immediate slope-delta rule did reduce slope ($-0.152\%$), but it exhausted profitable immediate opportunities after only 18 paired swaps and used 3.6\% of the budget. By contrast, the calibrated learned policy achieved $-1.102\%$ mean slope change while optimizing the same multi-objective reward and action mask in the real evaluation environment.
 
 \subsection{Transition model quality}
 \label{sec:tm_quality}
 
 \begin{table}[htbp]
 \centering
-\caption{Transition model validation metrics.}
+\caption{One-step transition model validation metrics.}
 \label{tab:tm}
 \begin{tabular}{lcc}
 \toprule
@@ -247,13 +304,61 @@ Training data & 12{,}000 transitions & --- \\
 \end{tabular}
 \end{table}
 
-The transition model achieves high aggregate state-prediction similarity (cosine similarity 0.9998). This metric is useful as a sanity check but should be interpreted cautiously because most blocks do not change after any single action. The reward MSE is higher (1.097), reflecting the high variance of rewards across random and greedy policies. The causal calibration mechanism (Section~\ref{sec:calibration}) therefore targets systematic reward bias rather than claiming perfect per-step reward prediction.
+The transition model achieves high aggregate state-prediction similarity (cosine similarity 0.9998). This metric is useful as a sanity check but should be interpreted cautiously because most blocks do not change after any single action. The reward MSE is higher (1.097), reflecting the high variance of rewards across random and greedy policies. The calibration mechanism (Section~\ref{sec:calibration}) therefore targets systematic reward bias rather than claiming perfect per-step reward prediction.
 
-\subsection{Ablation: Causal reward calibration (E5)}
+To avoid relying on aggregate cosine similarity alone, we also rolled the learned transition model forward over recorded real-environment action sequences. Diagnostics were computed at horizons 1, 5, 10, 25, and 100 over 120 deterministic start states. Table~\ref{tab:rollout_diag} reports selected horizons and 95th-percentile errors. The selected-block and reward errors are more informative than all-block MAE because only one selected block changes at each step. We further decomposed the 12 global features into budget/progress, slope--contiguity, \textit{baimu fang}, and investment-spread groups to identify which planning signals accumulate larger errors.
 
 \begin{table}[htbp]
 \centering
-\caption{Effect of causal reward calibration on policy quality (15 seeds). All metrics evaluated on real env.}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\caption{Multi-step transition-model rollout diagnostics over recorded real-environment actions. Selected-block MAE is computed for the acted-on block; reward MAE is absolute reward error; action-mask agreement compares valid-block masks derived from predicted and true block features. q95 columns report 95th-percentile absolute errors across evaluated rollout steps.}
+\label{tab:rollout_diag}
+\begin{tabular}{lcccccc}
+\toprule
+Horizon & Steps & Sel. MAE & Sel. q95 & Reward MAE & Reward q95 & Mask agree. \\
+\midrule
+1   & 120    & 0.093 & 0.119 & 0.136 & 0.548 & 0.99995 \\
+10  & 1{,}200 & 0.080 & 0.132 & 0.198 & 0.772 & 0.99960 \\
+50  & 6{,}000 & 0.076 & 0.124 & 0.230 & 0.843 & 0.99866 \\
+100 & 12{,}000 & 0.075 & 0.127 & 0.234 & 0.809 & 0.99738 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rollout diagnostics support using the learned environment for policy optimization but also reveal its limits. Action-mask agreement remains high even at 100 steps (0.997), indicating that the learned environment usually preserves which blocks remain selectable. Global-state and reward errors increase with rollout horizon, however, so the learned environment should be viewed as an approximate training surrogate whose policies require final real-environment evaluation. At the 100-step horizon, group-wise global MAE is 0.021 for budget/progress, 0.040 for slope--contiguity, 0.052 for \textit{baimu fang}, and 0.069 for investment-spread features. Thus the largest global errors occur in aggregate planning-distribution signals, not in the core action-mask feasibility condition.
+
+The recorded-action rollouts above test the transition model on behavioural action sequences. To test policy-induced states, we next replayed actions selected by all 15 trained calibrated policy seeds in synchronized learned and real environments. Table~\ref{tab:policy_induced_diag} reports the episode-level means. The trained policies did not move the real environment far from the recorded global-state support: the mean nearest-neighbour distance to the 12{,}000-transition trajectory set was 0.013, with a 95th percentile of 0.021. Action-mask agreement remained 0.998, close to the recorded-action 100-step value. The final real-environment slope change across these 15 diagnostic policies averaged $-1.106\%$, consistent with the full calibrated evaluation ($-1.102\%$). Reward error was larger under policy-induced actions than under recorded actions (raw reward MAE 0.581), but the reward signal actually used during calibrated training had a lower scaled error (0.107). These results strengthen the surrogate-training claim while preserving the paper's central boundary: learned-environment rollouts are diagnostic evidence, whereas final planning outcomes are still reported from the real environment.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\caption{Policy-induced learned-vs-real diagnostics for 15 calibrated policy seeds. The policy selects actions from learned-environment states; the same actions are replayed in the real environment. Support distance is Euclidean nearest-neighbour distance from the real global state to the 12{,}000-transition trajectory support. Calibrated reward MAE reports the same reward error after multiplying by $\alpha=0.185$, the reward scale used during policy training.}
+\label{tab:policy_induced_diag}
+\begin{tabular}{lcc}
+\toprule
+Metric & Mean & Range across seeds \\
+\midrule
+Episodes / steps per seed & 15 / 100 & --- \\
+Selected-block MAE & 0.075 & 0.072--0.077 \\
+All-block MAE & 0.0027 & 0.0026--0.0028 \\
+Global-feature MAE & 0.052 & 0.045--0.055 \\
+Raw reward MAE & 0.581 & 0.482--0.652 \\
+Calibrated reward MAE & 0.107 & 0.089--0.121 \\
+Action-mask agreement & 0.998 & 0.997--0.998 \\
+Support distance & 0.013 & 0.010--0.015 \\
+Support distance, 95th percentile & 0.021 & 0.014--0.030 \\
+Final real slope change (\%) & $-1.106$ & $-1.317$--$-0.946$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablation: Observational reward calibration (E5)}
+
+\begin{table}[htbp]
+\centering
+\caption{Effect of observational reward calibration on policy quality (15 seeds). All metrics evaluated on real env.}
 \label{tab:e5}
 \begin{tabular}{lcccc}
 \toprule
@@ -267,18 +372,44 @@ Improvement & & $+13.0\%$ & & \\
 \end{tabular}
 \end{table}
 
-Causal calibration improves slope reduction by 13.0\% ($-1.102\%$ vs.\ $-0.976\%$), statistically significant at $p = 0.004$ (Mann-Whitney $U = 48$, one-sided). The calibrated policy achieves better slope reduction than the uncalibrated version in 10 of 15 seeds. The improvement is robust: the worst calibrated seed ($-0.946\%$) still matches the uncalibrated mean.
+Observational calibration improves slope reduction by 13.0\% ($-1.102\%$ vs.\ $-0.976\%$), statistically significant at $p = 0.004$ (Mann-Whitney $U = 48$, one-sided). The calibrated policy achieves better slope reduction than the uncalibrated version in 10 of 15 seeds. The improvement is robust: the worst calibrated seed ($-0.946\%$) still matches the uncalibrated mean.
 
 The calibration factor $\alpha = 0.185$ indicates that the learned environment overestimates the reward differential between high- and low-quality actions by $5.4\times$. Without correction, the policy exploits this overestimation by concentrating on a narrow set of ``apparently high-value'' blocks; with calibration, the flattened reward landscape encourages broader exploration and more balanced block selection.
 
-\subsection{Causal calibration vs.\ heuristic reward scaling}
-\label{sec:grid_search}
+Because farmland consolidation is a multi-objective planning problem, we also audited the non-slope outcomes rather than treating slope change as the only relevant result. Across the 15 paired seeds, calibration improved mean slope change by $-0.127$ percentage points relative to the uncalibrated learned policy, but it reduced mean real reward by 1.69, contiguity change by 0.002, \textit{baimu fang} count change by 0.2, and \textit{baimu fang} area change by 67.2\,ha. The calibrated policy therefore represents a stronger slope-reduction solution within the same multi-objective environment, not a Pareto improvement on every planning metric. This audit supports the interpretation that the reward calibration mainly suppresses learned-reward slope exploitation; it does not remove the need for planners to inspect the slope--contiguity--large-field trade-off.
 
-A natural question is whether the benefit of causal calibration could be replicated by simply tuning a reward scaling hyperparameter via grid search. To test this, we trained policies with 8 reward scaling factors, from 0.1 to 1.0 and including the causally derived value 0.185, using 5 seeds per value (Table~\ref{tab:grid}).
+\subsection{Calibration sensitivity diagnostics}
+\label{sec:calibration_sensitivity}
+
+We evaluated whether the treatment-effect calibration signal is stable to treatment-threshold choice, propensity trimming, and behavioural-policy composition. Table~\ref{tab:calibration_sensitivity} summarizes representative diagnostics for the median treatment threshold, where a selected block is treated if its best-swap-gain feature exceeds the within-state median.
 
 \begin{table}[htbp]
 \centering
-\caption{Reward scaling grid search (5 seeds each). The causally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$.}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\caption{Calibration sensitivity diagnostics at the 50th-percentile treatment threshold. Common support is the share of observations whose propensity score lies in the overlap range of treated and control observations. Trimmed ATT uses $\hat{e}\in[0.05,0.95]$ with 200 bootstrap resamples. Mean SMD is the mean absolute standardized mean difference before and after ATT weighting.}
+\label{tab:calibration_sensitivity}
+\begin{tabular}{lrrrcc}
+\toprule
+Scope & $n$ & Treated & Support & ATT [95\% CI] & SMD mean \\
+\midrule
+Mixed & 12{,}000 & 9{,}326 & 0.456 & $0.022$ [$-0.098$, $0.140$] & 0.575$\to$0.446 \\
+Random & 6{,}000 & 3{,}326 & 0.909 & $-0.022$ [$-0.142$, $0.087$] & 0.192$\to$0.073 \\
+Greedy & 6{,}000 & 6{,}000 & 0.000 & Not estimable & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The diagnostics expose the observational nature of the calibration estimate. In mixed trajectories, the treatment indicator is highly correlated with behavioural policy source, leaving large residual imbalance for the policy indicator even after weighting. In random-only trajectories, common support is much stronger and mean SMD improves from 0.192 to 0.073, but the trimmed ATT confidence interval crosses zero. In greedy-only trajectories, every selected action is treated under the tested thresholds, so an ATT is not estimable. Across the 40th, 50th, 60th, and 70th thresholds, random-only trimmed ATT estimates range from $-0.046$ to $0.095$ and all bootstrap intervals include zero. These diagnostics do not invalidate the downstream performance gain from $\alpha=0.185$, but they require a conservative interpretation: the calibration factor is a useful observational reward-regularization signal, not a definitive causal effect estimate.
+
+\subsection{Observational calibration vs.\ heuristic reward scaling}
+\label{sec:grid_search}
+
+A natural question is whether the benefit of observational calibration could be replicated by simply tuning a reward scaling hyperparameter via grid search. To test this, we trained policies with 8 reward scaling factors, from 0.1 to 1.0 and including the pre-specified value 0.185, using 5 seeds per value (Table~\ref{tab:grid}).
+
+\begin{table}[htbp]
+\centering
+\caption{Reward scaling grid search (5 seeds each). The observationally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$.}
 \label{tab:grid}
 \begin{tabular}{lcc}
 \toprule
@@ -286,7 +417,7 @@ $\alpha$ & Slope (\%) & Std \\
 \midrule
 $0.100$                          & $-1.123$ & $0.151$ \\
 $0.150$                          & $-1.120$ & $0.109$ \\
-$0.185$ \textit{(causal)}        & $-1.171$ & $0.103$ \\
+$0.185$ \textit{(observational)} & $-1.171$ & $0.103$ \\
 $\mathbf{0.200}$ \textit{(grid best)} & $\mathbf{-1.209}$ & $\mathbf{0.092}$ \\
 $0.300$                          & $-1.171$ & $0.077$ \\
 $0.500$                          & $-1.043$ & $0.065$ \\
@@ -296,9 +427,9 @@ $1.000$ (no scaling)             & $-0.959$ & $0.055$ \\
 \end{tabular}
 \end{table}
 
-The results reveal three key findings. First, the optimal scaling region is $\alpha \in [0.15, 0.30]$, with performance degrading monotonically for $\alpha > 0.3$. Second, the causally derived $\alpha = 0.185$ achieves $-1.171\%$, within 0.038 percentage points (3.1\%) of the grid-search optimum $\alpha = 0.200$ ($-1.209\%$). Third, the no-scaling baseline ($\alpha = 1.0$, $-0.959\%$) is the weakest performer, supporting the interpretation that reward overestimation affects policy training in this setting.
+The results reveal three key findings. First, the optimal scaling region is $\alpha \in [0.15, 0.30]$, with performance degrading monotonically for $\alpha > 0.3$. Second, the observationally derived $\alpha = 0.185$ ranks second among the eight tested values and achieves $-1.171\%$, within 0.038 percentage points (3.1\%) of the grid-search optimum $\alpha = 0.200$ ($-1.209\%$). Third, the no-scaling baseline ($\alpha = 1.0$, $-0.959\%$) is the weakest performer; the pre-specified $\alpha=0.185$ improves mean slope reduction by 22.1\% relative to no scaling. This supports the interpretation that reward overestimation affects policy training in this setting.
 
-These results support causal calibration as a data-driven scaling method: the causally derived $\alpha$ lands in the optimal plateau without any hyperparameter search, which would otherwise require $8 \times 5 = 40$ additional training runs. We note that a state-dependent calibration factor $\alpha(\mathbf{s})$ could potentially improve upon the global constant; we leave this extension to future work.
+These results support treatment-effect-informed calibration as a data-driven scaling method: the observationally derived $\alpha$ lands in the optimal plateau without any hyperparameter search, which would otherwise require $8 \times 5 = 40$ additional training runs. We note that a state-dependent calibration factor $\alpha(\mathbf{s})$ could potentially improve upon the global constant; we leave this extension to future work.
 
 \subsection{Ablation: GeoFM embedding augmentation (E4)}
 
@@ -320,6 +451,94 @@ With GeoFM (81-dim input)    & 241{,}054 & \textbf{0.051} & $-0.70 \pm 0.01\%$ \
 
 GeoFM embeddings reduce transition model validation loss by 40\% (0.051 vs.\ 0.085), indicating better one-step state prediction. However, downstream policy quality \textit{decreases} ($-0.70\%$ vs.\ $-0.96\%$). This counterintuitive result suggests that a more accurate one-step model is not necessarily a better training environment for policy optimization. The finding aligns with observations in the MBRL literature that model accuracy and policy quality are not monotonically related \citep{lambert2022investigating}.
 
+\subsection{External-county data and action-space validation}
+\label{sec:external_validation}
+
+We tested whether the geospatial preprocessing and block-construction pipeline transfers to an independent county-scale cadastral dataset. The external case used Dongxing District, Neijiang, which was not used for model training, reward calibration, or Bishan policy evaluation. The Dongxing parcel layer contained 134{,}369 cadastral parcels in \texttt{EPSG:2359}; the same land-use mapping identified 45{,}735 farmland parcels, 30{,}643 forest parcels, and 57{,}991 other parcels.
+
+Because the original Dongxing attributes did not provide slope values for forest parcels, we derived a continuous parcel-level slope field from a public terrain-tile DEM. The downloaded DEM mosaic fully covered the Dongxing parcel extent after coordinate transformation, with \texttt{EPSG:3857} coordinates, 1536 $\times$ 1024 cells, and a cell size of approximately 76.44\,m. Parcel slopes were computed as DEM-derived slope degrees using a rasterized zonal mean; for cadastral parcels too small to receive a DEM cell centre, the value at a within-parcel representative point was used. This produced non-missing \texttt{slope\_mean} values for 100\% of farmland, forest, and other parcels.
+
+\begin{table}[htbp]
+\centering
+\caption{External-county preprocessing validation on Dongxing District. The table reports data-ingestion and action-space construction results; dynamic and slope-only learned-policy checks are reported in Tables~\ref{tab:dongxing_dynamic} and~\ref{tab:dongxing_rl_lite}.}
+\label{tab:dongxing_external}
+\begin{tabular}{lc}
+\toprule
+Quantity & Value \\
+\midrule
+Parcel records & 134{,}369 \\
+Farmland parcels & 45{,}735 \\
+Forest parcels & 30{,}643 \\
+Swappable farmland/forest parcels & 76{,}378 \\
+Administrative/ownership units processed & 429 \\
+Units with at least one candidate block & 424 \\
+Mixed farmland-forest candidate blocks & 2{,}978 \\
+Blocks with both farmland and forest slope means & 2{,}978 / 2{,}978 \\
+DEM-derived slope coverage & 100\% of parcels \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The external case therefore passed the two data prerequisites for dynamic paired-slope-swap experiments: it contained mixed farmland-forest candidate blocks, and every generated block had continuous slope estimates for both farmland and forest components. This experiment strengthens the portability claim for the data pipeline and action representation. It does not, by itself, constitute a cross-county RL performance test, because the full Bishan learned environment, reward calibration, and multi-objective policy evaluation are not reproduced on Dongxing.
+
+To test whether the generated Dongxing action space contained a structured slope-opportunity signal, we also ran a static top-100 block screen before any RL training. Candidate blocks were ranked either by the farmland-minus-forest slope gap or by the same gap multiplied by the smaller of farmland and forest area in the block. Both deterministic screens selected only positive-gap blocks, whereas 1{,}000 random top-100 selections averaged a negative slope gap and less than half positive-gap blocks (Table~\ref{tab:dongxing_screen}). The deterministic screens exceeded all random selections for mean slope gap, positive-gap share, and total opportunity score, giving one-sided empirical $p=0.000999$ with add-one correction for each metric. This result supports the existence of actionable slope heterogeneity in the external county action space, but remains a static opportunity screen rather than evidence of learned-policy transfer.
+
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Static Dongxing block-level opportunity screen. Rankings select the top 100 complete-slope candidate blocks. Random values summarize 1{,}000 random top-100 selections.}
+\label{tab:dongxing_screen}
+\begin{tabular}{lcccc}
+\toprule
+Screen & Gap & Pos. share & Area (ha) & Score \\
+\midrule
+Slope-gap ranking & 3.056 & 1.000 & 234.554 & 591.253 \\
+Area-weighted ranking & 1.571 & 1.000 & 1{,}109.813 & 1{,}442.349 \\
+Random mean $\pm$ sd & $-0.166 \pm 0.128$ & 0.443 & 604.530 & $-188.571$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Finally, we ran dynamic non-RL paired-swap baselines to test whether the Dongxing action space remained actionable after sequential state updates. Each episode used 100 decision steps and at most five positive-gap parcel pairs per selected block. The dynamic slope-gap strategy reduced area-weighted farmland slope by 1.218\%, and the dynamic area-weighted strategy reduced it by 0.883\%, compared with 0.358\% for the 200-seed random dynamic baseline (Table~\ref{tab:dongxing_dynamic}). Both deterministic dynamic baselines exceeded the random episodes for slope-change percentage, completed pair count, mean pair slope gap, and total pair slope gap, with one-sided empirical $p=0.004975$ using add-one correction for each metric. This result moves the external validation beyond a static opportunity screen and provides slope-only dynamic baselines for the learned Dongxing policy in Table~\ref{tab:dongxing_rl_lite}.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\caption{Dynamic non-RL paired-swap baselines on Dongxing District. Episodes use 100 decision steps and at most five positive-gap parcel pairs per selected block. Random values summarize 200 seeded dynamic episodes.}
+\label{tab:dongxing_dynamic}
+\begin{tabular}{lcccc}
+\toprule
+Baseline & Pairs & Slope (\%) & Mean gap & Total gap \\
+\midrule
+Slope-gap & 485 & $-1.218$ & 9.056 & 4{,}392.083 \\
+Area-weighted gap & 487 & $-0.883$ & 7.538 & 3{,}671.162 \\
+Random $\mu \pm \sigma$ & $426.545 \pm 13.649$ & $-0.358 \pm 0.087$ & $4.038 \pm 0.208$ & $1{,}722.523 \pm 109.533$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To test whether Dongxing supports learned sequential block selection under this external slope-only environment, we added a lightweight RL-lite experiment. The environment exposes the 2{,}978 Dongxing blocks as masked actions, uses the same paired-slope-swap dynamics, and rewards reductions in county-wide area-weighted farmland slope. A tabular preference learner updated linear block-feature weights from interactive slope-improvement rewards over 5 training seeds and 200 episodes per seed. The learned policy was then evaluated over 5 deterministic seeds and compared with the dynamic non-RL baselines (Table~\ref{tab:dongxing_rl_lite}). The learned preference policy reduced slope by 1.996\%, exceeding random dynamic episodes by 1.563 percentage points, dynamic slope-gap by 0.778 points, and dynamic area-weighted gap by 1.113 points. This adds external learned-actionability evidence, but it is still a slope-only Dongxing experiment. It does not test transfer of the Bishan transition model, the Bishan policy, or the full Bishan reward with contiguity and \textit{baimu fang} objectives.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\caption{Dongxing slope-only RL-lite learned-policy experiment. The learned policy is a tabular preference learner trained on Dongxing slope-swap interactions; all methods use 100 decision steps and at most five positive-gap parcel pairs per selected block. This table reports external slope-only actionability, not full cross-county policy transfer.}
+\label{tab:dongxing_rl_lite}
+\begin{tabular}{lcccc}
+\toprule
+Policy & Eval seeds & Pairs & Slope (\%) & Unique blocks \\
+\midrule
+RL-lite learned preference & 5 & 482 & $\mathbf{-1.996}$ & 93 \\
+Dynamic slope-gap & 1 & 485 & $-1.218$ & 100 \\
+Dynamic area-weighted gap & 1 & 487 & $-0.883$ & 99 \\
+Random dynamic $\mu \pm \sigma$ & 5 & $426.8 \pm 13.3$ & $-0.433 \pm 0.096$ & $99.4 \pm 0.8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 % ============================================================================
 \section{Discussion}
@@ -336,9 +555,13 @@ The observed advantage of model-based policies in this benchmark is initially co
 
 \textbf{Implicit curriculum from trajectory distribution.} The training data includes both random (exploratory) and greedy (exploitative) trajectories. The transition model learns an ``average'' dynamics that smooths over the stochastic greedy engine's variability, providing a more learnable training signal than the real environment's episodic noise.
 
-\subsection{Causal calibration as reward regularization}
+\textbf{Planning rather than local ranking.} The added non-learning baselines show that the task is not solved by a single local block score. Local slope-gap and area-weighted rules can worsen county-wide area-weighted slope even when they select apparently high-opportunity blocks, because parcel areas and county-level objective terms matter. The immediate slope-delta baseline improves slope only slightly and uses little of the available budget. This supports the interpretation that learned policies are solving a sequential budget-allocation problem rather than merely rediscovering a static block ranking.
 
-The calibration factor $\alpha = 0.185$ effectively shrinks the reward scale by $5.4\times$, which has a regularization effect similar to reward clipping or normalization. However, unlike generic normalization, causal calibration is \textit{grounded in empirical evidence}: the scaling is derived from the observed treatment effect of action quality on reward, not from arbitrary hyperparameter tuning. The grid search experiment (Section~\ref{sec:grid_search}) confirms this: the causally derived $\alpha = 0.185$ falls within the optimal plateau $[0.15, 0.30]$, matching the grid-search optimum ($\alpha = 0.200$) to within 3\%. This suggests a possible route for transfer: in a new environment, the same estimation procedure could recompute $\alpha$ from local trajectories instead of reusing a fixed hand-tuned value.
+\subsection{Observational calibration as reward regularization}
+
+The calibration factor $\alpha = 0.185$ effectively shrinks the reward scale by $5.4\times$, which has a regularization effect similar to reward clipping or normalization. Its advantage over generic normalization is that the scaling is anchored to real trajectory evidence and then checked against downstream policy performance. The grid search experiment (Section~\ref{sec:grid_search}) confirms that $\alpha = 0.185$ falls within the optimal plateau $[0.15, 0.30]$, matching the grid-search optimum ($\alpha = 0.200$) to within 3\%.
+
+The new sensitivity diagnostics also clarify what this result does not show. Propensity overlap and balance are adequate only in the random-policy subset, where the treatment-effect confidence intervals cross zero. Mixed random--greedy trajectories contain substantial policy-source imbalance, and greedy-only trajectories do not contain untreated selected actions under the tested thresholds. The appropriate interpretation is therefore not that the paper identifies a precise causal effect of action quality on reward. Rather, the observational analysis detected a reward-scale mismatch that produced a useful regularization factor, and the policy experiment verified that this factor improved real-environment performance.
 
 \subsection{The accuracy--utility paradox in GeoFM augmentation}
 
@@ -350,13 +573,21 @@ The GeoFM ablation reveals a paradox: adding rich spatial context (64-dimensiona
 
 \subsection{Limitations}
 
-\textbf{Distribution shift.} The transition model is trained on random and greedy trajectories. If the learned policy visits states far from this training distribution, prediction quality may degrade. Dyna-style hybrid training (alternating real and learned steps) could mitigate this but was not explored here.
+\textbf{Policy-induced distribution shift.} The transition model is trained on random and greedy trajectories. The 15-seed synchronized learned-vs-real diagnostic suggests that calibrated policies remain close to the recorded global-state support and retain high action-mask agreement, but this remains a diagnostic over the current Bishan calibrated-policy ensemble rather than an exhaustive coverage guarantee. If future policies visit states far from this distribution, prediction quality may degrade. Dyna-style hybrid training (alternating real and learned steps) could mitigate this but was not explored here.
 
-\textbf{Single study area.} All experiments use Bishan District. Cross-county generalization requires new trajectory data, though the transition model architecture is region-agnostic.
+\textbf{Learned-environment error accumulation.} Aggregate one-step cosine similarity is high, but multi-step rollout diagnostics show increasing global-feature and reward errors with horizon. Policy-induced diagnostics further show that rewards remain noisier than state and mask predictions even when calibrated reward scaling is applied. The learned environment is therefore suitable as a training surrogate only when final policies are evaluated in the real parcel-simulation environment. It should not be used as a stand-alone simulator for reporting final planning outcomes.
+
+\textbf{Reproducibility boundary.} The executable audit verifies that the recorded Bishan assets, trained transition model, policy-evaluation files, ablations, policy-induced diagnostics, and Dongxing feasibility outputs are mutually consistent. It is an audit of the stored data-to-result chain, not a fresh full retraining of all policies. A full computational reproduction would additionally rerun trajectory collection, transition training, 30 Bishan policy seeds, the 40-run reward-scaling grid, and the synchronized learned-vs-real diagnostic.
+
+\textbf{Causal identification.} The calibration procedure uses observational trajectories rather than randomized treatment assignment. The sensitivity diagnostics show strong treatment-policy coupling in mixed trajectories and no control group in greedy-only trajectories. We therefore interpret the calibration as treatment-effect-informed reward regularization, not as definitive causal identification.
+
+\textbf{Cross-county performance.} Full policy-performance experiments remain limited to Bishan District. The Dongxing experiment shows that the cadastral preprocessing, DEM-based slope enrichment, block action-space construction, static slope-opportunity screening, dynamic non-RL paired-swap baselines, and a slope-only RL-lite learned preference policy run on a second county-scale dataset. It does not test whether a Bishan-trained transition model or Bishan-trained policy transfers to Dongxing. The Dongxing learned-policy result is slope-only and does not include the full Bishan reward components for contiguity and \textit{baimu fang}. Full cross-county performance claims require Dongxing trajectories, local transition-model training or transfer testing, local reward calibration, and learned-policy evaluation under the full multi-objective environment.
+
+\textbf{DEM-derived slope uncertainty.} Dongxing slopes were derived from public DEM tiles with an approximately 76.44\,m cell size after reprojection. The DEM fully covers the parcel extent and produces complete parcel-level slope values, but small parcels may inherit representative-point values rather than cell-centre zonal means. The Dongxing results should therefore be read as an external feasibility and actionability check, not as a precision terrain-engineering assessment.
 
 \textbf{Global calibration factor.} The current calibration factor $\alpha$ is a global constant. A state-dependent $\alpha(\mathbf{s})$ could capture heterogeneous reward overestimation across different planning stages, potentially improving late-episode performance where distribution shift is most pronounced.
 
-\textbf{Reward prediction.} While state prediction is near-perfect (cosine 0.9998), reward prediction has higher error (MSE 1.097). The causal calibration addresses systematic bias but not per-step noise.
+\textbf{Reward prediction.} While state prediction is near-perfect by aggregate cosine similarity, reward prediction has higher error and multi-step reward MAE reaches 0.234 at the 100-step horizon. The calibration addresses systematic reward-scale bias but not per-step reward noise.
 
 
 % ============================================================================
@@ -364,21 +595,29 @@ The GeoFM ablation reveals a paradox: adding rich spatial context (64-dimensiona
 \label{sec:conclusions}
 % ============================================================================
 
-We have demonstrated that model-based reinforcement learning, combined with causal reward calibration, can reduce computational cost and, in this benchmark, improve mean slope reduction for county-level farmland consolidation planning. The key findings are:
+We have demonstrated that model-based reinforcement learning, combined with treatment-effect-informed reward calibration, can reduce computational cost and, in this benchmark, improve mean slope reduction for county-level farmland consolidation planning. The key findings are:
 
 \begin{enumerate}
-\item \textbf{Learned environments are viable for large-scale spatial planning.} A 237K-parameter transition model trained on 12{,}000 trajectory samples achieves 0.9998 cosine similarity with real environment dynamics and supports effective policy training.
+\item \textbf{Learned environments are viable for large-scale spatial planning when validated beyond aggregate similarity.} A 237K-parameter transition model trained on 12{,}000 real-environment transitions achieves 0.9998 cosine similarity with real environment dynamics and supports effective policy training. Recorded-action and policy-induced diagnostics show high action-mask agreement but non-negligible global-state and reward errors, motivating final real-environment evaluation.
 
 \item \textbf{Model-based policies improve mean slope reduction relative to model-free baselines.} Policies trained on the learned environment achieve $-0.976\%$ slope reduction on the real environment across 15 seeds, compared with 12-hour A100-trained MARL ($-0.84\%$) and centralized DRL ($-0.79\%$).
 
-\item \textbf{Causal calibration addresses reward exploitation.} Propensity-score-matched treatment effect estimates reveal that the learned reward function overestimates action quality differentials by $5.4\times$. Correcting this via a calibration factor improves policy quality by 13.0\% to $-1.102\%$ ($p = 0.004$). The causally derived calibration factor matches the grid-search optimum to within 3\%, supporting causal inference as a data-driven calibration method in this setting.
+\item \textbf{Observational calibration addresses reward exploitation.} Treatment-effect-informed reward scaling indicates that the learned reward function overestimates action-quality differentials by $5.4\times$. Correcting this via a calibration factor improves policy quality by 13.0\% to $-1.102\%$ ($p = 0.004$). The pre-specified calibration factor matches the grid-search optimum to within 3\%, but sensitivity diagnostics require interpreting it as observational reward regularization rather than definitive causal identification.
 
 \item \textbf{An order-of-magnitude compute reduction is achievable.} The complete model-based pipeline runs in $\sim$2 hours on CPU, compared to 8--12 hours on A100 for model-free training, with zero GPU requirement.
 
+\item \textbf{External-county slope-only actionability is supported, but full policy transfer remains open.} On Dongxing District, the pipeline constructs 2{,}978 mixed farmland-forest blocks from 134{,}369 parcels. Dynamic non-RL paired-swap baselines reduce area-weighted farmland slope by 0.883--1.218\%, and a slope-only RL-lite learned preference policy reaches $-1.996\%$. These results support external data-pipeline, action-space, and slope-only learned-actionability portability, not cross-county transfer of the Bishan learned environment or full multi-objective policy.
+
+\item \textbf{Simple local rules do not replace sequential planning.} In Bishan, random valid-block selection and local slope-gap greedy variants do not reliably reduce county-wide slope. An immediate slope-delta rule reduces slope by only 0.152\% and uses 3.6\% of the budget, whereas the calibrated learned policy achieves $-1.102\%$ mean slope change under the full multi-objective environment.
+
+\item \textbf{Policy-induced diagnostics support, but do not replace, real-environment evaluation.} Synchronized learned-vs-real rollouts for 15 calibrated policy seeds retain 0.998 action-mask agreement, remain close to the trajectory support, and produce $-1.106\%$ mean real-environment slope change. These diagnostics address policy-induced distribution shift more directly than recorded-action rollouts, but final reported outcomes still come from the real environment.
+
 \item \textbf{Model accuracy and policy quality are not monotonically related.} Adding GeoFM embeddings improves transition model accuracy by 40\% but degrades policy quality, indicating that one-step predictive accuracy alone is not sufficient to judge a learned environment for policy optimization.
+
+\item \textbf{The verified claim boundary is narrower than a full cross-county RL claim.} The end-to-end audit supports the Bishan learned-policy chain and classifies Dongxing as external slope-only actionability. A stronger external-validity claim would require Dongxing trajectories, local transition-model training or transfer testing, reward calibration, learned-policy optimization, and full multi-objective real-environment evaluation on Dongxing.
 \end{enumerate}
 
-These results suggest that the ``dream then act'' paradigm---collecting diverse experience, learning environment dynamics, and optimizing policies in imagination---is a practical route for county-scale farmland consolidation environments where parcel-level simulation is expensive. The causal calibration mechanism provides a principled, data-driven response to the reward exploitation pattern observed in this study.
+These results suggest that the ``dream then act'' paradigm---collecting diverse experience, learning environment dynamics, and optimizing policies in imagination---is a practical route for county-scale farmland consolidation environments where parcel-level simulation is expensive. The calibration mechanism provides a data-driven response to the reward exploitation pattern observed in this study, provided its observational assumptions and cross-county boundaries are stated explicitly.
 
 
 % ============================================================================
@@ -430,6 +669,5 @@ Spatial planning of urban communities via deep reinforcement learning. Nature Co
 \end{thebibliography}
 
 \end{document}
-
 
 
