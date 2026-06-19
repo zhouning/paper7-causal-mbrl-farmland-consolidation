@@ -60,18 +60,35 @@ def select_model_based_action(
     n_blocks: int,
     model: dict[str, Any],
 ) -> int:
+    scores = predict_action_rewards(obs, n_blocks, model)
+    if not bool(np.isfinite(scores).any()):
+        return 0
+    return int(np.argmax(scores))
+
+
+def predict_action_rewards(
+    obs: np.ndarray,
+    n_blocks: int,
+    model: dict[str, Any],
+) -> np.ndarray:
     block_features = _block_features_from_obs(obs, int(n_blocks)).astype(np.float64)
     global_features = _global_features_from_obs(obs, int(n_blocks)).astype(np.float64)
     mask = block_features[:, 0] > 0.0
-    valid = np.flatnonzero(mask)
-    if len(valid) == 0:
-        return 0
-    scores = np.full(int(n_blocks), -np.inf, dtype=np.float64)
-    for action in valid:
-        scores[int(action)] = predict_one_step(model, block_features[int(action)], global_features)[
-            "reward"
+    x = np.column_stack(
+        [
+            np.ones(int(n_blocks), dtype=np.float64),
+            block_features,
+            np.repeat(global_features.reshape(1, -1), int(n_blocks), axis=0),
         ]
-    return int(np.argmax(scores))
+    )
+    mean = np.asarray(model["design_mean"], dtype=np.float64)
+    scale = np.asarray(model["design_scale"], dtype=np.float64)
+    x_scaled = (x - mean) / scale
+    x_scaled[:, 0] = 1.0
+    reward_coef = np.asarray(model["reward_coef"], dtype=np.float64).reshape(-1)
+    scores = x_scaled @ reward_coef
+    scores[~mask] = -np.inf
+    return scores
 
 
 def predict_one_step(
@@ -117,10 +134,7 @@ def evaluate_model_based_policy(
         if not bool(mask.any()):
             break
         action = select_model_based_action(obs, env.n_blocks, model)
-        global_features = _global_features_from_obs(obs, env.n_blocks)
-        total_predicted_reward += predict_one_step(model, features[action], global_features)[
-            "reward"
-        ]
+        total_predicted_reward += float(predict_action_rewards(obs, env.n_blocks, model)[action])
         obs, reward, terminated, truncated, info = env.step(action)
         total_reward += float(reward)
         done = terminated or truncated

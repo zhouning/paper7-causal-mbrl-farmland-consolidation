@@ -5,6 +5,7 @@ from shapely.geometry import box
 from paper7.dongxing_full_model_based_policy import (
     evaluate_model_based_policy,
     fit_one_step_model,
+    predict_action_rewards,
     run_experiment,
     select_model_based_action,
     summarize_model_based_runs,
@@ -62,6 +63,23 @@ def test_select_model_based_action_prefers_positive_reward_block():
     action = select_model_based_action(obs, env.n_blocks, model)
 
     assert action == 0
+
+
+def test_predict_action_rewards_masks_invalid_actions():
+    rows = collect_transition_rows(
+        env_factory=_toy_env,
+        policies=["dynamic_slope_gap", "random"],
+        seeds=[0, 1, 2, 3],
+        max_steps=2,
+    )
+    model = fit_one_step_model(rows, ridge=1e-3)
+    env = _toy_env()
+    obs, _ = env.reset(seed=0)
+
+    rewards = predict_action_rewards(obs, env.n_blocks, model)
+
+    assert rewards.shape == (2,)
+    assert rewards[0] > rewards[1]
 
 
 def test_evaluate_model_based_policy_reports_real_environment_metrics():
