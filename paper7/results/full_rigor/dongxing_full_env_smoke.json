@@ -1,0 +1,13 @@
+{
+  "status": "constructed",
+  "n_parcels": 76378,
+  "n_blocks": 2978,
+  "valid_action_count": 2922,
+  "initial_avg_farmland_slope": 4.616568,
+  "initial_contiguity": 3.179622,
+  "initial_baimu_count": 214,
+  "initial_baimu_area_ha": 76313.094429,
+  "total_budget": 500,
+  "swaps_per_step": 5,
+  "max_steps": 100
+}
