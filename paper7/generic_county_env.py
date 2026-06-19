@@ -156,7 +156,9 @@ class GenericCountyEnv(gym.Env):
         self.step_count += 1
 
         self._compute_metrics_full()
-        self.baimu_count, self.baimu_total_area = self._count_baimu_fang()
+        baimu_interval = max(1, self.max_steps // 20)
+        if self.step_count % baimu_interval == 0 or self.step_count >= self.max_steps:
+            self.baimu_count, self.baimu_total_area = self._count_baimu_fang()
         component = RewardComponents(
             slope_delta=(self.prev_slope - self.avg_farmland_slope) / (abs(self.initial_slope) + 1e-8),
             cont_delta=(self.contiguity - self.prev_cont) / (abs(self.initial_cont) + 1e-8),
