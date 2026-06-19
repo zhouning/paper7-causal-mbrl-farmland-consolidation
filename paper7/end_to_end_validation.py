@@ -473,6 +473,33 @@ def summarize_dongxing_full_baselines(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_dongxing_full_learned_policy(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    learned = payload.get("learned_policy", {})
+    return {
+        "status": payload.get("status", "supported_as_dongxing_full_reward_learned_policy"),
+        "path": display_path(path),
+        "learner_type": payload.get("learner_type"),
+        "train_seeds": payload.get("train_seeds", []),
+        "eval_seeds": payload.get("eval_seeds", []),
+        "n_train_seeds": len(payload.get("train_seeds", [])),
+        "n_eval_seeds": len(payload.get("eval_seeds", [])),
+        "episodes": payload.get("episodes"),
+        "training_time_s": payload.get("training_time_s"),
+        "learned_summary": learned.get("summary", {}),
+        "comparisons": payload.get("comparisons", {}),
+        "learned_policy_tested": True,
+        "transfer_tested": False,
+        "mbrl_transition_model_tested": False,
+        "interpretation": payload.get(
+            "claim_boundary",
+            "Local Dongxing full-reward learned policy; not policy transfer and not transition-model MBRL",
+        ),
+    }
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -482,6 +509,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     policy_shift = evidence.get("policy_induced_diagnostics", {})
     dongxing_rl = evidence.get("dongxing_rl_lite", {})
     dongxing_full = evidence.get("dongxing_full_baselines", {})
+    dongxing_full_learned = evidence.get("dongxing_full_learned_policy", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -594,6 +622,19 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_full.get("interpretation"),
             }
         )
+    if dongxing_full_learned.get("status") == "supported_as_dongxing_full_reward_learned_policy":
+        scopes.append(
+            {
+                "id": "dongxing_full_learned_policy_scope",
+                "claim": "Dongxing supports local full-reward learned-policy actionability.",
+                "status": dongxing_full_learned.get("status"),
+                "evidence_level": "external_full_reward_local_learned_policy",
+                "n_eval_seeds": dongxing_full_learned.get("n_eval_seeds", 0),
+                "policy_transfer_tested": False,
+                "mbrl_transition_model_tested": False,
+                "interpretation": dongxing_full_learned.get("interpretation"),
+            }
+        )
     return scopes
 
 
@@ -664,6 +705,9 @@ def build_validation_report(
     )
     evidence["dongxing_full_baselines"] = summarize_dongxing_full_baselines(
         paper7_dir / "results" / "full_rigor" / "dongxing_full_baselines.json"
+    )
+    evidence["dongxing_full_learned_policy"] = summarize_dongxing_full_learned_policy(
+        paper7_dir / "results" / "full_rigor" / "dongxing_full_learned_policy.json"
     )
 
     return {

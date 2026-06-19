@@ -12,6 +12,7 @@ from paper7.end_to_end_validation import (
     summarize_alpha_grid,
     summarize_dongxing_rl_lite,
     summarize_dongxing_full_baselines,
+    summarize_dongxing_full_learned_policy,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
     summarize_reward_scaling_comparator,
@@ -287,6 +288,48 @@ def test_classify_claim_scope_marks_dongxing_full_baseline_level():
 
     assert dongxing_full["status"] == "supported_as_full_real_environment_baselines"
     assert dongxing_full["evidence_level"] == "external_full_real_environment_baselines"
+
+
+def test_summarize_dongxing_full_learned_policy_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_full_learned_policy.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_full_reward_learned_policy",
+            "learner_type": "linear_preference_full_reward",
+            "train_seeds": [0, 1],
+            "eval_seeds": [0, 1, 2],
+            "learned_policy": {"summary": {"n": 3, "reward_mean": 12.0}},
+            "comparisons": {"learned_minus_random_reward_mean": 10.0},
+            "claim_boundary": "Local Dongxing full-reward learned actionability",
+        },
+    )
+
+    summary = summarize_dongxing_full_learned_policy(path)
+
+    assert summary["status"] == "supported_as_dongxing_full_reward_learned_policy"
+    assert summary["learner_type"] == "linear_preference_full_reward"
+    assert summary["n_eval_seeds"] == 3
+    assert summary["learned_policy_tested"] is True
+    assert summary["transfer_tested"] is False
+
+
+def test_classify_claim_scope_marks_dongxing_full_learned_policy_as_local_not_transfer():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_full_learned_policy": {
+                "status": "supported_as_dongxing_full_reward_learned_policy",
+                "n_eval_seeds": 10,
+                "interpretation": "local full-reward learned policy",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_full_learned_policy_scope")
+
+    assert scope["status"] == "supported_as_dongxing_full_reward_learned_policy"
+    assert scope["evidence_level"] == "external_full_reward_local_learned_policy"
+    assert scope["policy_transfer_tested"] is False
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():
