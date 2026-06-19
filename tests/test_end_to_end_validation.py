@@ -13,6 +13,7 @@ from paper7.end_to_end_validation import (
     summarize_dongxing_rl_lite,
     summarize_dongxing_full_baselines,
     summarize_dongxing_full_learned_policy,
+    summarize_dongxing_full_model_based_policy,
     summarize_dongxing_transition_diagnostics,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
@@ -397,6 +398,63 @@ def test_classify_claim_scope_marks_dongxing_transition_as_diagnostic_not_mbrl()
     assert scope["evidence_level"] == "external_full_transition_learnability_diagnostic"
     assert scope["mbrl_policy_trained"] is False
     assert scope["policy_transfer_tested"] is False
+
+
+def test_summarize_dongxing_full_model_based_policy_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_full_model_based_policy.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_full_one_step_model_based_policy",
+            "n_training_transitions": 3000,
+            "planning_horizon": 1,
+            "model_based_policy": {
+                "summary": {
+                    "n": 10,
+                    "reward_mean": 72.0,
+                    "slope_change_pct_mean": -2.0,
+                }
+            },
+            "comparisons": {
+                "model_based_minus_random_reward_mean": 62.0,
+                "model_based_minus_scalarized_default_reward_mean": -36.0,
+            },
+            "mbrl_transition_model_used": True,
+            "policy_transfer_tested": False,
+            "claim_boundary": "one-step model-based action selection",
+        },
+    )
+
+    summary = summarize_dongxing_full_model_based_policy(path)
+
+    assert summary["status"] == "supported_as_dongxing_full_one_step_model_based_policy"
+    assert summary["n_training_transitions"] == 3000
+    assert summary["n_eval_seeds"] == 10
+    assert summary["planning_horizon"] == 1
+    assert summary["model_based_reward_mean"] == 72.0
+    assert summary["mbrl_transition_model_used"] is True
+    assert summary["policy_transfer_tested"] is False
+
+
+def test_classify_claim_scope_marks_model_based_policy_as_one_step_bounded():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_full_model_based_policy": {
+                "status": "supported_as_dongxing_full_one_step_model_based_policy",
+                "n_eval_seeds": 10,
+                "planning_horizon": 1,
+                "interpretation": "one-step model-based action selection",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_full_model_based_policy_scope")
+
+    assert scope["status"] == "supported_as_dongxing_full_one_step_model_based_policy"
+    assert scope["evidence_level"] == "external_full_one_step_model_based_policy"
+    assert scope["planning_horizon"] == 1
+    assert scope["policy_transfer_tested"] is False
+    assert scope["multi_step_mbrl_planning_tested"] is False
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():

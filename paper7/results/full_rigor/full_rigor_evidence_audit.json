@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T14:45:52.083399+00:00",
+  "generated_utc": "2026-06-19T15:31:37.504579+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -623,6 +623,49 @@
       "mbrl_policy_trained": false,
       "policy_transfer_tested": false,
       "interpretation": "Dongxing full real-environment transition learnability diagnostic. Random transition split metrics test local learnability; policy holdout metrics expose generalization limits. This artifact does not train an MBRL policy."
+    },
+    "dongxing_full_model_based_policy": {
+      "status": "supported_as_dongxing_full_one_step_model_based_policy",
+      "path": "paper7\\results\\full_rigor\\dongxing_full_model_based_policy.json",
+      "n_training_transitions": 3000,
+      "n_eval_seeds": 10,
+      "planning_horizon": 1,
+      "model_based_reward_mean": 72.665825,
+      "model_based_slope_change_pct_mean": -1.999939,
+      "model_based_cont_change_mean": -0.041937,
+      "model_based_baimu_area_change_ha_mean": -2698.58047,
+      "comparisons": {
+        "higher_reward_is_better": true,
+        "lower_slope_change_pct_is_better": true,
+        "model_based_minus_random_reward_mean": 62.042008,
+        "model_based_minus_random_slope_change_pct_mean": -1.657572,
+        "model_based_minus_random_cont_change_mean": -0.032553,
+        "model_based_minus_random_baimu_area_change_ha_mean": -2237.763554,
+        "model_based_minus_dynamic_slope_gap_reward_mean": 15.232979,
+        "model_based_minus_dynamic_slope_gap_slope_change_pct_mean": -0.782362,
+        "model_based_minus_dynamic_slope_gap_cont_change_mean": -0.041631,
+        "model_based_minus_dynamic_slope_gap_baimu_area_change_ha_mean": -2227.579056,
+        "model_based_minus_area_weighted_slope_gap_reward_mean": 34.978958,
+        "model_based_minus_area_weighted_slope_gap_slope_change_pct_mean": -1.117254,
+        "model_based_minus_area_weighted_slope_gap_cont_change_mean": -0.064327,
+        "model_based_minus_area_weighted_slope_gap_baimu_area_change_ha_mean": -2666.306737,
+        "model_based_minus_contiguity_aware_reward_mean": 38.692871,
+        "model_based_minus_contiguity_aware_slope_change_pct_mean": -1.144864,
+        "model_based_minus_contiguity_aware_cont_change_mean": -0.033934,
+        "model_based_minus_contiguity_aware_baimu_area_change_ha_mean": -2280.477672,
+        "model_based_minus_baimu_aware_reward_mean": -59.064267,
+        "model_based_minus_baimu_aware_slope_change_pct_mean": 0.260692,
+        "model_based_minus_baimu_aware_cont_change_mean": -0.024664,
+        "model_based_minus_baimu_aware_baimu_area_change_ha_mean": -894.420142,
+        "model_based_minus_scalarized_default_reward_mean": -35.871697,
+        "model_based_minus_scalarized_default_slope_change_pct_mean": 0.061394,
+        "model_based_minus_scalarized_default_cont_change_mean": -0.025801,
+        "model_based_minus_scalarized_default_baimu_area_change_ha_mean": -1223.999781
+      },
+      "mbrl_transition_model_used": true,
+      "policy_transfer_tested": false,
+      "multi_step_mbrl_planning_tested": false,
+      "interpretation": "Local Dongxing one-step model-based action selection; this is not cross-county policy transfer and not multi-step MBRL planning."
     }
   },
   "claim_scope": [
@@ -704,6 +747,18 @@
       "mbrl_policy_trained": false,
       "policy_transfer_tested": false,
       "interpretation": "Dongxing full real-environment transition learnability diagnostic. Random transition split metrics test local learnability; policy holdout metrics expose generalization limits. This artifact does not train an MBRL policy."
+    },
+    {
+      "id": "dongxing_full_model_based_policy_scope",
+      "claim": "Dongxing supports local one-step learned transition/reward model-based action selection in the full real environment.",
+      "status": "supported_as_dongxing_full_one_step_model_based_policy",
+      "evidence_level": "external_full_one_step_model_based_policy",
+      "n_eval_seeds": 10,
+      "planning_horizon": 1,
+      "mbrl_transition_model_used": true,
+      "policy_transfer_tested": false,
+      "multi_step_mbrl_planning_tested": false,
+      "interpretation": "Local Dongxing one-step model-based action selection; this is not cross-county policy transfer and not multi-step MBRL planning."
     }
   ],
   "overall_status": "supported_with_bounded_external_scope",

@@ -568,6 +568,34 @@ def _metric_beats_baseline(payload: dict[str, Any], metric: str, baseline: str) 
     return float(payload[metric]) < float(payload[baseline])
 
 
+def summarize_dongxing_full_model_based_policy(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    summary = payload.get("model_based_policy", {}).get("summary", {})
+    return {
+        "status": payload.get("status", "supported_as_dongxing_full_one_step_model_based_policy"),
+        "path": display_path(path),
+        "n_training_transitions": payload.get("n_training_transitions"),
+        "n_eval_seeds": summary.get("n"),
+        "planning_horizon": payload.get("planning_horizon"),
+        "model_based_reward_mean": summary.get("reward_mean"),
+        "model_based_slope_change_pct_mean": summary.get("slope_change_pct_mean"),
+        "model_based_cont_change_mean": summary.get("cont_change_mean"),
+        "model_based_baimu_area_change_ha_mean": summary.get(
+            "baimu_area_change_ha_mean"
+        ),
+        "comparisons": payload.get("comparisons", {}),
+        "mbrl_transition_model_used": bool(payload.get("mbrl_transition_model_used", False)),
+        "policy_transfer_tested": bool(payload.get("policy_transfer_tested", False)),
+        "multi_step_mbrl_planning_tested": False,
+        "interpretation": payload.get(
+            "claim_boundary",
+            "Local one-step Dongxing model-based action selection; not transfer or multi-step MBRL",
+        ),
+    }
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -579,6 +607,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_full = evidence.get("dongxing_full_baselines", {})
     dongxing_full_learned = evidence.get("dongxing_full_learned_policy", {})
     dongxing_transition = evidence.get("dongxing_transition_diagnostics", {})
+    dongxing_model_based = evidence.get("dongxing_full_model_based_policy", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -721,6 +750,26 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_transition.get("interpretation"),
             }
         )
+    if dongxing_model_based.get("status") == "supported_as_dongxing_full_one_step_model_based_policy":
+        scopes.append(
+            {
+                "id": "dongxing_full_model_based_policy_scope",
+                "claim": (
+                    "Dongxing supports local one-step learned transition/reward "
+                    "model-based action selection in the full real environment."
+                ),
+                "status": dongxing_model_based.get("status"),
+                "evidence_level": "external_full_one_step_model_based_policy",
+                "n_eval_seeds": dongxing_model_based.get("n_eval_seeds"),
+                "planning_horizon": dongxing_model_based.get("planning_horizon"),
+                "mbrl_transition_model_used": bool(
+                    dongxing_model_based.get("mbrl_transition_model_used", False)
+                ),
+                "policy_transfer_tested": False,
+                "multi_step_mbrl_planning_tested": False,
+                "interpretation": dongxing_model_based.get("interpretation"),
+            }
+        )
     return scopes
 
 
@@ -797,6 +846,9 @@ def build_validation_report(
     )
     evidence["dongxing_transition_diagnostics"] = summarize_dongxing_transition_diagnostics(
         paper7_dir / "results" / "full_rigor" / "dongxing_transition_diagnostics.json"
+    )
+    evidence["dongxing_full_model_based_policy"] = summarize_dongxing_full_model_based_policy(
+        paper7_dir / "results" / "full_rigor" / "dongxing_full_model_based_policy.json"
     )
 
     return {
