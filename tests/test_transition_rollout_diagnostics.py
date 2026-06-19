@@ -5,6 +5,8 @@ from paper7.transition_rollout_diagnostics import (
     compute_action_mask_agreement,
     compute_step_metrics,
     rollout_model,
+    summarize_feature_groups,
+    summarize_step_metrics,
 )
 
 
@@ -83,3 +85,44 @@ def test_rollout_model_accumulates_predictions_against_recorded_actions():
     assert results["horizons"]["1"]["reward_mae"] == 0.0
     assert results["horizons"]["2"]["n_steps"] == 2
     assert results["horizons"]["2"]["selected_block_mae"] == 0.0
+
+
+def test_summarize_step_metrics_adds_q50_and_q95_for_error_fields():
+    metrics = [
+        {
+            "selected_block_mae": 1.0,
+            "all_block_mae": 0.1,
+            "global_mae": 2.0,
+            "global_rmse": 2.0,
+            "reward_abs_error": 3.0,
+            "mask_agreement": 1.0,
+        },
+        {
+            "selected_block_mae": 3.0,
+            "all_block_mae": 0.3,
+            "global_mae": 4.0,
+            "global_rmse": 4.0,
+            "reward_abs_error": 5.0,
+            "mask_agreement": 0.5,
+        },
+    ]
+
+    summary = summarize_step_metrics(metrics)
+
+    assert summary["selected_block_mae_q50"] == 2.0
+    assert summary["selected_block_mae_q95"] > 2.0
+    assert summary["reward_mae"] == 4.0
+
+
+def test_summarize_feature_groups_reports_named_global_groups():
+    pred_global = [1.0, 3.0, 10.0, 10.0]
+    true_global = [2.0, 1.0, 7.0, 12.0]
+
+    groups = summarize_feature_groups(
+        pred_global,
+        true_global,
+        {"first_two": [0, 1], "last_two": [2, 3]},
+    )
+
+    assert groups["first_two_mae"] == 1.5
+    assert groups["last_two_mae"] == 2.5

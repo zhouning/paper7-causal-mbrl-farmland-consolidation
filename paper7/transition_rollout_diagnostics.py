@@ -21,6 +21,14 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 from paper7.train_model_based import load_transition_model
 
 
+DEFAULT_GLOBAL_FEATURE_GROUPS = {
+    "budget_progress": [0, 3],
+    "slope_contiguity": [1, 2, 4, 5],
+    "baimu": [6, 7],
+    "investment_spread": [8, 9, 10, 11],
+}
+
+
 def compute_action_mask_agreement(
     pred_block: np.ndarray,
     true_block: np.ndarray,
@@ -31,6 +39,25 @@ def compute_action_mask_agreement(
     pred_mask = pred_block[:, mask_feature_index] > threshold
     true_mask = true_block[:, mask_feature_index] > threshold
     return float(np.mean(pred_mask == true_mask))
+
+
+def summarize_feature_groups(
+    pred_values: np.ndarray | list[float],
+    true_values: np.ndarray | list[float],
+    groups: dict[str, list[int]],
+) -> dict[str, float]:
+    """Return MAE for named feature-index groups."""
+    pred = np.asarray(pred_values, dtype=np.float64)
+    true = np.asarray(true_values, dtype=np.float64)
+    result: dict[str, float] = {}
+    for name, indices in groups.items():
+        valid_indices = [int(index) for index in indices if int(index) < len(pred) and int(index) < len(true)]
+        if not valid_indices:
+            continue
+        result[f"{name}_mae"] = round(
+            float(np.abs(pred[valid_indices] - true[valid_indices]).mean()), 6
+        )
+    return result
 
 
 def compute_step_metrics(
@@ -46,7 +73,7 @@ def compute_step_metrics(
     selected_error = np.abs(pred_block[int(action)] - true_block[int(action)])
     block_delta_error = np.abs(pred_block - true_block)
     global_error = np.abs(pred_global - true_global)
-    return {
+    metrics = {
         "selected_block_mae": round(float(selected_error.mean()), 6),
         "selected_block_rmse": round(float(np.sqrt(np.mean(selected_error**2))), 6),
         "all_block_mae": round(float(block_delta_error.mean()), 6),
@@ -55,6 +82,14 @@ def compute_step_metrics(
         "reward_abs_error": round(float(abs(float(pred_reward) - float(true_reward))), 6),
         "mask_agreement": round(float(compute_action_mask_agreement(pred_block, true_block)), 6),
     }
+    metrics.update(
+        summarize_feature_groups(
+            pred_values=pred_global,
+            true_values=true_global,
+            groups=DEFAULT_GLOBAL_FEATURE_GROUPS,
+        )
+    )
+    return metrics
 
 
 def rollout_model(
@@ -121,6 +156,7 @@ def summarize_step_metrics(step_metrics: list[dict[str, float]]) -> dict[str, fl
     for key in keys:
         values = np.array([float(metric[key]) for metric in step_metrics], dtype=np.float64)
         summary[key] = round(float(values.mean()), 6)
+        summary[f"{key}_q50"] = round(float(np.quantile(values, 0.50)), 6)
         summary[f"{key}_q95"] = round(float(np.quantile(values, 0.95)), 6)
     # Short aliases used in the manuscript table.
     summary["reward_mae"] = summary["reward_abs_error"]
