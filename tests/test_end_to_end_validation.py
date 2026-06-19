@@ -9,7 +9,10 @@ from paper7.end_to_end_validation import (
     classify_claim_scope,
     select_policy_induced_diagnostics_path,
     summarize_alpha_grid,
+    summarize_dongxing_rl_lite,
     summarize_policy_induced_diagnostics,
+    summarize_planning_significance,
+    summarize_reward_scaling_comparator,
     summarize_seed_evaluations,
 )
 
@@ -129,6 +132,70 @@ def test_classify_claim_scope_marks_dongxing_as_feasibility_not_policy_transfer(
     assert "not learned-policy transfer" in dongxing["interpretation"]
     assert policy_shift["status"] == "supported"
     assert policy_shift["n_policy_episodes"] == 3
+
+
+def test_classify_claim_scope_marks_dongxing_rl_lite_as_slope_only_not_transfer():
+    evidence = {
+        "dongxing_dynamic": {"status": "supported", "has_learned_policy": False},
+        "dongxing_rl_lite": {
+            "status": "supported_as_slope_only_rl_actionability",
+            "learner_type": "tabular_preference_fallback",
+        },
+    }
+
+    claims = classify_claim_scope(evidence)
+    dongxing = next(item for item in claims if item["id"] == "dongxing_external_scope")
+
+    assert dongxing["policy_transfer_tested"] is False
+    assert dongxing["slope_only_rl_actionability_tested"] is True
+    assert dongxing["status"] == "supported_as_external_slope_only_actionability"
+
+
+def test_new_evidence_summarizers_extract_core_metrics(tmp_path):
+    reward_path = tmp_path / "reward.json"
+    planning_path = tmp_path / "planning.json"
+    dongxing_path = tmp_path / "dongxing.json"
+    _write_json(
+        reward_path,
+        {
+            "pre_specified_rank_by_slope": 2,
+            "pre_vs_best_relative_gap_pct": 3.1,
+            "pre_vs_unscaled_slope_gain_pct": 22.1,
+        },
+    )
+    _write_json(
+        planning_path,
+        {
+            "calibrated_policy": {"slope_change_pct_mean": -1.1},
+            "paired_calibration_effects": {
+                "n_paired_seeds": 15,
+                "slope_change_pct_delta_with_minus_no_mean": -0.12,
+            },
+            "action_concentration": {"status": "head_only_available"},
+        },
+    )
+    _write_json(
+        dongxing_path,
+        {
+            "status": "supported_as_slope_only_rl_actionability",
+            "learner_type": "tabular_preference_fallback",
+            "n_blocks": 2978,
+            "learned_policy": {"summary": {"slope_change_pct_mean": -2.0}},
+            "comparisons": {
+                "learned_minus_random_slope_change_pct": -1.5,
+                "learned_minus_dynamic_slope_gap_slope_change_pct": -0.7,
+            },
+        },
+    )
+
+    reward = summarize_reward_scaling_comparator(reward_path)
+    planning = summarize_planning_significance(planning_path)
+    dongxing = summarize_dongxing_rl_lite(dongxing_path)
+
+    assert reward["pre_specified_rank_by_slope"] == 2
+    assert planning["n_paired_seeds"] == 15
+    assert dongxing["status"] == "supported_as_slope_only_rl_actionability"
+    assert dongxing["learned_slope_change_pct_mean"] == -2.0
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():

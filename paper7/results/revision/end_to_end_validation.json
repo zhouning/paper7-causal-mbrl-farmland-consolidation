@@ -1,6 +1,6 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-19T09:24:25.557140+00:00",
+  "generated_utc": "2026-06-19T10:41:15.371767+00:00",
   "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
   "core_assets": {
     "trajectories": [
@@ -133,6 +133,29 @@
         "1.000": -0.958935
       }
     },
+    "reward_scaling_comparator": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\reward_scaling_comparator.json",
+      "pre_specified_rank_by_slope": 2,
+      "best_scale": 0.2,
+      "pre_specified_scale": 0.185,
+      "pre_vs_best_relative_gap_pct": 3.12135,
+      "pre_vs_unscaled_slope_gain_pct": 22.144879,
+      "interpretation": "pre-specified observational alpha is compared against ordinary heuristic reward scaling and the unscaled learned reward"
+    },
+    "planning_significance": {
+      "status": "supported",
+      "path": "paper7\\results\\revision\\planning_significance_audit.json",
+      "n_paired_seeds": 15,
+      "calibrated_slope_change_pct_mean": -1.102462,
+      "uncalibrated_slope_change_pct_mean": -0.975683,
+      "slope_delta_with_minus_no_mean": -0.126779,
+      "contiguity_delta_with_minus_no_mean": -0.001977,
+      "baimu_count_delta_with_minus_no_mean": -0.2,
+      "baimu_area_delta_with_minus_no_mean": -67.208419,
+      "action_concentration_status": "head_only_available",
+      "interpretation": "planning outcomes include slope, contiguity, baimu, reward, budget, and available action-concentration diagnostics"
+    },
     "transition_rollout": {
       "status": "supported",
       "path": "paper7\\results\\revision\\transition_rollout_diagnostics.json",
@@ -142,7 +165,11 @@
       "horizon_100_reward_mae": 0.234012,
       "horizon_100_global_mae": 0.048621,
       "horizon_100_mask_agreement": 0.997384,
-      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation"
+      "interpretation": "supports learned-environment training as an approximate surrogate; final policy outcomes still require real-environment evaluation",
+      "horizon_100_slope_contiguity_mae": 0.040126,
+      "horizon_100_baimu_mae": 0.052163,
+      "horizon_100_investment_spread_mae": 0.069254,
+      "horizon_100_budget_progress_mae": 0.020802
     },
     "policy_induced_diagnostics": {
       "status": "supported",
@@ -205,6 +232,37 @@
       "random_dynamic_n": 200,
       "has_learned_policy": false,
       "interpretation": "external data, action-space, and dynamic non-RL feasibility; not learned-policy transfer"
+    },
+    "dongxing_rl_lite": {
+      "status": "supported_as_slope_only_rl_actionability",
+      "path": "paper7\\results\\revision\\dongxing_rl_lite.json",
+      "learner_type": "tabular_preference_fallback",
+      "n_blocks": 2978,
+      "n_parcels": 76378,
+      "train_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "eval_seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "training_time_s": 97.223531,
+      "learned_slope_change_pct_mean": -1.996004,
+      "learned_completed_pairs_mean": 482.0,
+      "learned_unique_blocks_mean": 93.0,
+      "learned_minus_random_slope_change_pct": -1.563499,
+      "learned_minus_dynamic_slope_gap_slope_change_pct": -0.778427,
+      "learned_minus_dynamic_area_weighted_gap_slope_change_pct": -1.113319,
+      "policy_transfer_tested": false,
+      "slope_only_rl_actionability_tested": true,
+      "interpretation": "external slope-only learned block-selection actionability; not full cross-county learned-policy transfer and not Bishan full-reward validation"
     }
   },
   "claim_scope": [
@@ -243,12 +301,14 @@
     {
       "id": "dongxing_external_scope",
       "claim": "Dongxing supports external-county portability.",
-      "status": "supported_as_external_feasibility",
-      "evidence_level": "external_data_action_space_dynamic_non_rl",
+      "status": "supported_as_external_slope_only_actionability",
+      "evidence_level": "external_data_action_space_dynamic_non_rl_plus_slope_only_rl_lite",
       "policy_transfer_tested": false,
-      "interpretation": "external data, action-space, and dynamic non-RL feasibility; not learned-policy transfer"
+      "slope_only_rl_actionability_tested": true,
+      "interpretation": "external slope-only learned block-selection actionability; not full cross-county learned-policy transfer and not Bishan full-reward validation"
     }
   ],
   "overall_status": "supported_with_bounded_external_scope",
-  "external_policy_transfer_tested": false
+  "external_policy_transfer_tested": false,
+  "external_slope_only_rl_actionability_tested": true
 }

@@ -174,7 +174,7 @@ def summarize_rollout_diagnostics(path: Path) -> dict[str, Any]:
     payload = load_json(path)
     h100 = payload["horizons"]["100"]
     h1 = payload["horizons"]["1"]
-    return {
+    summary = {
         "status": "supported",
         "path": display_path(path),
         "n_transitions_loaded": payload.get("n_transitions_loaded"),
@@ -188,6 +188,15 @@ def summarize_rollout_diagnostics(path: Path) -> dict[str, Any]:
             "final policy outcomes still require real-environment evaluation"
         ),
     }
+    for key in (
+        "slope_contiguity_mae",
+        "baimu_mae",
+        "investment_spread_mae",
+        "budget_progress_mae",
+    ):
+        if key in h100:
+            summary[f"horizon_100_{key}"] = h100[key]
+    return summary
 
 
 def summarize_policy_induced_diagnostics(path: Path) -> dict[str, Any]:
@@ -300,6 +309,54 @@ def summarize_bishan_baselines(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_reward_scaling_comparator(path: Path) -> dict[str, Any]:
+    payload = load_json(path)
+    return {
+        "status": "supported",
+        "path": display_path(path),
+        "pre_specified_rank_by_slope": payload.get("pre_specified_rank_by_slope"),
+        "best_scale": payload.get("best_scale"),
+        "pre_specified_scale": payload.get("pre_specified_scale"),
+        "pre_vs_best_relative_gap_pct": payload.get("pre_vs_best_relative_gap_pct"),
+        "pre_vs_unscaled_slope_gain_pct": payload.get("pre_vs_unscaled_slope_gain_pct"),
+        "interpretation": (
+            "pre-specified observational alpha is compared against ordinary "
+            "heuristic reward scaling and the unscaled learned reward"
+        ),
+    }
+
+
+def summarize_planning_significance(path: Path) -> dict[str, Any]:
+    payload = load_json(path)
+    effects = payload["paired_calibration_effects"]
+    calibrated = payload["calibrated_policy"]
+    uncalibrated = payload.get("uncalibrated_policy", {})
+    return {
+        "status": "supported",
+        "path": display_path(path),
+        "n_paired_seeds": effects["n_paired_seeds"],
+        "calibrated_slope_change_pct_mean": calibrated.get("slope_change_pct_mean"),
+        "uncalibrated_slope_change_pct_mean": uncalibrated.get("slope_change_pct_mean"),
+        "slope_delta_with_minus_no_mean": effects[
+            "slope_change_pct_delta_with_minus_no_mean"
+        ],
+        "contiguity_delta_with_minus_no_mean": effects.get(
+            "cont_change_delta_with_minus_no_mean"
+        ),
+        "baimu_count_delta_with_minus_no_mean": effects.get(
+            "baimu_count_change_delta_with_minus_no_mean"
+        ),
+        "baimu_area_delta_with_minus_no_mean": effects.get(
+            "baimu_area_change_ha_delta_with_minus_no_mean"
+        ),
+        "action_concentration_status": payload.get("action_concentration", {}).get("status"),
+        "interpretation": (
+            "planning outcomes include slope, contiguity, baimu, reward, budget, "
+            "and available action-concentration diagnostics"
+        ),
+    }
+
+
 def summarize_dongxing(
     audit_path: Path, block_summary_path: Path, dynamic_path: Path
 ) -> dict[str, Any]:
@@ -336,6 +393,42 @@ def summarize_dongxing(
     }
 
 
+def summarize_dongxing_rl_lite(path: Path) -> dict[str, Any]:
+    payload = load_json(path)
+    learned_summary = payload["learned_policy"]["summary"]
+    comparisons = payload.get("comparisons", {})
+    return {
+        "status": payload.get("status", "missing"),
+        "path": display_path(path),
+        "learner_type": payload.get("learner_type"),
+        "n_blocks": payload.get("n_blocks"),
+        "n_parcels": payload.get("n_parcels"),
+        "train_seeds": payload.get("train_seeds", []),
+        "eval_seeds": payload.get("eval_seeds", []),
+        "training_time_s": payload.get("training_time_s"),
+        "learned_slope_change_pct_mean": learned_summary.get(
+            "slope_change_pct_mean"
+        ),
+        "learned_completed_pairs_mean": learned_summary.get("completed_pairs_mean"),
+        "learned_unique_blocks_mean": learned_summary.get("unique_blocks_mean"),
+        "learned_minus_random_slope_change_pct": comparisons.get(
+            "learned_minus_random_slope_change_pct"
+        ),
+        "learned_minus_dynamic_slope_gap_slope_change_pct": comparisons.get(
+            "learned_minus_dynamic_slope_gap_slope_change_pct"
+        ),
+        "learned_minus_dynamic_area_weighted_gap_slope_change_pct": comparisons.get(
+            "learned_minus_dynamic_area_weighted_gap_slope_change_pct"
+        ),
+        "policy_transfer_tested": False,
+        "slope_only_rl_actionability_tested": True,
+        "interpretation": (
+            "external slope-only learned block-selection actionability; not full "
+            "cross-county learned-policy transfer and not Bishan full-reward validation"
+        ),
+    }
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -343,6 +436,10 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     calibration = evidence.get("calibration", {})
     rollout = evidence.get("transition_rollout", {})
     policy_shift = evidence.get("policy_induced_diagnostics", {})
+    dongxing_rl = evidence.get("dongxing_rl_lite", {})
+    has_slope_only_rl = (
+        dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
+    )
 
     return [
         {
@@ -392,13 +489,24 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "id": "dongxing_external_scope",
             "claim": "Dongxing supports external-county portability.",
-            "status": "supported_as_external_feasibility"
-            if dongxing.get("status") == "supported"
-            and not dongxing.get("has_learned_policy", False)
-            else "policy_transfer_supported",
-            "evidence_level": "external_data_action_space_dynamic_non_rl",
-            "policy_transfer_tested": bool(dongxing.get("has_learned_policy", False)),
-            "interpretation": dongxing.get(
+            "status": "supported_as_external_slope_only_actionability"
+            if has_slope_only_rl
+            else (
+                "supported_as_external_feasibility"
+                if dongxing.get("status") == "supported"
+                and not dongxing.get("has_learned_policy", False)
+                else "policy_transfer_supported"
+            ),
+            "evidence_level": "external_data_action_space_dynamic_non_rl_plus_slope_only_rl_lite"
+            if has_slope_only_rl
+            else "external_data_action_space_dynamic_non_rl",
+            "policy_transfer_tested": False
+            if has_slope_only_rl
+            else bool(dongxing.get("has_learned_policy", False)),
+            "slope_only_rl_actionability_tested": bool(has_slope_only_rl),
+            "interpretation": dongxing_rl.get("interpretation")
+            if has_slope_only_rl
+            else dongxing.get(
                 "interpretation",
                 "external feasibility evidence; not learned-policy transfer",
             ),
@@ -441,6 +549,12 @@ def build_validation_report(
     evidence["alpha_grid"] = summarize_alpha_grid(
         paper7_dir / "results" / "revision" / "alpha_grid" / "grid_results.json"
     )
+    evidence["reward_scaling_comparator"] = summarize_reward_scaling_comparator(
+        paper7_dir / "results" / "revision" / "reward_scaling_comparator.json"
+    )
+    evidence["planning_significance"] = summarize_planning_significance(
+        paper7_dir / "results" / "revision" / "planning_significance_audit.json"
+    )
     evidence["transition_rollout"] = summarize_rollout_diagnostics(
         paper7_dir / "results" / "revision" / "transition_rollout_diagnostics.json"
     )
@@ -459,6 +573,9 @@ def build_validation_report(
         paper7_dir / "results" / "dongxing_blocks_slope" / "summary.json",
         paper7_dir / "results" / "dongxing_dynamic_baselines.json",
     )
+    evidence["dongxing_rl_lite"] = summarize_dongxing_rl_lite(
+        paper7_dir / "results" / "revision" / "dongxing_rl_lite.json"
+    )
 
     return {
         "description": (
@@ -473,6 +590,7 @@ def build_validation_report(
         "claim_scope": classify_claim_scope(evidence),
         "overall_status": "supported_with_bounded_external_scope",
         "external_policy_transfer_tested": False,
+        "external_slope_only_rl_actionability_tested": True,
     }
 
 
