@@ -40,7 +40,26 @@ def summarize_replayed_episodes(
         weight_grid = generate_weight_grid()
 
     rows: list[dict[str, Any]] = []
+    metric_rows: list[dict[str, Any]] = []
     policy_names = sorted({str(ep["policy"]) for ep in episodes})
+    for policy in policy_names:
+        policy_eps = [ep for ep in episodes if ep["policy"] == policy]
+        slopes = [float(ep["summary"]["final_slope_change_pct"]) for ep in policy_eps]
+        conts = [float(ep["summary"]["final_cont_change"]) for ep in policy_eps]
+        baimu_areas = [float(ep["summary"]["final_baimu_area_change_ha"]) for ep in policy_eps]
+        baimu_counts = [float(ep["summary"]["final_baimu_count_change"]) for ep in policy_eps]
+        metric_rows.append(
+            {
+                "policy": policy,
+                "n": len(policy_eps),
+                "slope_change_pct_mean": _mean(slopes),
+                "slope_change_pct_sd": _sd(slopes),
+                "cont_change_mean": _mean(conts),
+                "baimu_area_change_ha_mean": _mean(baimu_areas),
+                "baimu_count_change_mean": _mean(baimu_counts),
+            }
+        )
+
     for item in weight_grid:
         weight_name = str(item["name"])
         weights = item["weights"]
@@ -68,7 +87,7 @@ def summarize_replayed_episodes(
             )
 
     front = pareto_front(
-        rows,
+        metric_rows,
         objectives={
             "slope_change_pct_mean": "min",
             "cont_change_mean": "max",
@@ -77,6 +96,12 @@ def summarize_replayed_episodes(
         },
     )
     default_rows = [row for row in rows if row["weight_name"] == "default"]
+    best_policy_by_weight = []
+    for item in weight_grid:
+        weight_name = str(item["name"])
+        candidates = [row for row in rows if row["weight_name"] == weight_name]
+        if candidates:
+            best_policy_by_weight.append(max(candidates, key=lambda row: float(row["replayed_reward_mean"])))
     return {
         "description": (
             "Reward component replay under alternative reward weights. Final planning "
@@ -86,8 +111,10 @@ def summarize_replayed_episodes(
         "n_episodes": len(episodes),
         "n_weight_settings": len(weight_grid),
         "policy_weight_summaries": rows,
+        "policy_metric_summaries": metric_rows,
         "pareto_front": front,
         "default_weight_rows": default_rows,
+        "best_policy_by_weight": best_policy_by_weight,
         "interpretation_boundary": (
             "This replays scalar rewards for fixed action sequences; it does not "
             "replace retraining policies under each weight setting."

@@ -1,0 +1,56 @@
+[
+  {
+    "policy": "area_weighted_slope_gap",
+    "n": 10,
+    "slope_change_pct_mean": 3.084623,
+    "slope_change_pct_sd": 0.0,
+    "cont_change_mean": 0.052788,
+    "baimu_area_change_ha_mean": 1977.073878,
+    "baimu_count_change_mean": -15.0
+  },
+  {
+    "policy": "baimu_aware",
+    "n": 10,
+    "slope_change_pct_mean": 0.976607,
+    "slope_change_pct_sd": 0.0,
+    "cont_change_mean": 0.035701,
+    "baimu_area_change_ha_mean": 887.693918,
+    "baimu_count_change_mean": -2.0
+  },
+  {
+    "policy": "contiguity_aware",
+    "n": 10,
+    "slope_change_pct_mean": 0.925564,
+    "slope_change_pct_sd": 0.0,
+    "cont_change_mean": 0.036565,
+    "baimu_area_change_ha_mean": 834.052375,
+    "baimu_count_change_mean": -4.0
+  },
+  {
+    "policy": "dynamic_slope_gap",
+    "n": 10,
+    "slope_change_pct_mean": 1.10799,
+    "slope_change_pct_sd": 0.0,
+    "cont_change_mean": 0.038091,
+    "baimu_area_change_ha_mean": 948.296506,
+    "baimu_count_change_mean": -3.0
+  },
+  {
+    "policy": "random",
+    "n": 10,
+    "slope_change_pct_mean": 0.118619,
+    "slope_change_pct_sd": 0.127629,
+    "cont_change_mean": 0.014992,
+    "baimu_area_change_ha_mean": 179.316868,
+    "baimu_count_change_mean": 0.9
+  },
+  {
+    "policy": "scalarized_default",
+    "n": 10,
+    "slope_change_pct_mean": 0.869173,
+    "slope_change_pct_sd": 0.0,
+    "cont_change_mean": 0.036667,
+    "baimu_area_change_ha_mean": 811.960626,
+    "baimu_count_change_mean": -4.0
+  }
+]

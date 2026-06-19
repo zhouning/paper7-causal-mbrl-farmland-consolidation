@@ -1,6 +1,6 @@
 {
   "description": "Reward component replay under alternative reward weights. Final planning metrics are real-environment metrics from the original rollouts.",
-  "generated_utc": "2026-06-19T11:46:33.657121+00:00",
+  "generated_utc": "2026-06-19T11:56:47.440748+00:00",
   "n_episodes": 2,
   "n_weight_settings": 14,
   "policy_weight_summaries": [
@@ -565,21 +565,30 @@
       "baimu_count_change_mean": 1.0
     }
   ],
+  "policy_metric_summaries": [
+    {
+      "policy": "dynamic_slope_gap",
+      "n": 1,
+      "slope_change_pct_mean": -0.020798,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.003509,
+      "baimu_area_change_ha_mean": 28.398682,
+      "baimu_count_change_mean": -1.0
+    },
+    {
+      "policy": "random",
+      "n": 1,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    }
+  ],
   "pareto_front": [
     {
       "policy": "dynamic_slope_gap",
-      "weight_name": "default",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
       "n": 1,
-      "replayed_reward_mean": 1.768096,
-      "replayed_reward_sd": 0.0,
       "slope_change_pct_mean": -0.020798,
       "slope_change_pct_sd": 0.0,
       "cont_change_mean": 0.003509,
@@ -588,538 +597,7 @@
     },
     {
       "policy": "random",
-      "weight_name": "default",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
       "n": 1,
-      "replayed_reward_mean": 5.611393,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "slope_x0.5",
-      "weights": {
-        "slope_weight": 2000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.352128,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "slope_x0.5",
-      "weights": {
-        "slope_weight": 2000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.192884,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "slope_x2",
-      "weights": {
-        "slope_weight": 8000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 2.600031,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "slope_x2",
-      "weights": {
-        "slope_weight": 8000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 6.448411,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "contiguity_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 250.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.523408,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "contiguity_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 250.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.490822,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "contiguity_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 1000.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 2.257471,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "contiguity_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 1000.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.852535,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_area_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 750.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.326185,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_area_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 750.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.669347,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_area_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 3000.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 2.651918,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_area_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 3000.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.495486,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_count_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 2.5,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.768096,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_count_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 2.5,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 3.111393,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_count_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 10.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.768096,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_count_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 10.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 10.611393,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_penalty_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 1000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.986614,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_penalty_x0.5",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 1000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.786823,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_penalty_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 4000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.331059,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_penalty_x2",
-      "weights": {
-        "slope_weight": 4000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 4000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.260534,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "slope_priority",
-      "weights": {
-        "slope_weight": 8000.0,
-        "cont_weight": 250.0,
-        "baimu_weight": 750.0,
-        "baimu_bonus": 2.5,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 1.913433,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "slope_priority",
-      "weights": {
-        "slope_weight": 8000.0,
-        "cont_weight": 250.0,
-        "baimu_weight": 750.0,
-        "baimu_bonus": 2.5,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 3.885794,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "contiguity_priority",
-      "weights": {
-        "slope_weight": 3000.0,
-        "cont_weight": 1500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 2.538863,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "contiguity_priority",
-      "weights": {
-        "slope_weight": 3000.0,
-        "cont_weight": 1500.0,
-        "baimu_weight": 1500.0,
-        "baimu_bonus": 5.0,
-        "baimu_area_penalty": 2000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 5.884422,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020925,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.001729,
-      "baimu_area_change_ha_mean": -3.724282,
-      "baimu_count_change_mean": 1.0
-    },
-    {
-      "policy": "dynamic_slope_gap",
-      "weight_name": "baimu_priority",
-      "weights": {
-        "slope_weight": 3000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 4500.0,
-        "baimu_bonus": 15.0,
-        "baimu_area_penalty": 4000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 2.890719,
-      "replayed_reward_sd": 0.0,
-      "slope_change_pct_mean": -0.020798,
-      "slope_change_pct_sd": 0.0,
-      "cont_change_mean": 0.003509,
-      "baimu_area_change_ha_mean": 28.398682,
-      "baimu_count_change_mean": -1.0
-    },
-    {
-      "policy": "random",
-      "weight_name": "baimu_priority",
-      "weights": {
-        "slope_weight": 3000.0,
-        "cont_weight": 500.0,
-        "baimu_weight": 4500.0,
-        "baimu_bonus": 15.0,
-        "baimu_area_penalty": 4000.0,
-        "no_swap_penalty": 1.0
-      },
-      "n": 1,
-      "replayed_reward_mean": 14.819465,
-      "replayed_reward_sd": 0.0,
       "slope_change_pct_mean": -0.020925,
       "slope_change_pct_sd": 0.0,
       "cont_change_mean": 0.001729,
@@ -1161,6 +639,288 @@
       },
       "n": 1,
       "replayed_reward_mean": 5.611393,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    }
+  ],
+  "best_policy_by_weight": [
+    {
+      "policy": "random",
+      "weight_name": "default",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.611393,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "slope_x0.5",
+      "weights": {
+        "slope_weight": 2000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.192884,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "slope_x2",
+      "weights": {
+        "slope_weight": 8000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 6.448411,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "contiguity_x0.5",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 250.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.490822,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "contiguity_x2",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 1000.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.852535,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_area_x0.5",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 750.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.669347,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_area_x2",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 3000.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.495486,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_count_x0.5",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 2.5,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 3.111393,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_count_x2",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 10.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 10.611393,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_penalty_x0.5",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 1000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.786823,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_penalty_x2",
+      "weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 4000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.260534,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "slope_priority",
+      "weights": {
+        "slope_weight": 8000.0,
+        "cont_weight": 250.0,
+        "baimu_weight": 750.0,
+        "baimu_bonus": 2.5,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 3.885794,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "contiguity_priority",
+      "weights": {
+        "slope_weight": 3000.0,
+        "cont_weight": 1500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 5.884422,
+      "replayed_reward_sd": 0.0,
+      "slope_change_pct_mean": -0.020925,
+      "slope_change_pct_sd": 0.0,
+      "cont_change_mean": 0.001729,
+      "baimu_area_change_ha_mean": -3.724282,
+      "baimu_count_change_mean": 1.0
+    },
+    {
+      "policy": "random",
+      "weight_name": "baimu_priority",
+      "weights": {
+        "slope_weight": 3000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 4500.0,
+        "baimu_bonus": 15.0,
+        "baimu_area_penalty": 4000.0,
+        "no_swap_penalty": 1.0
+      },
+      "n": 1,
+      "replayed_reward_mean": 14.819465,
       "replayed_reward_sd": 0.0,
       "slope_change_pct_mean": -0.020925,
       "slope_change_pct_sd": 0.0,

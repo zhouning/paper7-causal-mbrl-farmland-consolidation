@@ -97,9 +97,16 @@ def choose_action(
     return int(np.argmax(scores))
 
 
-def run_episode(policy: str, seed: int, budget: int = 500, swaps_per_step: int = 5) -> dict[str, Any]:
+def run_episode(
+    policy: str,
+    seed: int,
+    budget: int = 500,
+    swaps_per_step: int = 5,
+    env: CountyLevelEnv | None = None,
+) -> dict[str, Any]:
     rng = np.random.default_rng(seed)
-    env = CountyLevelEnv(total_budget=budget, swaps_per_step=swaps_per_step)
+    if env is None:
+        env = CountyLevelEnv(total_budget=budget, swaps_per_step=swaps_per_step)
     obs, _ = env.reset(seed=seed)
     done = False
     steps: list[dict[str, Any]] = []
@@ -190,9 +197,18 @@ def summarize_episode(policy: str, seed: int, steps: list[dict[str, Any]]) -> di
 
 def run_suite(policies: list[str], seeds: list[int], budget: int, swaps_per_step: int) -> dict[str, Any]:
     episodes = []
+    env = CountyLevelEnv(total_budget=budget, swaps_per_step=swaps_per_step)
     for policy in policies:
         for seed in seeds:
-            episodes.append(run_episode(policy, seed, budget=budget, swaps_per_step=swaps_per_step))
+            episodes.append(
+                run_episode(
+                    policy,
+                    seed,
+                    budget=budget,
+                    swaps_per_step=swaps_per_step,
+                    env=env,
+                )
+            )
     return {
         "description": "Real CountyLevelEnv reward-component rollouts for reward-weight sensitivity.",
         "generated_utc": datetime.now(timezone.utc).isoformat(),

@@ -55,7 +55,16 @@ def test_summarize_replayed_episodes_groups_by_policy_and_weight_name():
                     baimu_weight=1,
                     baimu_bonus=1,
                 ),
-            }
+            },
+            {
+                "name": "slope_only",
+                "weights": RewardWeights(
+                    slope_weight=10,
+                    cont_weight=0,
+                    baimu_weight=0,
+                    baimu_bonus=0,
+                ),
+            },
         ],
     )
 
@@ -64,4 +73,7 @@ def test_summarize_replayed_episodes_groups_by_policy_and_weight_name():
     assert row["n"] == 2
     assert row["slope_change_pct_mean"] == -1.1
     assert row["baimu_count_change_mean"] == 1.5
+    assert len(report["policy_metric_summaries"]) == 2
     assert report["pareto_front"]
+    assert len({row["policy"] for row in report["pareto_front"]}) == len(report["pareto_front"])
+    assert {item["weight_name"] for item in report["best_policy_by_weight"]} == {"unit", "slope_only"}
