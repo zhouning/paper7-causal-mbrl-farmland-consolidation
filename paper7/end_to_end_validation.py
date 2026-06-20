@@ -13,16 +13,25 @@ import argparse
 import hashlib
 import json
 import math
+import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean, pstdev
 from typing import Any
 
-
 PAPER7_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PAPER7_DIR.parent
 DEFAULT_OUT = PAPER7_DIR / "results" / "revision" / "end_to_end_validation.json"
+
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from paper7.dongxing_full_rigor_summaries import (
+    summarize_dongxing_mbrl_results,
+    summarize_dongxing_trajectory_summary,
+    summarize_transfer_finetune_results,
+)
 
 
 def load_json(path: Path) -> Any:
@@ -645,8 +654,11 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_full = evidence.get("dongxing_full_baselines", {})
     dongxing_full_learned = evidence.get("dongxing_full_learned_policy", {})
     dongxing_transition = evidence.get("dongxing_transition_diagnostics", {})
+    dongxing_trajectory = evidence.get("dongxing_trajectory_summary", {})
+    dongxing_mbrl_results = evidence.get("dongxing_mbrl_results", {})
     dongxing_model_based = evidence.get("dongxing_full_model_based_policy", {})
     dongxing_model_optimization = evidence.get("dongxing_model_based_optimization", {})
+    transfer_finetune = evidence.get("transfer_finetune_results", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
@@ -789,6 +801,41 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_transition.get("interpretation"),
             }
         )
+    if dongxing_trajectory.get("status") == "supported_as_dongxing_trajectory_summary":
+        scopes.append(
+            {
+                "id": "dongxing_trajectory_summary_scope",
+                "claim": (
+                    "Dongxing full-environment trajectory evidence has been "
+                    "summarized for local learnability analysis."
+                ),
+                "status": dongxing_trajectory.get("status"),
+                "evidence_level": "local_dongxing_trajectory_summary",
+                "n_transitions": dongxing_trajectory.get("n_transitions"),
+                "policy_holdout_count": dongxing_trajectory.get("policy_holdout_count"),
+                "policy_transfer_tested": False,
+                "mbrl_policy_trained": bool(dongxing_trajectory.get("mbrl_policy_trained", False)),
+                "interpretation": dongxing_trajectory.get("interpretation"),
+            }
+        )
+    if dongxing_mbrl_results.get("status") == "supported_as_local_dongxing_mbrl_results":
+        scopes.append(
+            {
+                "id": "dongxing_local_mbrl_results_scope",
+                "claim": (
+                    "Dongxing local MBRL evidence bundles transition diagnostics, "
+                    "one-step model-based policy evaluation, and held-out scoring optimization."
+                ),
+                "status": dongxing_mbrl_results.get("status"),
+                "evidence_level": "local_dongxing_mbrl_result_bundle",
+                "mbrl_transition_model_used": bool(
+                    dongxing_mbrl_results.get("mbrl_transition_model_used", False)
+                ),
+                "policy_transfer_tested": False,
+                "multi_step_mbrl_planning_tested": False,
+                "interpretation": dongxing_mbrl_results.get("interpretation"),
+            }
+        )
     if dongxing_model_based.get("status") == "supported_as_dongxing_full_one_step_model_based_policy":
         scopes.append(
             {
@@ -836,6 +883,32 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "policy_transfer_tested": False,
                 "multi_step_mbrl_planning_tested": False,
                 "interpretation": dongxing_model_optimization.get("interpretation"),
+            }
+        )
+    if transfer_finetune.get("status") == "structurally_invalid_for_direct_policy_transfer":
+        scopes.append(
+            {
+                "id": "dongxing_transfer_finetune_scope",
+                "claim": (
+                    "Direct Bishan-to-Dongxing policy transfer is structurally "
+                    "invalid without adapter-level changes."
+                ),
+                "status": transfer_finetune.get("status"),
+                "evidence_level": "cross_county_dimension_mismatch",
+                "direct_policy_transfer_tested": bool(
+                    transfer_finetune.get("direct_policy_transfer_tested", False)
+                ),
+                "fine_tuning_tested": bool(transfer_finetune.get("fine_tuning_tested", False)),
+                "fine_tuning_required": bool(transfer_finetune.get("fine_tuning_required", False)),
+                "observation_dim_match": bool(
+                    transfer_finetune.get("dimension_mismatch", {}).get(
+                        "observation_dim_match", False
+                    )
+                ),
+                "action_dim_match": bool(
+                    transfer_finetune.get("dimension_mismatch", {}).get("action_dim_match", False)
+                ),
+                "interpretation": transfer_finetune.get("interpretation"),
             }
         )
     return scopes
@@ -914,6 +987,15 @@ def build_validation_report(
     )
     evidence["dongxing_transition_diagnostics"] = summarize_dongxing_transition_diagnostics(
         paper7_dir / "results" / "full_rigor" / "dongxing_transition_diagnostics.json"
+    )
+    evidence["dongxing_trajectory_summary"] = summarize_dongxing_trajectory_summary(
+        paper7_dir / "results" / "full_rigor" / "dongxing_trajectories_summary.json"
+    )
+    evidence["dongxing_mbrl_results"] = summarize_dongxing_mbrl_results(
+        paper7_dir / "results" / "full_rigor" / "dongxing_mbrl_results.json"
+    )
+    evidence["transfer_finetune_results"] = summarize_transfer_finetune_results(
+        paper7_dir / "results" / "full_rigor" / "transfer_finetune_results.json"
     )
     evidence["dongxing_full_model_based_policy"] = summarize_dongxing_full_model_based_policy(
         paper7_dir / "results" / "full_rigor" / "dongxing_full_model_based_policy.json"

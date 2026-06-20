@@ -10,7 +10,9 @@ from paper7.end_to_end_validation import (
     load_json,
     select_policy_induced_diagnostics_path,
     summarize_alpha_grid,
+    summarize_dongxing_mbrl_results,
     summarize_dongxing_rl_lite,
+    summarize_dongxing_trajectory_summary,
     summarize_dongxing_full_baselines,
     summarize_dongxing_full_learned_policy,
     summarize_dongxing_full_model_based_policy,
@@ -21,6 +23,7 @@ from paper7.end_to_end_validation import (
     summarize_reward_scaling_comparator,
     summarize_reward_weight_sensitivity,
     summarize_seed_evaluations,
+    summarize_transfer_finetune_results,
 )
 
 
@@ -517,6 +520,164 @@ def test_classify_claim_scope_marks_scoring_optimization_as_heldout_bounded():
     assert scope["selection_eval_split"] is True
     assert scope["policy_transfer_tested"] is False
     assert scope["multi_step_mbrl_planning_tested"] is False
+
+
+def test_summarize_dongxing_trajectory_summary_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_trajectories_summary.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_trajectory_summary",
+            "n_transitions": 3000,
+            "policies": ["random", "dynamic_slope_gap"],
+            "seeds": [0, 1, 2],
+            "feature_dims": {"selected_block": 8, "global": 8},
+            "model": {"reward_mae": 0.887175},
+            "policy_holdout_count": 6,
+            "policy_holdout_reward_beats_baseline_count": 2,
+            "mbrl_policy_trained": False,
+            "policy_transfer_tested": False,
+        },
+    )
+
+    summary = summarize_dongxing_trajectory_summary(path)
+
+    assert summary["status"] == "supported_as_dongxing_trajectory_summary"
+    assert summary["n_transitions"] == 3000
+    assert summary["n_policies"] == 2
+    assert summary["n_seeds"] == 3
+    assert summary["policy_holdout_reward_beats_baseline_count"] == 2
+
+
+def test_summarize_dongxing_trajectory_summary_reads_compact_summary_payload(tmp_path):
+    path = tmp_path / "dongxing_trajectories_summary.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_trajectory_summary",
+            "n_transitions": 3000,
+            "n_policies": 6,
+            "n_seeds": 5,
+            "random_split_reward_mae": 0.887175,
+            "policy_holdout_count": 6,
+            "policy_holdout_reward_beats_baseline_count": 2,
+            "mbrl_policy_trained": False,
+            "policy_transfer_tested": False,
+        },
+    )
+
+    summary = summarize_dongxing_trajectory_summary(path)
+
+    assert summary["random_split_reward_mae"] == pytest.approx(0.887175)
+    assert summary["policy_holdout_count"] == 6
+    assert summary["policy_holdout_reward_beats_baseline_count"] == 2
+
+
+def test_classify_claim_scope_marks_dongxing_trajectory_summary_scope():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_trajectory_summary": {
+                "status": "supported_as_dongxing_trajectory_summary",
+                "n_transitions": 3000,
+                "policy_holdout_count": 6,
+                "policy_holdout_reward_beats_baseline_count": 2,
+                "interpretation": "trajectory summary",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_trajectory_summary_scope")
+
+    assert scope["status"] == "supported_as_dongxing_trajectory_summary"
+    assert scope["policy_transfer_tested"] is False
+    assert scope["mbrl_policy_trained"] is False
+
+
+def test_summarize_dongxing_mbrl_results_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_mbrl_results.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_local_dongxing_mbrl_results",
+            "transition_diagnostics": {"n_transitions": 3000},
+            "full_model_based_policy": {"n_eval_seeds": 10},
+            "model_based_optimization": {"best_candidate": "reward_slope_bonus_x2"},
+            "mbrl_transition_model_used": True,
+            "policy_transfer_tested": False,
+            "multi_step_mbrl_planning_tested": False,
+        },
+    )
+
+    summary = summarize_dongxing_mbrl_results(path)
+
+    assert summary["status"] == "supported_as_local_dongxing_mbrl_results"
+    assert summary["mbrl_transition_model_used"] is True
+    assert summary["policy_transfer_tested"] is False
+    assert summary["multi_step_mbrl_planning_tested"] is False
+
+
+def test_classify_claim_scope_marks_dongxing_mbrl_results_scope():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_mbrl_results": {
+                "status": "supported_as_local_dongxing_mbrl_results",
+                "mbrl_transition_model_used": True,
+                "interpretation": "local mbrl bundle",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_local_mbrl_results_scope")
+
+    assert scope["status"] == "supported_as_local_dongxing_mbrl_results"
+    assert scope["policy_transfer_tested"] is False
+    assert scope["multi_step_mbrl_planning_tested"] is False
+
+
+def test_summarize_transfer_finetune_results_marks_structural_invalid(tmp_path):
+    path = tmp_path / "transfer_finetune_results.json"
+    _write_json(
+        path,
+        {
+            "status": "structurally_invalid_for_direct_policy_transfer",
+            "bishan": {"n_blocks": 2600, "observation_dim": 44212, "action_dim": 2600},
+            "dongxing": {"n_blocks": 2978, "observation_dim": 23832, "action_dim": 2978},
+            "dimension_mismatch": {
+                "observation_dim_match": False,
+                "action_dim_match": False,
+            },
+            "direct_policy_transfer_tested": False,
+            "fine_tuning_tested": False,
+            "fine_tuning_required": True,
+        },
+    )
+
+    summary = summarize_transfer_finetune_results(path)
+
+    assert summary["status"] == "structurally_invalid_for_direct_policy_transfer"
+    assert summary["direct_policy_transfer_tested"] is False
+    assert summary["fine_tuning_required"] is True
+
+
+def test_classify_claim_scope_marks_transfer_finetune_scope():
+    scopes = classify_claim_scope(
+        {
+            "transfer_finetune_results": {
+                "status": "structurally_invalid_for_direct_policy_transfer",
+                "dimension_mismatch": {
+                    "observation_dim_match": False,
+                    "action_dim_match": False,
+                },
+                "interpretation": "incompatible dimensions",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_transfer_finetune_scope")
+
+    assert scope["status"] == "structurally_invalid_for_direct_policy_transfer"
+    assert scope["direct_policy_transfer_tested"] is False
+    assert scope["fine_tuning_required"] is False
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():
