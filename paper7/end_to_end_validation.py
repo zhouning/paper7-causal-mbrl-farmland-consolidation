@@ -643,6 +643,138 @@ def summarize_dongxing_model_based_optimization(path: Path) -> dict[str, Any]:
     }
 
 
+def summarize_dongxing_multistep_mbrl_policy(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    summary = payload.get("real_environment_eval", {}).get("summary", {})
+    return {
+        "status": payload.get(
+            "status", "supported_as_dongxing_multistep_learned_environment_policy"
+        ),
+        "path": display_path(path),
+        "n_training_transitions": payload.get("n_training_transitions"),
+        "n_eval_seeds": summary.get("n"),
+        "planning_horizon": payload.get("planning_horizon"),
+        "real_eval_reward_mean": summary.get("reward_mean"),
+        "real_eval_slope_change_pct_mean": summary.get("slope_change_pct_mean"),
+        "real_eval_cont_change_mean": summary.get("cont_change_mean"),
+        "real_eval_baimu_area_change_ha_mean": summary.get(
+            "baimu_area_change_ha_mean"
+        ),
+        "comparisons": payload.get("comparisons", {}),
+        "mbrl_transition_model_used": bool(payload.get("mbrl_transition_model_used", False)),
+        "policy_transfer_tested": bool(payload.get("policy_transfer_tested", False)),
+        "multi_step_mbrl_planning_tested": bool(
+            payload.get("multi_step_mbrl_planning_tested", False)
+        ),
+        "interpretation": payload.get(
+            "claim_boundary",
+            "Local Dongxing multi-step learned-environment policy optimization; not transfer.",
+        ),
+    }
+
+
+def summarize_trajectory_source_ablation(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    comparison = payload.get("comparison", {})
+    source_reports = payload.get("source_reports", [])
+
+    def _best_source(scope: str, metric: str) -> str | None:
+        key = f"horizon_100_{metric}"
+        scored: list[tuple[float, str | None]] = []
+        for report in source_reports:
+            evaluation = report.get("evaluation", {}).get(scope, {})
+            if key not in evaluation:
+                continue
+            scored.append((float(evaluation[key]), report.get("source")))
+        if scored:
+            return min(scored, key=lambda item: item[0])[1]
+        fallback = comparison.get(f"best_source_by_{scope}_{key}")
+        return str(fallback) if fallback is not None else None
+
+    return {
+        "status": payload.get("status", "supported_as_trajectory_source_ablation"),
+        "path": display_path(path),
+        "trajectory_dir": payload.get("trajectory_dir"),
+        "holdout_seed": payload.get("holdout_seed"),
+        "horizons": payload.get("horizons", []),
+        "n_starts": payload.get("n_starts"),
+        "n_source_reports": len(source_reports),
+        "n_supported_source_reports": sum(
+            1 for report in source_reports if report.get("status") == "supported"
+        ),
+        "best_source_by_all_horizon_100_reward_mae": comparison.get(
+            "best_source_by_all_horizon_100_reward_mae"
+        )
+        or _best_source("all", "reward_mae"),
+        "best_source_by_all_horizon_100_global_mae": comparison.get(
+            "best_source_by_all_horizon_100_global_mae"
+        )
+        or _best_source("all", "global_mae"),
+        "best_source_by_random_horizon_100_reward_mae": comparison.get(
+            "best_source_by_random_horizon_100_reward_mae"
+        )
+        or _best_source("random", "reward_mae"),
+        "best_source_by_greedy_horizon_100_reward_mae": comparison.get(
+            "best_source_by_greedy_horizon_100_reward_mae"
+        )
+        or _best_source("greedy", "reward_mae"),
+        "mixed_minus_random_all_horizon_100_reward_mae": comparison.get(
+            "mixed_minus_random_all_horizon_100_reward_mae"
+        ),
+        "mixed_minus_greedy_all_horizon_100_reward_mae": comparison.get(
+            "mixed_minus_greedy_all_horizon_100_reward_mae"
+        ),
+        "mixed_minus_random_all_horizon_100_global_mae": comparison.get(
+            "mixed_minus_random_all_horizon_100_global_mae"
+        ),
+        "mixed_minus_greedy_all_horizon_100_global_mae": comparison.get(
+            "mixed_minus_greedy_all_horizon_100_global_mae"
+        ),
+        "interpretation": payload.get(
+            "interpretation",
+            "Trajectory-source robustness diagnostic for the learned transition model.",
+        ),
+    }
+
+
+def _has_dongxing_full_reward_counterpart(evidence: dict[str, Any]) -> bool:
+    full_baselines = evidence.get("dongxing_full_baselines", {})
+    full_learned = evidence.get("dongxing_full_learned_policy", {})
+    full_model_based = evidence.get("dongxing_full_model_based_policy", {})
+    full_optimization = evidence.get("dongxing_model_based_optimization", {})
+    full_multistep = evidence.get("dongxing_multistep_mbrl_policy", {})
+    full_mbrl_bundle = evidence.get("dongxing_mbrl_results", {})
+
+    has_full_baselines = full_baselines.get("status") in {
+        "supported_as_full_real_environment_baselines",
+        "supported_as_full_real_environment_baseline_pilot",
+    }
+    has_full_local_policy = full_learned.get("status") == "supported_as_dongxing_full_reward_learned_policy"
+    has_full_local_model = (
+        full_model_based.get("status") == "supported_as_dongxing_full_one_step_model_based_policy"
+    )
+    has_full_local_optimization = (
+        full_optimization.get("status") == "supported_as_dongxing_model_based_scoring_optimization"
+    )
+    has_full_multistep_mbrl = (
+        full_multistep.get("status")
+        == "supported_as_dongxing_multistep_learned_environment_policy"
+    )
+    has_full_local_bundle = full_mbrl_bundle.get("status") == "supported_as_local_dongxing_mbrl_results"
+
+    return has_full_baselines and (
+        has_full_local_policy
+        or has_full_local_model
+        or has_full_local_optimization
+        or has_full_multistep_mbrl
+        or has_full_local_bundle
+    )
+
+
 def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Classify which manuscript claims are supported by which evidence level."""
     bishan = evidence.get("bishan_seed_chain", {})
@@ -658,8 +790,11 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_mbrl_results = evidence.get("dongxing_mbrl_results", {})
     dongxing_model_based = evidence.get("dongxing_full_model_based_policy", {})
     dongxing_model_optimization = evidence.get("dongxing_model_based_optimization", {})
+    dongxing_multistep_mbrl = evidence.get("dongxing_multistep_mbrl_policy", {})
+    trajectory_source_ablation = evidence.get("trajectory_source_ablation", {})
     transfer_finetune = evidence.get("transfer_finetune_results", {})
     reward_sensitivity = evidence.get("reward_weight_sensitivity", {})
+    has_full_reward_counterpart = _has_dongxing_full_reward_counterpart(evidence)
     has_slope_only_rl = (
         dongxing_rl.get("status") == "supported_as_slope_only_rl_actionability"
     )
@@ -709,32 +844,76 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
             "standalone_simulator_for_final_outcomes": False,
             "interpretation": policy_shift.get("interpretation"),
         },
+    ]
+    if trajectory_source_ablation.get("status") == "supported_as_trajectory_source_ablation":
+        scopes.append(
+            {
+                "id": "trajectory_source_ablation_scope",
+                "claim": (
+                    "Trajectory-source composition changes the robustness of the "
+                    "learned transition model."
+                ),
+                "status": trajectory_source_ablation.get("status"),
+                "evidence_level": "trajectory_source_robustness_diagnostic",
+                "best_source_by_all_horizon_100_reward_mae": trajectory_source_ablation.get(
+                    "best_source_by_all_horizon_100_reward_mae"
+                ),
+                "best_source_by_all_horizon_100_global_mae": trajectory_source_ablation.get(
+                    "best_source_by_all_horizon_100_global_mae"
+                ),
+                "interpretation": trajectory_source_ablation.get("interpretation"),
+            }
+        )
+    scopes.append(
         {
             "id": "dongxing_external_scope",
-            "claim": "Dongxing supports external-county portability.",
-            "status": "supported_as_external_slope_only_actionability"
-            if has_slope_only_rl
-            else (
-                "supported_as_external_feasibility"
-                if dongxing.get("status") == "supported"
-                and not dongxing.get("has_learned_policy", False)
-                else "policy_transfer_supported"
+            "claim": "Dongxing supports an external-county local full-reward counterpart.",
+            "status": (
+                "supported_as_external_full_reward_counterpart"
+                if has_full_reward_counterpart
+                else (
+                    "supported_as_external_slope_only_actionability"
+                    if has_slope_only_rl
+                    else (
+                        "supported_as_external_feasibility"
+                        if dongxing.get("status") == "supported"
+                        and not dongxing.get("has_learned_policy", False)
+                        else "policy_transfer_supported"
+                    )
+                )
             ),
-            "evidence_level": "external_data_action_space_dynamic_non_rl_plus_slope_only_rl_lite"
-            if has_slope_only_rl
-            else "external_data_action_space_dynamic_non_rl",
+            "evidence_level": (
+                "external_full_reward_local_counterpart"
+                if has_full_reward_counterpart
+                else (
+                    "external_data_action_space_dynamic_non_rl_plus_slope_only_rl_lite"
+                    if has_slope_only_rl
+                    else "external_data_action_space_dynamic_non_rl"
+                )
+            ),
             "policy_transfer_tested": False
-            if has_slope_only_rl
+            if has_full_reward_counterpart or has_slope_only_rl
             else bool(dongxing.get("has_learned_policy", False)),
+            "full_reward_local_counterpart_tested": bool(has_full_reward_counterpart),
             "slope_only_rl_actionability_tested": bool(has_slope_only_rl),
-            "interpretation": dongxing_rl.get("interpretation")
-            if has_slope_only_rl
-            else dongxing.get(
-                "interpretation",
-                "external feasibility evidence; not learned-policy transfer",
+            "interpretation": (
+                "external full-reward local counterpart evidence on Dongxing; "
+                "full baselines, a local learned policy, one-step and multi-step "
+                "model-based policy optimization, and held-out scoring optimization "
+                "are tested locally. Direct Bishan-to-Dongxing policy transfer "
+                "remains structurally invalid."
+                if has_full_reward_counterpart
+                else (
+                    dongxing_rl.get("interpretation")
+                    if has_slope_only_rl
+                    else dongxing.get(
+                        "interpretation",
+                        "external feasibility evidence; not learned-policy transfer",
+                    )
+                )
             ),
-        },
-    ]
+        }
+    )
     if reward_sensitivity.get("status") == "supported_as_fixed_policy_reward_sensitivity":
         scopes.append(
             {
@@ -824,7 +1003,8 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "id": "dongxing_local_mbrl_results_scope",
                 "claim": (
                     "Dongxing local MBRL evidence bundles transition diagnostics, "
-                    "one-step model-based policy evaluation, and held-out scoring optimization."
+                    "one-step model-based policy evaluation, held-out scoring optimization, "
+                    "and multi-step learned-environment policy optimization."
                 ),
                 "status": dongxing_mbrl_results.get("status"),
                 "evidence_level": "local_dongxing_mbrl_result_bundle",
@@ -832,7 +1012,9 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                     dongxing_mbrl_results.get("mbrl_transition_model_used", False)
                 ),
                 "policy_transfer_tested": False,
-                "multi_step_mbrl_planning_tested": False,
+                "multi_step_mbrl_planning_tested": bool(
+                    dongxing_mbrl_results.get("multi_step_mbrl_planning_tested", False)
+                ),
                 "interpretation": dongxing_mbrl_results.get("interpretation"),
             }
         )
@@ -883,6 +1065,35 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "policy_transfer_tested": False,
                 "multi_step_mbrl_planning_tested": False,
                 "interpretation": dongxing_model_optimization.get("interpretation"),
+            }
+        )
+    if (
+        dongxing_multistep_mbrl.get("status")
+        == "supported_as_dongxing_multistep_learned_environment_policy"
+    ):
+        scopes.append(
+            {
+                "id": "dongxing_multistep_mbrl_policy_scope",
+                "claim": (
+                    "Dongxing supports local multi-step learned-environment "
+                    "policy optimization with final full real-environment evaluation."
+                ),
+                "status": dongxing_multistep_mbrl.get("status"),
+                "evidence_level": "external_full_multistep_learned_environment_policy",
+                "n_eval_seeds": dongxing_multistep_mbrl.get("n_eval_seeds"),
+                "planning_horizon": dongxing_multistep_mbrl.get("planning_horizon"),
+                "real_eval_reward_mean": dongxing_multistep_mbrl.get(
+                    "real_eval_reward_mean"
+                ),
+                "real_eval_slope_change_pct_mean": dongxing_multistep_mbrl.get(
+                    "real_eval_slope_change_pct_mean"
+                ),
+                "mbrl_transition_model_used": bool(
+                    dongxing_multistep_mbrl.get("mbrl_transition_model_used", False)
+                ),
+                "policy_transfer_tested": False,
+                "multi_step_mbrl_planning_tested": True,
+                "interpretation": dongxing_multistep_mbrl.get("interpretation"),
             }
         )
     if transfer_finetune.get("status") == "structurally_invalid_for_direct_policy_transfer":
@@ -1003,6 +1214,12 @@ def build_validation_report(
     evidence["dongxing_model_based_optimization"] = summarize_dongxing_model_based_optimization(
         paper7_dir / "results" / "full_rigor" / "dongxing_model_based_optimization.json"
     )
+    evidence["dongxing_multistep_mbrl_policy"] = summarize_dongxing_multistep_mbrl_policy(
+        paper7_dir / "results" / "full_rigor" / "dongxing_multistep_mbrl_policy.json"
+    )
+    evidence["trajectory_source_ablation"] = summarize_trajectory_source_ablation(
+        paper7_dir / "results" / "revision" / "trajectory_source_ablation.json"
+    )
 
     return {
         "description": (
@@ -1017,7 +1234,13 @@ def build_validation_report(
         "claim_scope": classify_claim_scope(evidence),
         "overall_status": "supported_with_bounded_external_scope",
         "external_policy_transfer_tested": False,
-        "external_slope_only_rl_actionability_tested": True,
+        "external_full_reward_counterpart_tested": _has_dongxing_full_reward_counterpart(
+            evidence
+        ),
+        "external_slope_only_rl_actionability_tested": (
+            evidence.get("dongxing_rl_lite", {}).get("status")
+            == "supported_as_slope_only_rl_actionability"
+        ),
     }
 
 

@@ -16,12 +16,14 @@ from paper7.end_to_end_validation import (
     summarize_dongxing_full_baselines,
     summarize_dongxing_full_learned_policy,
     summarize_dongxing_full_model_based_policy,
+    summarize_dongxing_multistep_mbrl_policy,
     summarize_dongxing_model_based_optimization,
     summarize_dongxing_transition_diagnostics,
     summarize_policy_induced_diagnostics,
     summarize_planning_significance,
     summarize_reward_scaling_comparator,
     summarize_reward_weight_sensitivity,
+    summarize_trajectory_source_ablation,
     summarize_seed_evaluations,
     summarize_transfer_finetune_results,
 )
@@ -166,6 +168,38 @@ def test_classify_claim_scope_marks_dongxing_rl_lite_as_slope_only_not_transfer(
     assert dongxing["policy_transfer_tested"] is False
     assert dongxing["slope_only_rl_actionability_tested"] is True
     assert dongxing["status"] == "supported_as_external_slope_only_actionability"
+
+
+def test_classify_claim_scope_prefers_dongxing_full_reward_counterpart():
+    evidence = {
+        "dongxing_dynamic": {"status": "supported", "has_learned_policy": False},
+        "dongxing_rl_lite": {
+            "status": "supported_as_slope_only_rl_actionability",
+            "learner_type": "tabular_preference_fallback",
+        },
+        "dongxing_full_baselines": {
+            "status": "supported_as_full_real_environment_baselines",
+        },
+        "dongxing_full_learned_policy": {
+            "status": "supported_as_dongxing_full_reward_learned_policy",
+        },
+        "dongxing_full_model_based_policy": {
+            "status": "supported_as_dongxing_full_one_step_model_based_policy",
+        },
+        "dongxing_model_based_optimization": {
+            "status": "supported_as_dongxing_model_based_scoring_optimization",
+        },
+    }
+
+    claims = classify_claim_scope(evidence)
+    dongxing = next(item for item in claims if item["id"] == "dongxing_external_scope")
+
+    assert dongxing["status"] == "supported_as_external_full_reward_counterpart"
+    assert dongxing["evidence_level"] == "external_full_reward_local_counterpart"
+    assert dongxing["full_reward_local_counterpart_tested"] is True
+    assert dongxing["slope_only_rl_actionability_tested"] is True
+    assert dongxing["policy_transfer_tested"] is False
+    assert "Direct Bishan-to-Dongxing policy transfer" in dongxing["interpretation"]
 
 
 def test_reward_rigor_scope_is_bounded_when_weight_sensitivity_exists():
@@ -522,6 +556,64 @@ def test_classify_claim_scope_marks_scoring_optimization_as_heldout_bounded():
     assert scope["multi_step_mbrl_planning_tested"] is False
 
 
+def test_summarize_dongxing_multistep_mbrl_policy_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_multistep_mbrl_policy.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_multistep_learned_environment_policy",
+            "n_training_transitions": 3000,
+            "planning_horizon": 100,
+            "real_environment_eval": {
+                "summary": {
+                    "n": 5,
+                    "reward_mean": 88.0,
+                    "slope_change_pct_mean": -2.1,
+                }
+            },
+            "comparisons": {
+                "model_based_minus_random_reward_mean": 77.0,
+            },
+            "mbrl_transition_model_used": True,
+            "multi_step_mbrl_planning_tested": True,
+            "policy_transfer_tested": False,
+            "claim_boundary": "multi-step local learned-environment policy optimization",
+        },
+    )
+
+    summary = summarize_dongxing_multistep_mbrl_policy(path)
+
+    assert summary["status"] == "supported_as_dongxing_multistep_learned_environment_policy"
+    assert summary["n_training_transitions"] == 3000
+    assert summary["n_eval_seeds"] == 5
+    assert summary["planning_horizon"] == 100
+    assert summary["real_eval_reward_mean"] == 88.0
+    assert summary["mbrl_transition_model_used"] is True
+    assert summary["multi_step_mbrl_planning_tested"] is True
+    assert summary["policy_transfer_tested"] is False
+
+
+def test_classify_claim_scope_marks_multistep_mbrl_as_stronger_counterpart():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_multistep_mbrl_policy": {
+                "status": "supported_as_dongxing_multistep_learned_environment_policy",
+                "n_eval_seeds": 5,
+                "planning_horizon": 100,
+                "interpretation": "multi-step local learned-environment policy optimization",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_multistep_mbrl_policy_scope")
+
+    assert scope["status"] == "supported_as_dongxing_multistep_learned_environment_policy"
+    assert scope["evidence_level"] == "external_full_multistep_learned_environment_policy"
+    assert scope["planning_horizon"] == 100
+    assert scope["policy_transfer_tested"] is False
+    assert scope["multi_step_mbrl_planning_tested"] is True
+
+
 def test_summarize_dongxing_trajectory_summary_extracts_scope(tmp_path):
     path = tmp_path / "dongxing_trajectories_summary.json"
     _write_json(
@@ -678,6 +770,103 @@ def test_classify_claim_scope_marks_transfer_finetune_scope():
     assert scope["status"] == "structurally_invalid_for_direct_policy_transfer"
     assert scope["direct_policy_transfer_tested"] is False
     assert scope["fine_tuning_required"] is False
+
+
+def test_summarize_trajectory_source_ablation_reports_best_source_and_gap(tmp_path):
+    path = tmp_path / "trajectory_source_ablation.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_trajectory_source_ablation",
+            "source_reports": [
+                {
+                    "source": "random_only",
+                    "status": "supported",
+                    "evaluation": {
+                        "all": {
+                            "horizon_100_reward_mae": 0.31,
+                            "horizon_100_global_mae": 0.12,
+                        },
+                        "random": {
+                            "horizon_100_reward_mae": 0.35,
+                            "horizon_100_global_mae": 0.15,
+                        },
+                        "greedy": {
+                            "horizon_100_reward_mae": 0.28,
+                            "horizon_100_global_mae": 0.11,
+                        },
+                    },
+                },
+                {
+                    "source": "greedy_only",
+                    "status": "supported",
+                    "evaluation": {
+                        "all": {
+                            "horizon_100_reward_mae": 0.27,
+                            "horizon_100_global_mae": 0.11,
+                        },
+                        "random": {
+                            "horizon_100_reward_mae": 0.29,
+                            "horizon_100_global_mae": 0.13,
+                        },
+                        "greedy": {
+                            "horizon_100_reward_mae": 0.26,
+                            "horizon_100_global_mae": 0.1,
+                        },
+                    },
+                },
+                {
+                    "source": "mixed",
+                    "status": "supported",
+                    "evaluation": {
+                        "all": {
+                            "horizon_100_reward_mae": 0.19,
+                            "horizon_100_global_mae": 0.08,
+                        },
+                        "random": {
+                            "horizon_100_reward_mae": 0.21,
+                            "horizon_100_global_mae": 0.09,
+                        },
+                        "greedy": {
+                            "horizon_100_reward_mae": 0.18,
+                            "horizon_100_global_mae": 0.07,
+                        },
+                    },
+                },
+            ],
+            "comparison": {
+                "best_source_by_all_horizon_100_reward_mae": "mixed",
+                "best_source_by_all_horizon_100_global_mae": "mixed",
+                "mixed_minus_random_all_horizon_100_reward_mae": -0.12,
+                "mixed_minus_greedy_all_horizon_100_reward_mae": -0.08,
+            },
+        },
+    )
+
+    summary = summarize_trajectory_source_ablation(path)
+
+    assert summary["status"] == "supported_as_trajectory_source_ablation"
+    assert summary["best_source_by_all_horizon_100_reward_mae"] == "mixed"
+    assert summary["best_source_by_all_horizon_100_global_mae"] == "mixed"
+    assert summary["mixed_minus_random_all_horizon_100_reward_mae"] == pytest.approx(-0.12)
+    assert summary["mixed_minus_greedy_all_horizon_100_reward_mae"] == pytest.approx(-0.08)
+
+
+def test_classify_claim_scope_marks_trajectory_source_ablation_as_robustness_evidence():
+    scopes = classify_claim_scope(
+        {
+            "trajectory_source_ablation": {
+                "status": "supported_as_trajectory_source_ablation",
+                "best_source_by_all_horizon_100_reward_mae": "mixed",
+                "interpretation": "source robustness",
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "trajectory_source_ablation_scope")
+
+    assert scope["status"] == "supported_as_trajectory_source_ablation"
+    assert scope["evidence_level"] == "trajectory_source_robustness_diagnostic"
 
 
 def test_end_to_end_validation_script_help_runs_from_repo_root():

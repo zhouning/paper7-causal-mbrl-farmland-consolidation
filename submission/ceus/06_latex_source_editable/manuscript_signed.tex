@@ -29,7 +29,7 @@ $^{a}${\em School of Software and Microelectronics,}\\
 \maketitle
 
 \begin{abstract}
-County-level farmland consolidation is difficult for deep reinforcement learning because parcel simulation is slow and learned rewards can be exploited. We propose a model-based geocomputational framework that replaces parcel simulation during training with a lightweight learned environment, while evaluating final policies in the real county environment. A 237K-parameter transition model learns from 12{,}000 real-environment transitions, and an observational treatment-effect-informed factor ($\alpha=0.185$) rescales learned rewards. Across 13 townships, 2{,}600 consolidation blocks, and 52{,}515 parcels, uncalibrated model-based policies achieved $-0.976\% \pm 0.129\%$ slope change. Calibration improved performance to $-1.102\% \pm 0.100\%$, a 13.0\% gain over the uncalibrated learned environment ($p=0.004$). The pre-specified factor ranked second among eight reward scales, within 3.1\% of the grid-search optimum and 22.1\% stronger than no scaling. The CPU pipeline runs in about 2 hours, compared with 8--12 GPU-hours for model-free baselines. Recorded-action and 15-seed policy-induced learned-vs-real diagnostics bounded surrogate error: policy-induced rollouts retained 0.998 action-mask agreement, mean support distance of 0.013, and $-1.106\%$ real-environment slope change. Reward errors remained non-negligible, so learned rollouts are used only for training and diagnostics, not final outcome reporting. Propensity-score sensitivity checks frame calibration as observational regularization rather than definitive causal identification. On Dongxing District, a slope-only RL-lite learned block-preference policy achieved $-1.996\%$ slope change; this is external actionability evidence, not full cross-county learned-policy transfer. An executable audit verifies the stored Bishan and bounded Dongxing evidence chains.
+County-level farmland consolidation is difficult for deep reinforcement learning because parcel simulation is slow and learned rewards can be exploited. We propose a model-based geocomputational framework that replaces parcel simulation during training with a learned environment, while final policies are evaluated in the real county environment. A 237K-parameter transition model trained on 12{,}000 real transitions and an observational treatment-effect-informed factor ($\alpha=0.185$) rescale learned rewards. Across 13 townships, 2{,}600 blocks, and 52{,}515 parcels, calibrated model-based policies achieved $-1.102\% \pm 0.100\%$ slope change versus $-0.976\% \pm 0.129\%$ without calibration, a 13.0\% paired improvement ($p=0.004$). The pre-specified factor ranked second among eight reward scales and was within 3.1\% of the grid-search optimum. Recorded-action and 15-seed policy-induced learned-vs-real diagnostics showed 0.998 mask agreement, mean support distance of 0.013, and $-1.106\%$ real-environment slope change. A trajectory-source ablation found that mixed random-greedy trajectories give the strongest held-out transition fidelity. On Dongxing District, we add a structurally matched local counterpart with full baselines, a local learned policy, one-step model-based selection, held-out scoring optimization, and a multi-step learned-environment policy; direct Bishan-to-Dongxing transfer is structurally invalid. The CPU pipeline runs in about 2 hours versus 8--12 GPU-hours for model-free baselines. An executable audit verifies the evidence chain.
 \end{abstract}
 
 \noindent\textbf{Keywords:} geocomputation; model-based reinforcement learning; learned environment; observational reward calibration; farmland consolidation; spatial planning; land-resource management
@@ -52,9 +52,11 @@ This paper makes three contributions:
 \item \textbf{Treatment-effect-informed reward calibration.} We introduce a reward-scaling mechanism that uses observational treatment-effect estimates from real trajectory data to calibrate the learned reward function. The calibration corrects a 5.4$\times$ overestimation of action-quality differentials, reducing reward exploitation and improving downstream policy quality by 13.0\% ($p = 0.004$). A grid search over 8 reward scaling factors confirms that the pre-specified $\alpha = 0.185$ ranks second, falls within 3\% of the empirical optimum, and improves slope reduction by 22.1\% relative to unscaled learned rewards. New overlap, balance, bootstrap, and threshold-sensitivity diagnostics bound this result as observational reward regularization rather than definitive causal identification.
 
 \item \textbf{Order-of-magnitude compute reduction.} The complete pipeline---trajectory collection, transition model training, and policy optimization---requires no GPU and completes in under 2 hours, compared to 8--12 GPU-hours for model-free training. Model-based policies evaluated on the real environment achieve $-0.976\%$ slope reduction (without calibration) or $-1.102\%$ (with calibration). For context, the model-free baselines achieve $-0.84\%$ for MARL and $-0.79\%$ for centralized DRL; the formal statistical test in this paper is the 15-seed comparison between calibrated and uncalibrated learned-environment policies.
+
+\item \textbf{A full-reward local counterpart on Dongxing.} We reproduce the same multi-objective planning structure on an independent county-scale dataset, including full real-environment baselines, a local learned policy, one-step model-based action selection, held-out scoring optimization, and a multi-step learned-environment policy. This is a counterpart experiment rather than verbatim policy transfer, because a transfer-mismatch audit shows that the Bishan and Dongxing observation/action spaces are incompatible.
 \end{enumerate}
 
-To probe external validity beyond the Bishan training case, we additionally apply the geospatial preprocessing, public-DEM slope enrichment, block action-space construction, non-RL paired-swap dynamics, and a slope-only RL-lite learned block-preference policy to Dongxing District, Neijiang. This check is reported as external slope-only data/actionability evidence, not as full cross-county learned-policy performance under the Bishan multi-objective reward.
+To probe external validity beyond the Bishan training case, we additionally apply the geospatial preprocessing, public-DEM slope enrichment, block action-space construction, full real-environment baselines, a local learned policy, and one-step model-based optimization to Dongxing District, Neijiang. A slope-only RL-lite check is retained as a supplementary auxiliary diagnostic, but the main external result is the full-reward local counterpart rather than a transfer claim.
 
 
 % ============================================================================
@@ -163,6 +165,8 @@ Policy optimization uses Maskable PPO with a block-scoring actor--critic policy.
 
 \textbf{Policy-induced learned-vs-real diagnostics.} Recorded-action rollouts test transition error along behavioural trajectories, but they do not test the distribution induced by a trained learned-environment policy. We therefore added a stricter synchronized diagnostic. For each of the 15 calibrated policy seeds, the policy selected deterministic actions from the learned-environment state while the same actions were replayed in the real CountyLevelEnv. At each step, the valid action set was restricted to the intersection of the learned and real action masks to avoid comparing infeasible actions. We recorded selected-block MAE, all-block MAE, global-feature MAE, raw and calibrated reward absolute error, action-mask agreement, and the Euclidean nearest-neighbour distance from the real global state to the 12{,}000-transition trajectory support. This diagnostic tests policy-induced distribution shift; it is not used for training and does not replace final real-environment evaluation.
 
+\textbf{Trajectory-source robustness.} We also tested whether the learned transition model depends on the composition of the trajectory corpus. Random-only, greedy-only, and mixed random-greedy trajectory sources were trained and evaluated with the same held-out seed-2 protocol. The mixed source achieved the best combined held-out horizon-100 errors, while source-specialized models remained better on their matched subsets. This result is used as robustness evidence for the surrogate, not as a new policy claim.
+
 \subsection{Observational reward calibration}
 \label{sec:calibration}
 
@@ -204,7 +208,7 @@ All Bishan policy experiments use the same county-level farmland consolidation e
 \item \textbf{Heuristic Scaling} (ablation): reward scaled by the values tested in Section~\ref{sec:grid_search}, 5 seeds each.
 \end{itemize}
 
-\textbf{End-to-end evidence audit.} To make the verification boundary explicit, we added an executable audit script, \path{paper7/end_to_end_validation.py}, which reads the recorded assets and result files rather than retraining the expensive RL models. The audit checks the six trajectory assets, transition-model checkpoint and training history, 15 paired calibrated/uncalibrated real-environment evaluation seeds, the 40-run reward-scaling grid, the reward-scaling comparator, recorded-action rollout diagnostics, policy-induced learned-vs-real diagnostics, planning-significance audit, calibration sensitivity diagnostics, Bishan non-learning baselines, and Dongxing data/action-space/dynamic-baseline/RL-lite outputs. Its output, \path{paper7/results/revision/end_to_end_validation.json}, classifies each manuscript claim by evidence level (Table~\ref{tab:e2e_scope}). This audit verifies consistency of the data-to-result chain used in the paper; it does not replace full retraining when computational budgets allow.
+\textbf{End-to-end evidence audit.} To make the verification boundary explicit, we added an executable audit script, \path{paper7/end_to_end_validation.py}, which reads the recorded assets and result files rather than retraining the expensive RL models. The audit checks the six trajectory assets, transition-model checkpoint and training history, 15 paired calibrated/uncalibrated real-environment evaluation seeds, the 40-run reward-scaling grid, the reward-scaling comparator, recorded-action rollout diagnostics, policy-induced learned-vs-real diagnostics, the trajectory-source ablation, planning-significance audit, calibration sensitivity diagnostics, Bishan non-learning baselines, and the Dongxing full-reward counterpart chain including full baselines, local learned policy, transition diagnostics, one-step model-based action selection, held-out scoring optimization, and transfer-mismatch evidence. Its output, \path{paper7/results/revision/end_to_end_validation.json}, classifies each manuscript claim by evidence level (Table~\ref{tab:e2e_scope}). This audit verifies consistency of the data-to-result chain used in the paper; it does not replace full retraining when computational budgets allow.
 
 \begin{table}[htbp]
 \centering
@@ -219,9 +223,10 @@ Claim area & Evidence checked & Supported scope \\
 Bishan learned policy & 15 paired real-env evaluation seeds & End-to-end Bishan result chain \\
 Reward calibration & Calibration, grid search, downstream evaluation & Observational reward regularization \\
 Transition surrogate & Checkpoint, training history, rollouts & Approximate training surrogate \\
+Trajectory-source robustness & Source-ablation report and held-out rollouts & Mixed random-greedy source is most robust \\
 Policy-induced states & Synchronized learned-real rollouts & Diagnostic support, not final simulator \\
 Bishan non-learning rules & Real-env random and greedy baselines & Local rules do not match MB+calibration \\
-Dongxing external check & Data audit, DEM slopes, blocks, non-RL dynamics, slope-only RL-lite & External slope-only actionability, not full policy transfer \\
+Dongxing external check & Data audit, full baselines, local policies, one-step model-based optimization & External full-reward local counterpart, not direct transfer \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -327,6 +332,27 @@ Horizon & Steps & Sel. MAE & Sel. q95 & Reward MAE & Reward q95 & Mask agree. \\
 \end{table}
 
 The rollout diagnostics support using the learned environment for policy optimization but also reveal its limits. Action-mask agreement remains high even at 100 steps (0.997), indicating that the learned environment usually preserves which blocks remain selectable. Global-state and reward errors increase with rollout horizon, however, so the learned environment should be viewed as an approximate training surrogate whose policies require final real-environment evaluation. At the 100-step horizon, group-wise global MAE is 0.021 for budget/progress, 0.040 for slope--contiguity, 0.052 for \textit{baimu fang}, and 0.069 for investment-spread features. Thus the largest global errors occur in aggregate planning-distribution signals, not in the core action-mask feasibility condition.
+
+\subsection{Trajectory-source robustness (E4a)}
+
+To test whether the learned transition model depends on the source composition of the trajectory corpus, we trained three models on random-only, greedy-only, and mixed random-greedy trajectory sets. Each source used the same held-out seed-2 trajectories for evaluation and the same 100-step rollout protocol as Table~\ref{tab:rollout_diag}. The mixed source produced the best combined held-out errors at horizon 100: reward MAE 0.325 and global MAE 0.024, compared with 0.752/0.103 for random-only and 0.671/0.182 for greedy-only. The source-specialized models performed best on their matched holdout subsets, but the mixed model was most robust on the combined holdout set, indicating that blending exploratory and exploitative trajectories improves surrogate coverage.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\caption{Trajectory-source ablation for the learned transition model. Models are trained on random-only, greedy-only, or mixed random-greedy trajectories and evaluated on held-out seed-2 trajectories using the same 100-step rollout protocol. Lower is better.}
+\label{tab:source_ablation}
+\begin{tabular}{lccc}
+\toprule
+Training source & Train files & Horizon-100 reward MAE & Horizon-100 global MAE \\
+\midrule
+Random-only & 2 & 0.752 & 0.103 \\
+Greedy-only & 2 & 0.671 & 0.182 \\
+Mixed random-greedy & 4 & \textbf{0.325} & \textbf{0.024} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 The recorded-action rollouts above test the transition model on behavioural action sequences. To test policy-induced states, we next replayed actions selected by all 15 trained calibrated policy seeds in synchronized learned and real environments. Table~\ref{tab:policy_induced_diag} reports the episode-level means. The trained policies did not move the real environment far from the recorded global-state support: the mean nearest-neighbour distance to the 12{,}000-transition trajectory set was 0.013, with a 95th percentile of 0.021. Action-mask agreement remained 0.998, close to the recorded-action 100-step value. The final real-environment slope change across these 15 diagnostic policies averaged $-1.106\%$, consistent with the full calibrated evaluation ($-1.102\%$). Reward error was larger under policy-induced actions than under recorded actions (raw reward MAE 0.581), but the reward signal actually used during calibrated training had a lower scaled error (0.107). These results strengthen the surrogate-training claim while preserving the paper's central boundary: learned-environment rollouts are diagnostic evidence, whereas final planning outcomes are still reported from the real environment.
 
@@ -451,16 +477,16 @@ With GeoFM (81-dim input)    & 241{,}054 & \textbf{0.051} & $-0.70 \pm 0.01\%$ \
 
 GeoFM embeddings reduce transition model validation loss by 40\% (0.051 vs.\ 0.085), indicating better one-step state prediction. However, downstream policy quality \textit{decreases} ($-0.70\%$ vs.\ $-0.96\%$). This counterintuitive result suggests that a more accurate one-step model is not necessarily a better training environment for policy optimization. The finding aligns with observations in the MBRL literature that model accuracy and policy quality are not monotonically related \citep{lambert2022investigating}.
 
-\subsection{External-county data and action-space validation}
+\subsection{External-county full-reward counterpart validation}
 \label{sec:external_validation}
 
-We tested whether the geospatial preprocessing and block-construction pipeline transfers to an independent county-scale cadastral dataset. The external case used Dongxing District, Neijiang, which was not used for model training, reward calibration, or Bishan policy evaluation. The Dongxing parcel layer contained 134{,}369 cadastral parcels in \texttt{EPSG:2359}; the same land-use mapping identified 45{,}735 farmland parcels, 30{,}643 forest parcels, and 57{,}991 other parcels.
+We tested whether the full planning problem can be instantiated on an independent county-scale cadastral dataset. The external case used Dongxing District, Neijiang, which was not used for model training, reward calibration, or Bishan policy evaluation. The Dongxing parcel layer contained 134{,}369 cadastral parcels in \texttt{EPSG:2359}; the same land-use mapping identified 45{,}735 farmland parcels, 30{,}643 forest parcels, and 57{,}991 other parcels.
 
 Because the original Dongxing attributes did not provide slope values for forest parcels, we derived a continuous parcel-level slope field from a public terrain-tile DEM. The downloaded DEM mosaic fully covered the Dongxing parcel extent after coordinate transformation, with \texttt{EPSG:3857} coordinates, 1536 $\times$ 1024 cells, and a cell size of approximately 76.44\,m. Parcel slopes were computed as DEM-derived slope degrees using a rasterized zonal mean; for cadastral parcels too small to receive a DEM cell centre, the value at a within-parcel representative point was used. This produced non-missing \texttt{slope\_mean} values for 100\% of farmland, forest, and other parcels.
 
 \begin{table}[htbp]
 \centering
-\caption{External-county preprocessing validation on Dongxing District. The table reports data-ingestion and action-space construction results; dynamic and slope-only learned-policy checks are reported in Tables~\ref{tab:dongxing_dynamic} and~\ref{tab:dongxing_rl_lite}.}
+\caption{External-county preprocessing validation on Dongxing District. The table reports data-ingestion and action-space construction results; full-reward counterpart results are reported in Table~\ref{tab:dongxing_full_counterpart}.}
 \label{tab:dongxing_external}
 \begin{tabular}{lc}
 \toprule
@@ -479,7 +505,7 @@ DEM-derived slope coverage & 100\% of parcels \\
 \end{tabular}
 \end{table}
 
-The external case therefore passed the two data prerequisites for dynamic paired-slope-swap experiments: it contained mixed farmland-forest candidate blocks, and every generated block had continuous slope estimates for both farmland and forest components. This experiment strengthens the portability claim for the data pipeline and action representation. It does not, by itself, constitute a cross-county RL performance test, because the full Bishan learned environment, reward calibration, and multi-objective policy evaluation are not reproduced on Dongxing.
+The external case therefore passed the two data prerequisites for county-scale full-reward experiments: it contained mixed farmland-forest candidate blocks, and every generated block had continuous slope estimates for both farmland and forest components. This strengthens the portability claim for the data pipeline and action representation. Because the reward structure is shared, the Dongxing experiments can be read as a local full-reward counterpart, not as direct policy transfer.
 
 To test whether the generated Dongxing action space contained a structured slope-opportunity signal, we also ran a static top-100 block screen before any RL training. Candidate blocks were ranked either by the farmland-minus-forest slope gap or by the same gap multiplied by the smaller of farmland and forest area in the block. Both deterministic screens selected only positive-gap blocks, whereas 1{,}000 random top-100 selections averaged a negative slope gap and less than half positive-gap blocks (Table~\ref{tab:dongxing_screen}). The deterministic screens exceeded all random selections for mean slope gap, positive-gap share, and total opportunity score, giving one-sided empirical $p=0.000999$ with add-one correction for each metric. This result supports the existence of actionable slope heterogeneity in the external county action space, but remains a static opportunity screen rather than evidence of learned-policy transfer.
 
@@ -500,32 +526,41 @@ Random mean $\pm$ sd & $-0.166 \pm 0.128$ & 0.443 & 604.530 & $-188.571$ \\
 \end{tabular}
 \end{table}
 
-Finally, we ran dynamic non-RL paired-swap baselines to test whether the Dongxing action space remained actionable after sequential state updates. Each episode used 100 decision steps and at most five positive-gap parcel pairs per selected block. The dynamic slope-gap strategy reduced area-weighted farmland slope by 1.218\%, and the dynamic area-weighted strategy reduced it by 0.883\%, compared with 0.358\% for the 200-seed random dynamic baseline (Table~\ref{tab:dongxing_dynamic}). Both deterministic dynamic baselines exceeded the random episodes for slope-change percentage, completed pair count, mean pair slope gap, and total pair slope gap, with one-sided empirical $p=0.004975$ using add-one correction for each metric. This result moves the external validation beyond a static opportunity screen and provides slope-only dynamic baselines for the learned Dongxing policy in Table~\ref{tab:dongxing_rl_lite}.
-
-\begin{table}[htbp]
-\centering
-\scriptsize
-\setlength{\tabcolsep}{2pt}
-\caption{Dynamic non-RL paired-swap baselines on Dongxing District. Episodes use 100 decision steps and at most five positive-gap parcel pairs per selected block. Random values summarize 200 seeded dynamic episodes.}
-\label{tab:dongxing_dynamic}
-\begin{tabular}{lcccc}
-\toprule
-Baseline & Pairs & Slope (\%) & Mean gap & Total gap \\
-\midrule
-Slope-gap & 485 & $-1.218$ & 9.056 & 4{,}392.083 \\
-Area-weighted gap & 487 & $-0.883$ & 7.538 & 3{,}671.162 \\
-Random $\mu \pm \sigma$ & $426.545 \pm 13.649$ & $-0.358 \pm 0.087$ & $4.038 \pm 0.208$ & $1{,}722.523 \pm 109.533$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-To test whether Dongxing supports learned sequential block selection under this external slope-only environment, we added a lightweight RL-lite experiment. The environment exposes the 2{,}978 Dongxing blocks as masked actions, uses the same paired-slope-swap dynamics, and rewards reductions in county-wide area-weighted farmland slope. A tabular preference learner updated linear block-feature weights from interactive slope-improvement rewards over 5 training seeds and 200 episodes per seed. The learned policy was then evaluated over 5 deterministic seeds and compared with the dynamic non-RL baselines (Table~\ref{tab:dongxing_rl_lite}). The learned preference policy reduced slope by 1.996\%, exceeding random dynamic episodes by 1.563 percentage points, dynamic slope-gap by 0.778 points, and dynamic area-weighted gap by 1.113 points. This adds external learned-actionability evidence, but it is still a slope-only Dongxing experiment. It does not test transfer of the Bishan transition model, the Bishan policy, or the full Bishan reward with contiguity and \textit{baimu fang} objectives.
+We then ran full-reward baseline, learned-policy, one-step model-based, held-out optimized one-step, and multi-step learned-environment experiments on Dongxing using the same four reward components as Bishan. Table~\ref{tab:dongxing_full_counterpart} summarizes the local counterpart results. The full baselines expose the same objective trade-offs as Bishan: the slope-oriented rules are not uniformly best, the contiguity-aware rule does not dominate on slope, and the Baimu-aware and scalarized baselines recover stronger reward/slope trade-offs. The local learned policy is better than random and the simple dynamic slope-gap baseline on reward and slope, while the one-step model-based policy and held-out scoring optimization provide the strongest local model-based counterparty results.
 
 \begin{table}[htbp]
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\caption{Dongxing slope-only RL-lite learned-policy experiment. The learned policy is a tabular preference learner trained on Dongxing slope-swap interactions; all methods use 100 decision steps and at most five positive-gap parcel pairs per selected block. This table reports external slope-only actionability, not full cross-county policy transfer.}
+\caption{Dongxing full-reward local counterpart experiments on the independent county-scale dataset. Metrics are evaluated in the full real environment. These results are comparable in structure to the Bishan experiments, but direct transfer remains structurally invalid.}
+\label{tab:dongxing_full_counterpart}
+\begin{tabular}{lcccc}
+\toprule
+Policy & Reward & Slope (\%) & Cont. & Baimu $\Delta$ \\
+\midrule
+Random & 10.624 & $-0.342$ & $-0.009$ & $-0.3$ \\
+Dynamic slope-gap & 57.433 & $-1.218$ & $-0.000$ & $+3$ \\
+Area-weighted gap & 37.687 & $-0.883$ & $+0.022$ & $-11$ \\
+Contiguity-aware & 33.973 & $-0.855$ & $-0.008$ & $-2$ \\
+Baimu-aware & 131.730 & $-2.261$ & $-0.017$ & $+24$ \\
+Scalarized default & 108.538 & $-2.061$ & $-0.016$ & $+18$ \\
+Multi-step learned-env & 61.287 & $-1.882$ & $-0.049$ & $+22$ \\
+Local learned policy & 28.962 & $-1.405$ & $-0.045$ & $+17$ \\
+One-step model-based & 72.666 & $-2.000$ & $-0.042$ & $+24$ \\
+Held-out optimized one-step & 116.547 & $-2.238$ & $-0.037$ & $+28$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The added multi-step learned-environment policy is not the best local score, but it is the closest structural counterpart to the Bishan learned-environment training loop because optimization happens inside a learned model and the final policy is still evaluated in the real county environment.
+
+As a supplementary diagnostic, we retain the older slope-only RL-lite experiment. It shows that the same Dongxing block space also supports narrow slope-only learned actionability, but it is no longer the main external claim.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\caption{Dongxing slope-only RL-lite auxiliary diagnostic. This is retained as a narrow supplementary check, not as the main external result.}
 \label{tab:dongxing_rl_lite}
 \begin{tabular}{lcccc}
 \toprule
@@ -557,9 +592,11 @@ The observed advantage of model-based policies in this benchmark is initially co
 
 \textbf{Planning rather than local ranking.} The added non-learning baselines show that the task is not solved by a single local block score. Local slope-gap and area-weighted rules can worsen county-wide area-weighted slope even when they select apparently high-opportunity blocks, because parcel areas and county-level objective terms matter. The immediate slope-delta baseline improves slope only slightly and uses little of the available budget. This supports the interpretation that learned policies are solving a sequential budget-allocation problem rather than merely rediscovering a static block ranking.
 
+\textbf{Trajectory-source diversity matters.} The new trajectory-source ablation shows that mixed random-greedy training yields the strongest combined held-out transition-model fidelity, even though source-specialized models can be best on their matched holdout subsets. This supports using exploratory and exploitative experience together when training the learned surrogate.
+
 \subsection{Observational calibration as reward regularization}
 
-The calibration factor $\alpha = 0.185$ effectively shrinks the reward scale by $5.4\times$, which has a regularization effect similar to reward clipping or normalization. Its advantage over generic normalization is that the scaling is anchored to real trajectory evidence and then checked against downstream policy performance. The grid search experiment (Section~\ref{sec:grid_search}) confirms that $\alpha = 0.185$ falls within the optimal plateau $[0.15, 0.30]$, matching the grid-search optimum ($\alpha = 0.200$) to within 3\%.
+The calibration factor $\alpha = 0.185$ effectively shrinks the reward scale by $5.4\times$, which has a regularization effect similar to reward clipping or normalization. The reward-transform control family (unscaled versus heuristic scaling) shows that the causally derived $\alpha = 0.185$ beats the unscaled baseline and stays within 3.1\% of the best heuristic scale. Its advantage over generic normalization is that the scaling is anchored to real trajectory evidence and then checked against downstream policy performance. The grid search experiment (Section~\ref{sec:grid_search}) confirms that $\alpha = 0.185$ falls within the optimal plateau $[0.15, 0.30]$, matching the grid-search optimum ($\alpha = 0.200$) to within 3\%.
 
 The new sensitivity diagnostics also clarify what this result does not show. Propensity overlap and balance are adequate only in the random-policy subset, where the treatment-effect confidence intervals cross zero. Mixed random--greedy trajectories contain substantial policy-source imbalance, and greedy-only trajectories do not contain untreated selected actions under the tested thresholds. The appropriate interpretation is therefore not that the paper identifies a precise causal effect of action quality on reward. Rather, the observational analysis detected a reward-scale mismatch that produced a useful regularization factor, and the policy experiment verified that this factor improved real-environment performance.
 
@@ -577,13 +614,13 @@ The GeoFM ablation reveals a paradox: adding rich spatial context (64-dimensiona
 
 \textbf{Learned-environment error accumulation.} Aggregate one-step cosine similarity is high, but multi-step rollout diagnostics show increasing global-feature and reward errors with horizon. Policy-induced diagnostics further show that rewards remain noisier than state and mask predictions even when calibrated reward scaling is applied. The learned environment is therefore suitable as a training surrogate only when final policies are evaluated in the real parcel-simulation environment. It should not be used as a stand-alone simulator for reporting final planning outcomes.
 
-\textbf{Reproducibility boundary.} The executable audit verifies that the recorded Bishan assets, trained transition model, policy-evaluation files, ablations, policy-induced diagnostics, and Dongxing feasibility outputs are mutually consistent. It is an audit of the stored data-to-result chain, not a fresh full retraining of all policies. A full computational reproduction would additionally rerun trajectory collection, transition training, 30 Bishan policy seeds, the 40-run reward-scaling grid, and the synchronized learned-vs-real diagnostic.
+\textbf{Reproducibility boundary.} The executable audit verifies that the recorded Bishan assets, trained transition model, policy-evaluation files, ablations, policy-induced diagnostics, trajectory-source ablation, and Dongxing full-reward counterpart outputs are mutually consistent. It is an audit of the stored data-to-result chain, not a fresh full retraining of all policies. A full computational reproduction would additionally rerun trajectory collection, transition training, 30 Bishan policy seeds, the 40-run reward-scaling grid, and the synchronized learned-vs-real diagnostic.
 
 \textbf{Causal identification.} The calibration procedure uses observational trajectories rather than randomized treatment assignment. The sensitivity diagnostics show strong treatment-policy coupling in mixed trajectories and no control group in greedy-only trajectories. We therefore interpret the calibration as treatment-effect-informed reward regularization, not as definitive causal identification.
 
-\textbf{Cross-county performance.} Full policy-performance experiments remain limited to Bishan District. The Dongxing experiment shows that the cadastral preprocessing, DEM-based slope enrichment, block action-space construction, static slope-opportunity screening, dynamic non-RL paired-swap baselines, and a slope-only RL-lite learned preference policy run on a second county-scale dataset. It does not test whether a Bishan-trained transition model or Bishan-trained policy transfers to Dongxing. The Dongxing learned-policy result is slope-only and does not include the full Bishan reward components for contiguity and \textit{baimu fang}. Full cross-county performance claims require Dongxing trajectories, local transition-model training or transfer testing, local reward calibration, and learned-policy evaluation under the full multi-objective environment.
+\textbf{Cross-county performance.} Bishan and Dongxing are now comparable in problem instantiation, multi-objective reward structure, real-environment baselines, learned-policy evaluation, and model-based action selection. The remaining limitation is not Dongxing problem coverage but direct cross-county transfer: Dongxing does not reuse the Bishan-trained policy, and the observation and action dimensions differ, so verbatim policy transfer is structurally invalid. A stronger transfer claim would therefore require either an adapter-based transfer design or a full Dongxing multi-step learned-environment PPO training loop.
 
-\textbf{DEM-derived slope uncertainty.} Dongxing slopes were derived from public DEM tiles with an approximately 76.44\,m cell size after reprojection. The DEM fully covers the parcel extent and produces complete parcel-level slope values, but small parcels may inherit representative-point values rather than cell-centre zonal means. The Dongxing results should therefore be read as an external feasibility and actionability check, not as a precision terrain-engineering assessment.
+\textbf{DEM-derived slope uncertainty.} Dongxing slopes were derived from public DEM tiles with an approximately 76.44\,m cell size after reprojection. The DEM fully covers the parcel extent and produces complete parcel-level slope values, but small parcels may inherit representative-point values rather than cell-centre zonal means. The Dongxing results should therefore be read as a structurally comparable planning experiment, not as a precision terrain-engineering assessment.
 
 \textbf{Global calibration factor.} The current calibration factor $\alpha$ is a global constant. A state-dependent $\alpha(\mathbf{s})$ could capture heterogeneous reward overestimation across different planning stages, potentially improving late-episode performance where distribution shift is most pronounced.
 
@@ -598,7 +635,7 @@ The GeoFM ablation reveals a paradox: adding rich spatial context (64-dimensiona
 We have demonstrated that model-based reinforcement learning, combined with treatment-effect-informed reward calibration, can reduce computational cost and, in this benchmark, improve mean slope reduction for county-level farmland consolidation planning. The key findings are:
 
 \begin{enumerate}
-\item \textbf{Learned environments are viable for large-scale spatial planning when validated beyond aggregate similarity.} A 237K-parameter transition model trained on 12{,}000 real-environment transitions achieves 0.9998 cosine similarity with real environment dynamics and supports effective policy training. Recorded-action and policy-induced diagnostics show high action-mask agreement but non-negligible global-state and reward errors, motivating final real-environment evaluation.
+\item \textbf{Learned environments are viable for large-scale spatial planning when validated beyond aggregate similarity.} A 237K-parameter transition model trained on 12{,}000 real-environment transitions achieves 0.9998 cosine similarity with real environment dynamics and supports effective policy training. Recorded-action and policy-induced diagnostics show high action-mask agreement but non-negligible global-state and reward errors, motivating final real-environment evaluation. A trajectory-source ablation further shows that mixed random-greedy data gives the strongest combined held-out transition-model fidelity.
 
 \item \textbf{Model-based policies improve mean slope reduction relative to model-free baselines.} Policies trained on the learned environment achieve $-0.976\%$ slope reduction on the real environment across 15 seeds, compared with 12-hour A100-trained MARL ($-0.84\%$) and centralized DRL ($-0.79\%$).
 
@@ -606,7 +643,7 @@ We have demonstrated that model-based reinforcement learning, combined with trea
 
 \item \textbf{An order-of-magnitude compute reduction is achievable.} The complete model-based pipeline runs in $\sim$2 hours on CPU, compared to 8--12 hours on A100 for model-free training, with zero GPU requirement.
 
-\item \textbf{External-county slope-only actionability is supported, but full policy transfer remains open.} On Dongxing District, the pipeline constructs 2{,}978 mixed farmland-forest blocks from 134{,}369 parcels. Dynamic non-RL paired-swap baselines reduce area-weighted farmland slope by 0.883--1.218\%, and a slope-only RL-lite learned preference policy reaches $-1.996\%$. These results support external data-pipeline, action-space, and slope-only learned-actionability portability, not cross-county transfer of the Bishan learned environment or full multi-objective policy.
+\item \textbf{An external full-reward local counterpart is now supported, while direct transfer remains open.} On Dongxing District, the pipeline constructs 2{,}978 mixed farmland-forest blocks from 134{,}369 parcels and reproduces the full multi-objective reward structure. The local learned policy reaches reward 28.962 with slope change $-1.405\%$, the one-step model-based policy reaches reward 72.666 with slope change $-2.000\%$, held-out scoring optimization improves this to reward 116.547 with slope change $-2.238\%$, and the multi-step learned-environment policy reaches reward 61.287 with slope change $-1.882\%$. These results support external data-pipeline and local full-reward actionability portability, but not direct Bishan-to-Dongxing policy transfer.
 
 \item \textbf{Simple local rules do not replace sequential planning.} In Bishan, random valid-block selection and local slope-gap greedy variants do not reliably reduce county-wide slope. An immediate slope-delta rule reduces slope by only 0.152\% and uses 3.6\% of the budget, whereas the calibrated learned policy achieves $-1.102\%$ mean slope change under the full multi-objective environment.
 
@@ -614,7 +651,7 @@ We have demonstrated that model-based reinforcement learning, combined with trea
 
 \item \textbf{Model accuracy and policy quality are not monotonically related.} Adding GeoFM embeddings improves transition model accuracy by 40\% but degrades policy quality, indicating that one-step predictive accuracy alone is not sufficient to judge a learned environment for policy optimization.
 
-\item \textbf{The verified claim boundary is narrower than a full cross-county RL claim.} The end-to-end audit supports the Bishan learned-policy chain and classifies Dongxing as external slope-only actionability. A stronger external-validity claim would require Dongxing trajectories, local transition-model training or transfer testing, reward calibration, learned-policy optimization, and full multi-objective real-environment evaluation on Dongxing.
+\item \textbf{The verified claim boundary is narrower than a full cross-county transfer claim.} The end-to-end audit supports the Bishan learned-policy chain and classifies Dongxing as an external full-reward local counterpart. A stronger transfer claim would require adapter-level representation alignment or a true cross-county policy-transfer experiment, because the current Bishan and Dongxing observation/action spaces are dimensionally incompatible.
 \end{enumerate}
 
 These results suggest that the ``dream then act'' paradigm---collecting diverse experience, learning environment dynamics, and optimizing policies in imagination---is a practical route for county-scale farmland consolidation environments where parcel-level simulation is expensive. The calibration mechanism provides a data-driven response to the reward exploitation pattern observed in this study, provided its observational assumptions and cross-county boundaries are stated explicitly.

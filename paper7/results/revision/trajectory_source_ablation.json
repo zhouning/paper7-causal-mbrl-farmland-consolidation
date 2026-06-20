@@ -1,0 +1,165 @@
+{
+  "status": "supported_as_trajectory_source_ablation",
+  "description": "Trajectory-source ablation for the learned transition model. Random-only, greedy-only, and mixed trajectory sources are trained separately and evaluated on held-out trajectories.",
+  "generated_utc": "2026-06-20T04:50:49.097674+00:00",
+  "trajectory_dir": "paper7\\trajectories",
+  "holdout_seed": 2,
+  "horizons": [
+    1,
+    5,
+    10,
+    25,
+    50,
+    100
+  ],
+  "n_starts": 40,
+  "source_reports": [
+    {
+      "source": "random_only",
+      "status": "supported",
+      "train_policies": [
+        "random"
+      ],
+      "train_files": [
+        "paper7\\trajectories\\random_seed0.npz",
+        "paper7\\trajectories\\random_seed1.npz"
+      ],
+      "eval_files": [
+        "paper7\\trajectories\\greedy_seed2.npz",
+        "paper7\\trajectories\\random_seed2.npz"
+      ],
+      "n_train_files": 2,
+      "n_eval_files": 2,
+      "n_train_transitions": 4000,
+      "training": {
+        "epochs": 10,
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "val_split": 0.1,
+        "best_val_loss": 0.168875978993518,
+        "final_val_loss": 0.1797937447471278,
+        "final_val_reward_mse": 1.7946822025946207,
+        "final_val_obs_cosine": 0.9998157364981515
+      },
+      "evaluation": {
+        "all": {
+          "horizon_100_reward_mae": 0.752497,
+          "horizon_100_global_mae": 0.103051
+        },
+        "random": {
+          "horizon_100_reward_mae": 0.530529,
+          "horizon_100_global_mae": 0.180812
+        },
+        "greedy": {
+          "horizon_100_reward_mae": 1.184847,
+          "horizon_100_global_mae": 0.195449
+        }
+      }
+    },
+    {
+      "source": "greedy_only",
+      "status": "supported",
+      "train_policies": [
+        "greedy"
+      ],
+      "train_files": [
+        "paper7\\trajectories\\greedy_seed0.npz",
+        "paper7\\trajectories\\greedy_seed1.npz"
+      ],
+      "eval_files": [
+        "paper7\\trajectories\\greedy_seed2.npz",
+        "paper7\\trajectories\\random_seed2.npz"
+      ],
+      "n_train_files": 2,
+      "n_eval_files": 2,
+      "n_train_transitions": 4000,
+      "training": {
+        "epochs": 10,
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "val_split": 0.1,
+        "best_val_loss": 1.124068915357514e-05,
+        "final_val_loss": 1.1308252526630116e-05,
+        "final_val_reward_mse": 8.532633281837272e-07,
+        "final_val_obs_cosine": 0.9998219864709037
+      },
+      "evaluation": {
+        "all": {
+          "horizon_100_reward_mae": 0.670665,
+          "horizon_100_global_mae": 0.181795
+        },
+        "random": {
+          "horizon_100_reward_mae": 1.353541,
+          "horizon_100_global_mae": 0.351512
+        },
+        "greedy": {
+          "horizon_100_reward_mae": 0.282496,
+          "horizon_100_global_mae": 0.158208
+        }
+      }
+    },
+    {
+      "source": "mixed",
+      "status": "supported",
+      "train_policies": null,
+      "train_files": [
+        "paper7\\trajectories\\greedy_seed0.npz",
+        "paper7\\trajectories\\greedy_seed1.npz",
+        "paper7\\trajectories\\random_seed0.npz",
+        "paper7\\trajectories\\random_seed1.npz"
+      ],
+      "eval_files": [
+        "paper7\\trajectories\\greedy_seed2.npz",
+        "paper7\\trajectories\\random_seed2.npz"
+      ],
+      "n_train_files": 4,
+      "n_eval_files": 2,
+      "n_train_transitions": 8000,
+      "training": {
+        "epochs": 10,
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "val_split": 0.1,
+        "best_val_loss": 0.0684154540157089,
+        "final_val_loss": 0.0684154540157089,
+        "final_val_reward_mse": 0.6830542058898852,
+        "final_val_obs_cosine": 0.9998109157268817
+      },
+      "evaluation": {
+        "all": {
+          "horizon_100_reward_mae": 0.324777,
+          "horizon_100_global_mae": 0.023505
+        },
+        "random": {
+          "horizon_100_reward_mae": 0.548417,
+          "horizon_100_global_mae": 0.127385
+        },
+        "greedy": {
+          "horizon_100_reward_mae": 0.5152,
+          "horizon_100_global_mae": 0.127048
+        }
+      }
+    }
+  ],
+  "comparison": {
+    "best_source_by_all_horizon_100_reward_mae": "mixed",
+    "best_source_by_all_horizon_100_global_mae": "mixed",
+    "best_source_by_random_horizon_100_reward_mae": "random_only",
+    "best_source_by_random_horizon_100_global_mae": "mixed",
+    "best_source_by_greedy_horizon_100_reward_mae": "greedy_only",
+    "best_source_by_greedy_horizon_100_global_mae": "mixed",
+    "mixed_minus_random_all_horizon_100_reward_mae": -0.42772,
+    "mixed_minus_random_all_horizon_100_global_mae": -0.079546,
+    "mixed_minus_random_random_horizon_100_reward_mae": 0.017888,
+    "mixed_minus_random_random_horizon_100_global_mae": -0.053427,
+    "mixed_minus_random_greedy_horizon_100_reward_mae": -0.669647,
+    "mixed_minus_random_greedy_horizon_100_global_mae": -0.068401,
+    "mixed_minus_greedy_all_horizon_100_reward_mae": -0.345888,
+    "mixed_minus_greedy_all_horizon_100_global_mae": -0.15829,
+    "mixed_minus_greedy_random_horizon_100_reward_mae": -0.805124,
+    "mixed_minus_greedy_random_horizon_100_global_mae": -0.224127,
+    "mixed_minus_greedy_greedy_horizon_100_reward_mae": 0.232704,
+    "mixed_minus_greedy_greedy_horizon_100_global_mae": -0.03116
+  },
+  "interpretation": "Source composition is treated as a robustness factor for the learned transition model; held-out rollout errors are compared across random, greedy, and mixed training data sources."
+}

@@ -175,25 +175,43 @@ def build_dongxing_mbrl_results_summary(
     transition_diagnostics: dict[str, Any],
     full_model_based_policy: dict[str, Any],
     model_based_optimization: dict[str, Any],
+    multistep_mbrl_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     trajectory_summary = build_dongxing_trajectory_summary(transition_diagnostics)
     policy_summary = dict(full_model_based_policy)
     optimization_summary = dict(model_based_optimization)
+    multistep_summary = dict(multistep_mbrl_policy or {})
+    has_multistep = (
+        multistep_summary.get("status")
+        == "supported_as_dongxing_multistep_learned_environment_policy"
+    )
     return {
         "status": "supported_as_local_dongxing_mbrl_results",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "transition_diagnostics": trajectory_summary,
         "full_model_based_policy": policy_summary,
         "model_based_optimization": optimization_summary,
+        "multistep_mbrl_policy": multistep_summary,
         "mbrl_transition_model_used": bool(
             policy_summary.get("mbrl_transition_model_used", False)
             or optimization_summary.get("mbrl_transition_model_used", False)
+            or multistep_summary.get("mbrl_transition_model_used", False)
         ),
         "policy_transfer_tested": False,
-        "multi_step_mbrl_planning_tested": False,
+        "multi_step_mbrl_planning_tested": bool(
+            has_multistep
+            and multistep_summary.get("multi_step_mbrl_planning_tested", False)
+        ),
         "interpretation": (
-            "Local Dongxing one-step model-based policy and held-out scoring "
-            "optimization; not cross-county transfer and not multi-step MBRL."
+            "Local Dongxing transition-model MBRL evidence bundles one-step "
+            "model-based policy evaluation, held-out scoring optimization, "
+            "and multi-step learned-environment policy optimization; not "
+            "direct cross-county policy transfer."
+            if has_multistep
+            else (
+                "Local Dongxing one-step model-based policy and held-out scoring "
+                "optimization; not cross-county transfer and not multi-step MBRL."
+            )
         ),
     }
 
@@ -267,6 +285,8 @@ def write_full_rigor_summaries(repo_root: Path = REPO_ROOT) -> dict[str, Path]:
     transition_diagnostics = _load_json(full_rigor_dir / "dongxing_transition_diagnostics.json")
     full_model_based_policy = _load_json(full_rigor_dir / "dongxing_full_model_based_policy.json")
     model_based_optimization = _load_json(full_rigor_dir / "dongxing_model_based_optimization.json")
+    multistep_path = full_rigor_dir / "dongxing_multistep_mbrl_policy.json"
+    multistep_mbrl_policy = _load_json(multistep_path) if multistep_path.exists() else {}
     full_env_smoke = _load_json(full_rigor_dir / "dongxing_full_env_smoke.json")
 
     trajectories_summary = build_dongxing_trajectory_summary(transition_diagnostics)
@@ -274,6 +294,7 @@ def write_full_rigor_summaries(repo_root: Path = REPO_ROOT) -> dict[str, Path]:
         transition_diagnostics,
         full_model_based_policy,
         model_based_optimization,
+        multistep_mbrl_policy,
     )
     transfer_finetune = build_transfer_finetune_summary(
         {

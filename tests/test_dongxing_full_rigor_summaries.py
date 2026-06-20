@@ -79,14 +79,27 @@ def test_build_dongxing_mbrl_results_summary_compacts_local_mbrl_evidence():
             "beats_baimu_aware_reward": False,
             "selection_eval_split": True,
         },
+        {
+            "status": "supported_as_dongxing_multistep_learned_environment_policy",
+            "n_training_transitions": 3000,
+            "n_eval_seeds": 5,
+            "planning_horizon": 100,
+            "real_eval_reward_mean": 88.0,
+            "real_eval_slope_change_pct_mean": -2.1,
+            "mbrl_transition_model_used": True,
+            "multi_step_mbrl_planning_tested": True,
+            "policy_transfer_tested": False,
+        },
     )
 
     assert summary["status"] == "supported_as_local_dongxing_mbrl_results"
     assert summary["transition_diagnostics"]["n_transitions"] == 3000
     assert summary["full_model_based_policy"]["n_eval_seeds"] == 10
     assert summary["model_based_optimization"]["best_candidate"] == "reward_slope_bonus_x2"
+    assert summary["multistep_mbrl_policy"]["planning_horizon"] == 100
     assert summary["mbrl_transition_model_used"] is True
     assert summary["policy_transfer_tested"] is False
+    assert summary["multi_step_mbrl_planning_tested"] is True
 
 
 def test_build_transfer_finetune_summary_marks_direct_transfer_structurally_invalid():
@@ -187,6 +200,20 @@ def test_write_full_rigor_summaries_writes_expected_files(tmp_path):
         ),
         encoding="utf-8",
     )
+    (full_rigor / "dongxing_multistep_mbrl_policy.json").write_text(
+        json.dumps(
+            {
+                "status": "supported_as_dongxing_multistep_learned_environment_policy",
+                "n_training_transitions": 12,
+                "planning_horizon": 2,
+                "real_environment_eval": {"summary": {"n": 2, "reward_mean": 8.0}},
+                "mbrl_transition_model_used": True,
+                "multi_step_mbrl_planning_tested": True,
+                "policy_transfer_tested": False,
+            }
+        ),
+        encoding="utf-8",
+    )
     (full_rigor / "dongxing_full_env_smoke.json").write_text(
         json.dumps(
             {
@@ -219,3 +246,5 @@ def test_write_full_rigor_summaries_writes_expected_files(tmp_path):
     assert summary["random_split_reward_mae"] == pytest.approx(0.5)
     assert summary["policy_holdout_count"] == 3
     assert summary["policy_holdout_reward_beats_baseline_count"] == 2
+    mbrl_summary = json.loads(outputs["dongxing_mbrl_results"].read_text(encoding="utf-8"))
+    assert mbrl_summary["multi_step_mbrl_planning_tested"] is True
