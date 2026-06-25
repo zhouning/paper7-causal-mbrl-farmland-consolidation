@@ -19,7 +19,7 @@ Target journal: Computers, Environment and Urban Systems.
 
 - [ ] Confirm CEUS still requests double-anonymized review in the submission system.
 - [ ] Confirm the final funding statement.
-- [ ] Prepare the missing pipeline figure referenced as `Fig.~\ref{fig:pipeline}`.
+- [x] Prepare the missing pipeline figure referenced as `Fig.~\ref{fig:pipeline}`.
 - [ ] Decide whether to upload supplementary result summaries or keep them for reviewer request.
 - [ ] Confirm whether raw cadastral data are restricted administrative data.
 - [ ] Prepare an anonymized code/data repository if CEUS requests one.

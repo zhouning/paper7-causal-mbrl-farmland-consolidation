@@ -110,10 +110,7 @@ Our approach consists of three stages (Fig.~\ref{fig:pipeline}): (1) trajectory 
 
 \begin{figure}[htbp]
 \centering
-\fbox{\begin{minipage}{0.92\textwidth}
-\centering
-Real county environment $\rightarrow$ random and greedy trajectory collection $\rightarrow$ neural transition model $\rightarrow$ learned county environment $\rightarrow$ policy training with optional observational reward calibration $\rightarrow$ deterministic evaluation on the real county environment.
-\end{minipage}}
+\includegraphics[width=0.92\textwidth]{../05_figures/figure_1_pipeline.pdf}
 \caption{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training.}
 \label{fig:pipeline}
 \end{figure}
@@ -706,5 +703,6 @@ Spatial planning of urban communities via deep reinforcement learning. Nature Co
 \end{thebibliography}
 
 \end{document}
+
 
 

@@ -1,8 +1,8 @@
 # Figure Status - Paper 7 CEUS Package
 
-No standalone figure files were found in `D:\test\paper7`.
+Standalone figure files now exist in `D:\test\paper7\submission\ceus\05_figures`.
 
-The manuscript now defines `Fig.~\ref{fig:pipeline}` as an embedded text-box pipeline figure, so the LaTeX reference is resolved. Before final CEUS submission, replacing that placeholder with a standalone publication-quality figure is recommended:
+The manuscript now uses `figure_1_pipeline.pdf` for `Fig.~\ref{fig:pipeline}`. Additional publication-quality figures are still recommended before final CEUS submission:
 
 - `figure_1_pipeline.png` or `.pdf`: trajectory collection, learned transition model, observational reward calibration, policy training in the learned environment, and real-environment evaluation.
 

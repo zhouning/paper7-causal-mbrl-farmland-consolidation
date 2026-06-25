@@ -24,7 +24,7 @@ Editor-facing cover letter tailored to CEUS.
 
 `05_figures/`
 
-Figure staging folder. No standalone figure files were present in the source `paper7` directory. The manuscript now includes an embedded text-box pipeline figure; see `README_figures.md` for recommended publication-quality figure work.
+Figure staging folder. The standalone pipeline figure is stored here as `figure_1_pipeline.pdf/png`; see `README_figures.md` for the remaining optional figure work.
 
 `06_latex_source_editable/`
 
@@ -61,7 +61,7 @@ Original English and Chinese Word files plus the original LaTeX source. Do not u
 - The abstract was shortened to satisfy the CEUS 250-word limit after the added experimental evidence.
 - The anonymous manuscript uses manual `thebibliography` references, so BibTeX is not required.
 - The body no longer relies on four unpublished author self-citations; those bibliography entries were removed.
-- The manuscript defines `Fig.~\ref{fig:pipeline}` as an embedded placeholder pipeline figure. A standalone publication-quality pipeline figure is still recommended before final CEUS submission.
+- The manuscript now uses a standalone publication-quality pipeline figure at `05_figures/figure_1_pipeline.pdf/png`.
 
 ## Build and Verification Snapshot
 
@@ -80,7 +80,7 @@ Anonymous manuscript and evidence-chain refresh checked on 2026-06-20.
 - Anonymous source grep: no exact hits for `Ning`, `Zhou`, `Xiang`, `Jing`, `Peking`, `pku`, `jingxiang`, or `School of Software`.
 - Self-citation grep: no hits for `zhou2026`, `Author(s)`, `Anonymized self-citation`, or related unpublished-self-citation markers.
 - LaTeX log scan: no undefined citations, undefined references, fatal errors, or emergency stops.
-- Anonymous source copy synchronized with the main anonymous manuscript, and anonymous source zip prepared: `CEUS_paper7_latex_source_anonymous.zip`.
+- Anonymous source copy synchronized with the main anonymous manuscript and standalone pipeline figure dependency, and anonymous source zip prepared: `CEUS_paper7_latex_source_anonymous.zip`.
 - Title page PDF compiled successfully: `02_title_page_author_info/title_page.pdf`, 1 page.
 - Signed manuscript compiled successfully after two `pdflatex` passes: `06_latex_source_editable/manuscript_signed.pdf`, 29 pages.
 - Title page, cover letter, highlights, signed source, and anonymous source were synchronized with the treatment-effect-informed wording and the added experiment boundary.
