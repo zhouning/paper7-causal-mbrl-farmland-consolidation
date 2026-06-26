@@ -1,63 +1,24 @@
 {
   "description": "End-to-end evidence audit for Paper 7. Expensive RL models are not retrained; the script validates the recorded data-to-result chain and classifies each manuscript claim by evidence level.",
-  "generated_utc": "2026-06-20T10:20:21.314765+00:00",
-  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation",
+  "generated_utc": "2026-06-26T00:24:37.133194+00:00",
+  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-review-hardening",
   "core_assets": {
-    "trajectories": [
-      {
-        "path": "paper7\\trajectories\\greedy_seed0.npz",
-        "exists": true,
-        "bytes": 277372243,
-        "modified_utc": "2026-04-06T15:49:55.322765+00:00"
-      },
-      {
-        "path": "paper7\\trajectories\\greedy_seed1.npz",
-        "exists": true,
-        "bytes": 277372243,
-        "modified_utc": "2026-04-06T15:52:22.197656+00:00"
-      },
-      {
-        "path": "paper7\\trajectories\\greedy_seed2.npz",
-        "exists": true,
-        "bytes": 277372243,
-        "modified_utc": "2026-04-06T15:54:48.513161+00:00"
-      },
-      {
-        "path": "paper7\\trajectories\\random_seed0.npz",
-        "exists": true,
-        "bytes": 277469428,
-        "modified_utc": "2026-04-06T15:49:55.360669+00:00"
-      },
-      {
-        "path": "paper7\\trajectories\\random_seed1.npz",
-        "exists": true,
-        "bytes": 277473860,
-        "modified_utc": "2026-04-06T15:52:21.724897+00:00"
-      },
-      {
-        "path": "paper7\\trajectories\\random_seed2.npz",
-        "exists": true,
-        "bytes": 277447664,
-        "modified_utc": "2026-04-06T15:54:48.054826+00:00"
-      }
-    ],
+    "trajectories": [],
     "transition_model": {
       "path": "paper7\\models\\transition_model.pt",
       "exists": true,
       "bytes": 956643,
-      "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+      "modified_utc": "2026-06-25T14:33:50.186982+00:00"
     },
     "training_history": {
       "path": "paper7\\models\\training_history.json",
       "exists": true,
       "bytes": 5210,
-      "modified_utc": "2026-06-17T13:49:39.725010+00:00"
+      "modified_utc": "2026-06-25T14:33:50.171340+00:00"
     },
     "dongxing_slope_gpkg": {
       "path": "paper7\\data\\dongxing_DLTB_with_slope.gpkg",
-      "exists": true,
-      "bytes": 184639488,
-      "modified_utc": "2026-06-17T09:30:06.737925+00:00"
+      "exists": false
     }
   },
   "evidence": {
@@ -67,13 +28,13 @@
         "path": "paper7\\models\\transition_model.pt",
         "exists": true,
         "bytes": 956643,
-        "modified_utc": "2026-04-06T18:27:17.812703+00:00"
+        "modified_utc": "2026-06-25T14:33:50.186982+00:00"
       },
       "history": {
         "path": "paper7\\models\\training_history.json",
         "exists": true,
         "bytes": 5210,
-        "modified_utc": "2026-06-17T13:49:39.725010+00:00"
+        "modified_utc": "2026-06-25T14:33:50.171340+00:00"
       },
       "epochs_recorded": 50,
       "best_val_loss": 0.088109,
@@ -109,7 +70,27 @@
       "no_cal_std": 0.129237,
       "with_cal_mean": -1.102462,
       "with_cal_std": 0.099865,
-      "improvement_pct": 12.993898
+      "improvement_pct": 12.993898,
+      "paired_test_method": "exact_sign_flip",
+      "calibration_slope_one_sided_p": 0.011963,
+      "calibration_slope_two_sided_p": 0.023926,
+      "calibrated_slope_win_count": 10,
+      "uncalibrated_slope_win_count": 5,
+      "slope_tie_count": 0,
+      "paired_slope_test": {
+        "paired_test": "exact_sign_flip",
+        "alternative": "less",
+        "n_pairs": 15,
+        "n_nonzero_pairs": 15,
+        "negative_delta_count": 10,
+        "positive_delta_count": 5,
+        "zero_delta_count": 0,
+        "observed_delta_mean": -0.126779,
+        "observed_delta_sum": -1.901688,
+        "one_sided_p": 0.011963,
+        "two_sided_p": 0.023926,
+        "interpretation_boundary": "Seed evaluations are paired by seed; use this exact sign-flip randomization result rather than independent-sample Mann-Whitney wording for calibration effects."
+      }
     },
     "alpha_grid": {
       "status": "supported",
@@ -153,6 +134,65 @@
       "n_pareto_rows": 6,
       "n_best_policy_by_weight": 14,
       "policy_retraining_under_all_weights": false,
+      "reward_specification_exported": true,
+      "reward_specification": {
+        "canonical_equation": "reward = slope_weight * slope_delta + cont_weight * cont_delta + baimu_weight * baimu_area_delta + baimu_bonus * baimu_new_count + I(baimu_area_delta < 0) * baimu_area_penalty * baimu_area_delta - I(completed_swaps <= 0) * no_swap_penalty",
+        "default_weights": {
+          "slope_weight": 4000.0,
+          "cont_weight": 500.0,
+          "baimu_weight": 1500.0,
+          "baimu_bonus": 5.0,
+          "baimu_area_penalty": 2000.0,
+          "no_swap_penalty": 1.0
+        },
+        "terms": [
+          {
+            "component": "slope_delta",
+            "weight_key": "slope_weight",
+            "sign": "positive",
+            "optimization_direction": "maximize",
+            "interpretation": "higher slope_delta increases reward"
+          },
+          {
+            "component": "cont_delta",
+            "weight_key": "cont_weight",
+            "sign": "positive",
+            "optimization_direction": "maximize",
+            "interpretation": "higher contiguity change increases reward"
+          },
+          {
+            "component": "baimu_area_delta",
+            "weight_key": "baimu_weight",
+            "sign": "positive",
+            "optimization_direction": "maximize",
+            "interpretation": "higher baimu area change increases reward"
+          },
+          {
+            "component": "baimu_new_count",
+            "weight_key": "baimu_bonus",
+            "sign": "positive",
+            "optimization_direction": "maximize",
+            "interpretation": "new baimu count contributes a positive bonus"
+          },
+          {
+            "component": "negative_baimu_area_penalty",
+            "weight_key": "baimu_area_penalty",
+            "condition": "baimu_area_delta < 0",
+            "sign": "negative_when_triggered",
+            "optimization_direction": "avoid_negative_area_delta",
+            "interpretation": "negative baimu area change receives an additional penalty"
+          },
+          {
+            "component": "no_swap_penalty",
+            "weight_key": "no_swap_penalty",
+            "condition": "completed_swaps <= 0",
+            "sign": "negative_when_triggered",
+            "optimization_direction": "avoid_no_swap_action",
+            "interpretation": "zero-swap or invalid actions lose a fixed reward amount"
+          }
+        ],
+        "interpretation_boundary": "Weight replay is fixed-policy sensitivity on recorded action sequences; it is not retraining under each reward setting."
+      },
       "interpretation": "fixed-policy reward-component replay; supports reward preference analysis but does not prove retrained-policy robustness under every weight setting"
     },
     "planning_significance": {
@@ -165,6 +205,10 @@
       "contiguity_delta_with_minus_no_mean": -0.001977,
       "baimu_count_delta_with_minus_no_mean": -0.2,
       "baimu_area_delta_with_minus_no_mean": -67.208419,
+      "paired_test_method": "exact_sign_flip",
+      "calibration_slope_one_sided_p": 0.011963,
+      "calibrated_slope_win_count": 10,
+      "uncalibrated_slope_win_count": 5,
       "action_concentration_status": "head_only_available",
       "interpretation": "planning outcomes include slope, contiguity, baimu, reward, budget, and available action-concentration diagnostics"
     },
@@ -2496,6 +2540,22 @@
       "evidence_level": "fixed_policy_reward_component_replay",
       "policy_retraining_under_all_weights": false,
       "interpretation": "fixed-policy reward-component replay; supports reward preference analysis but does not prove retrained-policy robustness under every weight setting"
+    },
+    {
+      "id": "reward_specification_scope",
+      "claim": "The scalar reward function is exported as a canonical machine-readable specification.",
+      "status": "supported_as_reward_specification_export",
+      "evidence_level": "code_exported_canonical_reward_specification",
+      "default_weights": {
+        "slope_weight": 4000.0,
+        "cont_weight": 500.0,
+        "baimu_weight": 1500.0,
+        "baimu_bonus": 5.0,
+        "baimu_area_penalty": 2000.0,
+        "no_swap_penalty": 1.0
+      },
+      "policy_retraining_under_all_weights": false,
+      "interpretation": "Weight replay is fixed-policy sensitivity on recorded action sequences; it is not retraining under each reward setting."
     },
     {
       "id": "dongxing_full_real_environment_scope",

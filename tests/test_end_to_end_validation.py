@@ -219,6 +219,30 @@ def test_reward_rigor_scope_is_bounded_when_weight_sensitivity_exists():
     assert reward_scope["policy_retraining_under_all_weights"] is False
 
 
+def test_reward_specification_scope_is_exported_when_present():
+    scopes = classify_claim_scope(
+        {
+            "reward_weight_sensitivity": {
+                "status": "supported_as_fixed_policy_reward_sensitivity",
+                "reward_specification_exported": True,
+                "reward_specification": {
+                    "default_weights": {"slope_weight": 4000.0},
+                    "interpretation_boundary": "fixed-policy sensitivity, not retraining",
+                },
+                "interpretation": "fixed-policy reward-component replay",
+            }
+        }
+    )
+
+    spec_scope = next(
+        item for item in scopes if item["id"] == "reward_specification_scope"
+    )
+    assert spec_scope["status"] == "supported_as_reward_specification_export"
+    assert spec_scope["evidence_level"] == "code_exported_canonical_reward_specification"
+    assert spec_scope["default_weights"]["slope_weight"] == 4000.0
+    assert spec_scope["policy_retraining_under_all_weights"] is False
+
+
 def test_new_evidence_summarizers_extract_core_metrics(tmp_path):
     reward_path = tmp_path / "reward.json"
     planning_path = tmp_path / "planning.json"
@@ -277,6 +301,10 @@ def test_summarize_reward_weight_sensitivity_extracts_bounded_metrics(tmp_path):
             "policy_metric_summaries": [{"policy": "a"}] * 6,
             "pareto_front": [{"policy": "a"}, {"policy": "b"}],
             "best_policy_by_weight": [{"weight_name": "default", "policy": "a"}],
+            "reward_specification": {
+                "default_weights": {"slope_weight": 4000.0},
+                "interpretation_boundary": "fixed-policy sensitivity, not retraining",
+            },
         },
     )
 
@@ -288,6 +316,8 @@ def test_summarize_reward_weight_sensitivity_extracts_bounded_metrics(tmp_path):
     assert summary["n_policy_metric_summaries"] == 6
     assert summary["n_pareto_rows"] == 2
     assert summary["policy_retraining_under_all_weights"] is False
+    assert summary["reward_specification_exported"] is True
+    assert summary["reward_specification"]["default_weights"]["slope_weight"] == 4000.0
 
 
 def test_summarize_dongxing_full_baselines_extracts_scope(tmp_path):

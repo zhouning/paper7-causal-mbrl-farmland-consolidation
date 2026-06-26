@@ -1,6 +1,6 @@
 {
   "description": "Reward component replay under alternative reward weights. Final planning metrics are real-environment metrics from the original rollouts.",
-  "generated_utc": "2026-06-19T11:56:03.090462+00:00",
+  "generated_utc": "2026-06-26T00:16:07.673689+00:00",
   "n_episodes": 60,
   "n_weight_settings": 14,
   "policy_weight_summaries": [
@@ -2201,5 +2201,63 @@
       "baimu_count_change_mean": -15.0
     }
   ],
+  "reward_specification": {
+    "canonical_equation": "reward = slope_weight * slope_delta + cont_weight * cont_delta + baimu_weight * baimu_area_delta + baimu_bonus * baimu_new_count + I(baimu_area_delta < 0) * baimu_area_penalty * baimu_area_delta - I(completed_swaps <= 0) * no_swap_penalty",
+    "default_weights": {
+      "slope_weight": 4000.0,
+      "cont_weight": 500.0,
+      "baimu_weight": 1500.0,
+      "baimu_bonus": 5.0,
+      "baimu_area_penalty": 2000.0,
+      "no_swap_penalty": 1.0
+    },
+    "terms": [
+      {
+        "component": "slope_delta",
+        "weight_key": "slope_weight",
+        "sign": "positive",
+        "optimization_direction": "maximize",
+        "interpretation": "higher slope_delta increases reward"
+      },
+      {
+        "component": "cont_delta",
+        "weight_key": "cont_weight",
+        "sign": "positive",
+        "optimization_direction": "maximize",
+        "interpretation": "higher contiguity change increases reward"
+      },
+      {
+        "component": "baimu_area_delta",
+        "weight_key": "baimu_weight",
+        "sign": "positive",
+        "optimization_direction": "maximize",
+        "interpretation": "higher baimu area change increases reward"
+      },
+      {
+        "component": "baimu_new_count",
+        "weight_key": "baimu_bonus",
+        "sign": "positive",
+        "optimization_direction": "maximize",
+        "interpretation": "new baimu count contributes a positive bonus"
+      },
+      {
+        "component": "negative_baimu_area_penalty",
+        "weight_key": "baimu_area_penalty",
+        "condition": "baimu_area_delta < 0",
+        "sign": "negative_when_triggered",
+        "optimization_direction": "avoid_negative_area_delta",
+        "interpretation": "negative baimu area change receives an additional penalty"
+      },
+      {
+        "component": "no_swap_penalty",
+        "weight_key": "no_swap_penalty",
+        "condition": "completed_swaps <= 0",
+        "sign": "negative_when_triggered",
+        "optimization_direction": "avoid_no_swap_action",
+        "interpretation": "zero-swap or invalid actions lose a fixed reward amount"
+      }
+    ],
+    "interpretation_boundary": "Weight replay is fixed-policy sensitivity on recorded action sequences; it is not retraining under each reward setting."
+  },
   "interpretation_boundary": "This replays scalar rewards for fixed action sequences; it does not replace retraining policies under each weight setting."
 }

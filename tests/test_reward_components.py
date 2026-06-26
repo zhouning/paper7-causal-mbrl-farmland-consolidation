@@ -5,6 +5,7 @@ from paper7.reward_components import (
     default_reward_weights,
     generate_weight_grid,
     pareto_front,
+    reward_specification,
 )
 
 
@@ -90,3 +91,19 @@ def test_pareto_front_keeps_non_dominated_rows_for_mixed_directions():
 
     ids = {row["id"] for row in front}
     assert ids == {"b", "c"}
+
+
+def test_reward_specification_exports_equation_weights_and_boundaries():
+    spec = reward_specification()
+    terms = {term["component"]: term for term in spec["terms"]}
+
+    assert spec["default_weights"] == default_reward_weights().to_dict()
+    assert "slope_weight * slope_delta" in spec["canonical_equation"]
+    assert terms["slope_delta"]["weight_key"] == "slope_weight"
+    assert terms["slope_delta"]["optimization_direction"] == "maximize"
+    assert terms["cont_delta"]["weight_key"] == "cont_weight"
+    assert terms["baimu_area_delta"]["weight_key"] == "baimu_weight"
+    assert terms["baimu_new_count"]["weight_key"] == "baimu_bonus"
+    assert terms["negative_baimu_area_penalty"]["condition"] == "baimu_area_delta < 0"
+    assert terms["no_swap_penalty"]["condition"] == "completed_swaps <= 0"
+    assert "fixed-policy sensitivity" in spec["interpretation_boundary"]

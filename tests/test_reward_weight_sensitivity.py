@@ -1,3 +1,7 @@
+import subprocess
+import sys
+from pathlib import Path
+
 from paper7.reward_components import RewardWeights
 from paper7.reward_weight_sensitivity import (
     replay_episode_reward,
@@ -77,3 +81,18 @@ def test_summarize_replayed_episodes_groups_by_policy_and_weight_name():
     assert report["pareto_front"]
     assert len({row["policy"] for row in report["pareto_front"]}) == len(report["pareto_front"])
     assert {item["weight_name"] for item in report["best_policy_by_weight"]} == {"unit", "slope_only"}
+    assert report["reward_specification"]["default_weights"]["slope_weight"] == 4000.0
+    assert "fixed-policy sensitivity" in report["reward_specification"]["interpretation_boundary"]
+
+
+def test_reward_weight_sensitivity_script_help_runs_from_repo_root():
+    repo_root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, "paper7/reward_weight_sensitivity.py", "--help"],
+        cwd=repo_root,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "--rollouts" in result.stdout

@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 from collections import Counter
+from itertools import product
 from pathlib import Path
 from statistics import mean, pstdev
 from typing import Any
@@ -68,6 +69,62 @@ def summarize_policy_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             summary[f"{field_name}_min"] = round(min(values), 6)
             summary[f"{field_name}_max"] = round(max(values), 6)
     return summary
+
+
+def exact_sign_flip_test(
+    deltas: list[float], alternative: str = "two-sided"
+) -> dict[str, Any]:
+    """Run an exact paired sign-flip randomization test on paired deltas."""
+    if alternative not in {"less", "greater", "two-sided"}:
+        raise ValueError("alternative must be 'less', 'greater', or 'two-sided'")
+
+    clean = [float(value) for value in deltas if math.isfinite(float(value))]
+    nonzero = [value for value in clean if value != 0.0]
+    observed = sum(nonzero)
+    n_nonzero = len(nonzero)
+    if n_nonzero > 20:
+        raise ValueError("exact sign-flip enumeration is capped at 20 non-zero pairs")
+
+    if n_nonzero == 0:
+        one_sided_p = 1.0
+        two_sided_p = 1.0
+    else:
+        magnitudes = [abs(value) for value in nonzero]
+        flipped_sums = [
+            sum(sign * magnitude for sign, magnitude in zip(signs, magnitudes))
+            for signs in product((-1.0, 1.0), repeat=n_nonzero)
+        ]
+        total = len(flipped_sums)
+        if alternative == "less":
+            one_sided_p = sum(value <= observed for value in flipped_sums) / total
+        elif alternative == "greater":
+            one_sided_p = sum(value >= observed for value in flipped_sums) / total
+        else:
+            lower = sum(value <= observed for value in flipped_sums) / total
+            upper = sum(value >= observed for value in flipped_sums) / total
+            one_sided_p = min(1.0, 2.0 * min(lower, upper))
+        two_sided_p = (
+            sum(abs(value) >= abs(observed) for value in flipped_sums) / total
+        )
+
+    return {
+        "paired_test": "exact_sign_flip",
+        "alternative": alternative,
+        "n_pairs": len(clean),
+        "n_nonzero_pairs": n_nonzero,
+        "negative_delta_count": sum(value < 0.0 for value in clean),
+        "positive_delta_count": sum(value > 0.0 for value in clean),
+        "zero_delta_count": sum(value == 0.0 for value in clean),
+        "observed_delta_mean": round(mean(clean), 6) if clean else None,
+        "observed_delta_sum": round(sum(clean), 6) if clean else None,
+        "one_sided_p": round(one_sided_p, 6),
+        "two_sided_p": round(two_sided_p, 6),
+        "interpretation_boundary": (
+            "Seed evaluations are paired by seed; use this exact sign-flip "
+            "randomization result rather than independent-sample Mann-Whitney "
+            "wording for calibration effects."
+        ),
+    }
 
 
 def build_report(
@@ -173,6 +230,10 @@ def _paired_deltas(
         if values:
             summary[f"{key}_mean"] = round(mean(values), 6)
             summary[f"{key}_sd"] = round(pstdev(values), 6) if len(values) > 1 else 0.0
+            if field_name == "slope_change_pct":
+                summary[f"{key}_paired_test"] = exact_sign_flip_test(
+                    values, alternative="less"
+                )
     summary["per_seed"] = deltas
     return summary
 

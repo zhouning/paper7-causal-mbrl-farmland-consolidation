@@ -30,6 +30,7 @@ from stable_baselines3.common.monitor import Monitor
 from county_env import CountyLevelEnv, K_BLOCK, K_GLOBAL_COUNTY
 from parcel_scoring_policy import ParcelScoringPolicy
 from learned_env import TransitionModel, LearnedCountyEnv
+from planning_significance_audit import exact_sign_flip_test
 
 PAPER7_DIR = os.path.dirname(os.path.abspath(__file__))
 REVISION_DIR = os.path.join(PAPER7_DIR, 'results', 'revision')
@@ -171,10 +172,17 @@ def run_seeds(n_seeds=15):
     print(f"  No calibration:   {np.mean(nc_slopes):+.3f}% ± {np.std(nc_slopes):.3f}%")
     print(f"  With calibration: {np.mean(wc_slopes):+.3f}% ± {np.std(wc_slopes):.3f}%")
 
-    # Statistical test
-    from scipy import stats
-    U, p = stats.mannwhitneyu(wc_slopes, nc_slopes, alternative='less')
-    print(f"  Mann-Whitney U: U={U:.0f}, p={p:.6f} {'***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else 'ns'}")
+    # Paired exact test because no_cal and with_cal are matched by seed.
+    no_by_seed = {int(r['seed']): r for r in nocal}
+    with_by_seed = {int(r['seed']): r for r in withcal}
+    paired_seeds = sorted(set(no_by_seed).intersection(with_by_seed))
+    paired_deltas = [
+        with_by_seed[seed]['slope_change_pct'] - no_by_seed[seed]['slope_change_pct']
+        for seed in paired_seeds
+    ]
+    paired_test = exact_sign_flip_test(paired_deltas, alternative='less')
+    p = paired_test['one_sided_p']
+    print(f"  Exact paired sign-flip: p={p:.6f} {'***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else 'ns'}")
     print(f"{'='*60}")
 
     with open(os.path.join(out_dir, 'summary.json'), 'w') as f:
@@ -183,8 +191,13 @@ def run_seeds(n_seeds=15):
             'no_cal_std': float(np.std(nc_slopes)),
             'with_cal_mean': float(np.mean(wc_slopes)),
             'with_cal_std': float(np.std(wc_slopes)),
-            'mann_whitney_U': float(U),
-            'mann_whitney_p': float(p),
+            'paired_test_method': paired_test['paired_test'],
+            'calibration_slope_one_sided_p': float(paired_test['one_sided_p']),
+            'calibration_slope_two_sided_p': float(paired_test['two_sided_p']),
+            'calibrated_slope_win_count': paired_test['negative_delta_count'],
+            'uncalibrated_slope_win_count': paired_test['positive_delta_count'],
+            'slope_tie_count': paired_test['zero_delta_count'],
+            'paired_slope_test': paired_test,
             'n_seeds': n_seeds,
         }, f, indent=2)
 

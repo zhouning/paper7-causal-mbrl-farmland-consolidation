@@ -55,6 +55,73 @@ def compute_scalar_reward(components: RewardComponents, weights: RewardWeights) 
     return float(reward)
 
 
+def reward_specification(weights: RewardWeights | None = None) -> dict[str, Any]:
+    """Return the canonical scalar reward formula and its review boundaries."""
+    if weights is None:
+        weights = default_reward_weights()
+    return {
+        "canonical_equation": (
+            "reward = slope_weight * slope_delta "
+            "+ cont_weight * cont_delta "
+            "+ baimu_weight * baimu_area_delta "
+            "+ baimu_bonus * baimu_new_count "
+            "+ I(baimu_area_delta < 0) * baimu_area_penalty * baimu_area_delta "
+            "- I(completed_swaps <= 0) * no_swap_penalty"
+        ),
+        "default_weights": weights.to_dict(),
+        "terms": [
+            {
+                "component": "slope_delta",
+                "weight_key": "slope_weight",
+                "sign": "positive",
+                "optimization_direction": "maximize",
+                "interpretation": "higher slope_delta increases reward",
+            },
+            {
+                "component": "cont_delta",
+                "weight_key": "cont_weight",
+                "sign": "positive",
+                "optimization_direction": "maximize",
+                "interpretation": "higher contiguity change increases reward",
+            },
+            {
+                "component": "baimu_area_delta",
+                "weight_key": "baimu_weight",
+                "sign": "positive",
+                "optimization_direction": "maximize",
+                "interpretation": "higher baimu area change increases reward",
+            },
+            {
+                "component": "baimu_new_count",
+                "weight_key": "baimu_bonus",
+                "sign": "positive",
+                "optimization_direction": "maximize",
+                "interpretation": "new baimu count contributes a positive bonus",
+            },
+            {
+                "component": "negative_baimu_area_penalty",
+                "weight_key": "baimu_area_penalty",
+                "condition": "baimu_area_delta < 0",
+                "sign": "negative_when_triggered",
+                "optimization_direction": "avoid_negative_area_delta",
+                "interpretation": "negative baimu area change receives an additional penalty",
+            },
+            {
+                "component": "no_swap_penalty",
+                "weight_key": "no_swap_penalty",
+                "condition": "completed_swaps <= 0",
+                "sign": "negative_when_triggered",
+                "optimization_direction": "avoid_no_swap_action",
+                "interpretation": "zero-swap or invalid actions lose a fixed reward amount",
+            },
+        ],
+        "interpretation_boundary": (
+            "Weight replay is fixed-policy sensitivity on recorded action sequences; "
+            "it is not retraining under each reward setting."
+        ),
+    }
+
+
 def generate_weight_grid() -> list[dict[str, Any]]:
     base = default_reward_weights()
     variants = [

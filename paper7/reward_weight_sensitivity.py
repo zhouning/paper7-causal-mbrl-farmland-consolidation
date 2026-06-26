@@ -5,9 +5,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+PAPER7_DIR = Path(__file__).resolve().parent
+REPO_ROOT = PAPER7_DIR.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from paper7.reward_components import (
     RewardComponents,
@@ -15,6 +21,7 @@ from paper7.reward_components import (
     compute_scalar_reward,
     generate_weight_grid,
     pareto_front,
+    reward_specification,
 )
 
 
@@ -115,6 +122,7 @@ def summarize_replayed_episodes(
         "pareto_front": front,
         "default_weight_rows": default_rows,
         "best_policy_by_weight": best_policy_by_weight,
+        "reward_specification": reward_specification(),
         "interpretation_boundary": (
             "This replays scalar rewards for fixed action sequences; it does not "
             "replace retraining policies under each weight setting."

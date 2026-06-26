@@ -44,7 +44,7 @@ The learned transition model depends on:
 
 These large files are distributed as GitHub Release assets. See `DATA_ASSETS.md` for names, target paths, sizes, and SHA256 checksums.
 
-The Dongxing external-county feasibility check additionally depends on Dongxing cadastral data and public DEM-derived slope assets. These files are used only for the external data/action-space/dynamic non-RL checks and are not evidence of cross-county learned-policy transfer.
+The Dongxing external-county checks additionally depend on Dongxing cadastral data and public DEM-derived slope assets. These files support external data/action-space checks, dynamic non-RL feasibility, local full-reward baselines, local learned-policy actionability, and local model-based planning evidence; they are still not evidence of direct Bishan-to-Dongxing learned-policy transfer.
 
 ## Main Reproduction Steps
 
@@ -74,6 +74,8 @@ Outputs:
 
 - `paper7/models/transition_model.pt`
 - `paper7/models/training_history.json`
+
+The stored CEUS revision training history currently records 50 epochs. The command above is the full training recipe; the audit command below validates the stored artifact chain and does not imply fresh retraining.
 
 ### 3. Estimate Observational Reward Calibration
 
@@ -106,13 +108,20 @@ Existing ablation outputs are already included under:
 
 ### 6. Audit The Stored Evidence Chain
 
-The revision also includes a policy-induced learned-vs-real diagnostic. It loads three trained calibrated policy checkpoints, lets each policy select actions from the learned environment, replays the same actions in the real environment, and reports state, reward, mask, support-distance, and final real-outcome metrics:
+The revision also includes a policy-induced learned-vs-real diagnostic. The stored expanded diagnostic uses 15 calibrated policy seeds, lets each policy select actions from the learned environment, replays the same actions in the real environment, and reports state, reward, mask, support-distance, and final real-outcome metrics:
 
 ```bash
 python paper7/policy_induced_diagnostics.py --output paper7/results/revision/policy_induced_diagnostics.json
 ```
 
-The CEUS revision includes an executable audit that verifies the recorded data-to-result chain without retraining all expensive policies:
+The CEUS revision includes executable audits that verify the recorded data-to-result chain without retraining all expensive policies:
+
+```bash
+python paper7/planning_significance_audit.py
+python paper7/reward_weight_sensitivity.py
+```
+
+These commands refresh paired seed statistics and fixed-policy reward-component replay artifacts, including the canonical reward specification. They verify stored outputs and replay recorded action sequences; they do not perform full fresh policy retraining.
 
 ```bash
 python paper7/end_to_end_validation.py --out paper7/results/revision/end_to_end_validation.json
@@ -123,8 +132,8 @@ Expected high-level audit status:
 - `overall_status`: `supported_with_bounded_external_scope`
 - Bishan learned-policy chain: 15 paired calibrated/uncalibrated real-environment evaluation seeds
 - Reward-scaling grid: 40 stored runs over 8 alpha values
-- Policy-induced learned-vs-real diagnostics: 3 calibrated policy checkpoints, 100 synchronized steps each
-- Dongxing: `supported_as_external_feasibility`, not learned-policy transfer
+- Policy-induced learned-vs-real diagnostics: 15 calibrated policy seeds, with final real-environment outcomes and support-distance checks
+- Dongxing: `supported_as_external_full_reward_counterpart`, still not direct learned-policy transfer
 
 ## Manuscript Rebuild
 
@@ -153,11 +162,11 @@ The current manuscript reports:
 
 - uncalibrated model-based slope reduction: `-0.976% +/- 0.129%`
 - calibrated model-based slope reduction: `-1.102% +/- 0.100%`
-- observational calibration gain over uncalibrated learned environment: `13.0%`, `p = 0.004`
+- paired calibrated-minus-uncalibrated slope delta: `-0.127` percentage points; exact sign-flip one-sided `p = 0.011963`
 - pre-specified calibration factor: `alpha = 0.185`
 - transition model validation cosine similarity: `0.9998`
 - 100-step rollout diagnostics: action-mask agreement `0.997`, reward MAE `0.234`
-- policy-induced diagnostics: action-mask agreement `0.997`, support distance `0.011`, final real slope change `-1.109%`
-- Dongxing external feasibility: 2,978 mixed blocks from 134,369 parcels, dynamic non-RL slope reduction `0.883--1.218%`
+- policy-induced diagnostics: action-mask agreement `0.998`, support distance `0.013`, final real slope change `-1.106%`
+- Dongxing external counterpart: 2,978 mixed blocks from 134,369 parcels, dynamic non-RL slope reduction `0.883--1.218%`, plus local full-reward baselines and local model-based planning evidence
 
 See `submission/ceus/01_main_document_anonymous/manuscript.tex` and `paper7/results/` for detailed tables and result artifacts.

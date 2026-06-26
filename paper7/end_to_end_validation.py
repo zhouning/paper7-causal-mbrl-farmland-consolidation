@@ -32,6 +32,7 @@ from paper7.dongxing_full_rigor_summaries import (
     summarize_dongxing_trajectory_summary,
     summarize_transfer_finetune_results,
 )
+from paper7.planning_significance_audit import exact_sign_flip_test
 
 
 def load_json(path: Path) -> Any:
@@ -98,6 +99,8 @@ def summarize_seed_evaluations(seed_dir: Path) -> dict[str, Any]:
     paired = sorted(set(no_cal).intersection(with_cal))
     no_values = [no_cal[seed] for seed in paired]
     with_values = [with_cal[seed] for seed in paired]
+    slope_deltas = [with_cal[seed] - no_cal[seed] for seed in paired]
+    paired_test = exact_sign_flip_test(slope_deltas, alternative="less") if paired else None
     no_mean = mean(no_values) if no_values else math.nan
     with_mean = mean(with_values) if with_values else math.nan
     improvement_pct = (
@@ -121,6 +124,17 @@ def summarize_seed_evaluations(seed_dir: Path) -> dict[str, Any]:
         if len(with_values) > 1
         else 0.0,
         "improvement_pct": round(improvement_pct, 6) if no_values else None,
+        "paired_test_method": paired_test["paired_test"] if paired_test else None,
+        "calibration_slope_one_sided_p": paired_test["one_sided_p"]
+        if paired_test
+        else None,
+        "calibration_slope_two_sided_p": paired_test["two_sided_p"]
+        if paired_test
+        else None,
+        "calibrated_slope_win_count": sum(delta < 0.0 for delta in slope_deltas),
+        "uncalibrated_slope_win_count": sum(delta > 0.0 for delta in slope_deltas),
+        "slope_tie_count": sum(delta == 0.0 for delta in slope_deltas),
+        "paired_slope_test": paired_test,
     }
 
 
@@ -349,6 +363,8 @@ def summarize_reward_weight_sensitivity(path: Path) -> dict[str, Any]:
         "n_pareto_rows": len(payload.get("pareto_front", [])),
         "n_best_policy_by_weight": len(payload.get("best_policy_by_weight", [])),
         "policy_retraining_under_all_weights": False,
+        "reward_specification_exported": "reward_specification" in payload,
+        "reward_specification": payload.get("reward_specification"),
         "interpretation": (
             "fixed-policy reward-component replay; supports reward preference "
             "analysis but does not prove retrained-policy robustness under every "
@@ -362,6 +378,7 @@ def summarize_planning_significance(path: Path) -> dict[str, Any]:
     effects = payload["paired_calibration_effects"]
     calibrated = payload["calibrated_policy"]
     uncalibrated = payload.get("uncalibrated_policy", {})
+    slope_test = effects.get("slope_change_pct_delta_with_minus_no_paired_test", {})
     return {
         "status": "supported",
         "path": display_path(path),
@@ -380,6 +397,10 @@ def summarize_planning_significance(path: Path) -> dict[str, Any]:
         "baimu_area_delta_with_minus_no_mean": effects.get(
             "baimu_area_change_ha_delta_with_minus_no_mean"
         ),
+        "paired_test_method": slope_test.get("paired_test"),
+        "calibration_slope_one_sided_p": slope_test.get("one_sided_p"),
+        "calibrated_slope_win_count": slope_test.get("negative_delta_count"),
+        "uncalibrated_slope_win_count": slope_test.get("positive_delta_count"),
         "action_concentration_status": payload.get("action_concentration", {}).get("status"),
         "interpretation": (
             "planning outcomes include slope, contiguity, baimu, reward, budget, "
@@ -928,6 +949,25 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": reward_sensitivity.get("interpretation"),
             }
         )
+        reward_spec = reward_sensitivity.get("reward_specification")
+        if reward_spec:
+            scopes.append(
+                {
+                    "id": "reward_specification_scope",
+                    "claim": (
+                        "The scalar reward function is exported as a canonical "
+                        "machine-readable specification."
+                    ),
+                    "status": "supported_as_reward_specification_export",
+                    "evidence_level": "code_exported_canonical_reward_specification",
+                    "default_weights": reward_spec.get("default_weights"),
+                    "policy_retraining_under_all_weights": False,
+                    "interpretation": reward_spec.get(
+                        "interpretation_boundary",
+                        reward_sensitivity.get("interpretation"),
+                    ),
+                }
+            )
     if dongxing_full.get("status") in {
         "supported_as_full_real_environment_baselines",
         "supported_as_full_real_environment_baseline_pilot",
