@@ -386,14 +386,14 @@ Final real slope change (\%) & $-1.106$ & $-1.317$--$-0.946$ \\
 Configuration & $n$ & Slope (\%) & $p$-value & Wins \\
 \midrule
 No calibration ($\alpha = 1.0$)       & 15 & $-0.976 \pm 0.129$ & --- & --- \\
-With calibration ($\alpha = 0.185$)   & 15 & $\mathbf{-1.102 \pm 0.100}$ & $0.004^{**}$ & 10/15 \\
+With calibration ($\alpha = 0.185$)   & 15 & $\mathbf{-1.102 \pm 0.100}$ & $0.012$ / $0.024$ & 10/15 \\
 \midrule
 Improvement & & $+13.0\%$ & & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Observational calibration improves slope reduction by 13.0\% ($-1.102\%$ vs.\ $-0.976\%$). Because the calibrated and uncalibrated policies are paired by seed, we use an exact paired sign-flip test rather than an independent-sample Mann--Whitney test. The paired slope delta is $-0.127$ percentage points, with one-sided $p=0.012$ and two-sided $p=0.024$; the calibrated policy achieves better slope reduction in 10 of 15 seeds. The improvement is robust in the planning sense that the worst calibrated seed ($-0.946\%$) still matches the uncalibrated mean.
+Observational calibration improves slope reduction by 13.0\% ($-1.102\%$ vs.\ $-0.976\%$). Because the calibrated and uncalibrated policies are paired by seed, we use an exact paired sign-flip test rather than an independent-sample test. The paired slope delta is $-0.127$ percentage points, with one-sided $p=0.012$ and two-sided $p=0.024$; the calibrated policy achieves better slope reduction in 10 of 15 seeds. The improvement is robust in the planning sense that the worst calibrated seed ($-0.946\%$) still matches the uncalibrated mean.
 
 The calibration factor $\alpha = 0.185$ indicates that the learned environment overestimates the reward differential between high- and low-quality actions by $5.4\times$. Without correction, the policy exploits this overestimation by concentrating on a narrow set of ``apparently high-value'' blocks; with calibration, the flattened reward landscape encourages broader exploration and more balanced block selection.
 

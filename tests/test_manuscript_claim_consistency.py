@@ -27,10 +27,11 @@ def test_manuscript_uses_audited_paired_calibration_p_values():
     one_sided = f"p={paired['one_sided_p']:.3f}"
     two_sided = f"p={paired['two_sided_p']:.3f}"
 
-    assert "p=0.004" not in compact
+    assert "0.004" not in manuscript
     assert one_sided in compact
     assert two_sided in compact
     assert "Mann-Whitney" not in manuscript
+    assert "Mann--Whitney" not in manuscript
 
 
 def test_manuscript_keeps_review_boundaries_visible():
