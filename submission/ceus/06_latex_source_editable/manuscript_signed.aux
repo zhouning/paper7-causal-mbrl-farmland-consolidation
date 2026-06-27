@@ -10,24 +10,24 @@
 \citation{hafner2023dreamerv3}
 \citation{schrittwieser2020muzero}
 \citation{zheng2023spatial}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
-\newlabel{sec:related}{{2}{3}{Related Work}{section.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Model-based reinforcement learning}{3}{subsection.2.1}\protected@file@percent }
 \citation{amodei2016concrete}
 \citation{levine2020offline}
 \citation{bai2022training}
-\citation{stuart2010matching}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{4}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{4}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Model-based reinforcement learning}{4}{subsection.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Reward model exploitation}{4}{subsection.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}DRL for farmland consolidation}{4}{subsection.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Observational treatment effects for reward calibration}{4}{subsection.2.4}\protected@file@percent }
+\citation{stuart2010matching}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Observational treatment effects for reward calibration}{5}{subsection.2.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Problem Setting}{5}{section.3}\protected@file@percent }
 \newlabel{sec:problem}{{3}{5}{Problem Setting}{section.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Methods}{6}{section.4}\protected@file@percent }
 \newlabel{sec:methods}{{4}{6}{Methods}{section.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training.}}{6}{figure.caption.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Stage 1: Trajectory collection}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training.}}{7}{figure.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:pipeline}{{1}{6}{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training}{figure.caption.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Stage 1: Trajectory collection}{7}{subsection.4.1}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{7}{Pipeline for learned-environment policy training. The real parcel-simulation environment is used to collect trajectories and to evaluate final policies. The learned environment is used only for policy optimization, with observational reward calibration applied during model-based training}{figure.caption.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Stage 2: Neural transition model}{7}{subsection.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Stage 3: Policy optimization on learned environment}{8}{subsection.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Observational reward calibration}{9}{subsection.4.4}\protected@file@percent }
@@ -35,11 +35,11 @@
 \@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{10}{section.5}\protected@file@percent }
 \newlabel{sec:experiments}{{5}{10}{Experiments}{section.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Experimental setup}{10}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Main results}{11}{subsection.5.2}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Evidence scope verified by the end-to-end audit.}}{12}{table.caption.2}\protected@file@percent }
 \newlabel{tab:e2e_scope}{{1}{12}{Evidence scope verified by the end-to-end audit}{table.caption.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Comparisons with model-free DRL are reported descriptively because seed counts, training budgets, and training architectures differ. The formal test in this table is the 15-seed comparison between calibrated and uncalibrated model-based policies. Best mean slope result in bold.}}{12}{table.caption.3}\protected@file@percent }
-\newlabel{tab:main}{{2}{12}{Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Comparisons with model-free DRL are reported descriptively because seed counts, training budgets, and training architectures differ. The formal test in this table is the 15-seed comparison between calibrated and uncalibrated model-based policies. Best mean slope result in bold}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Main results}{12}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Comparisons with model-free DRL are reported descriptively because seed counts, training budgets, and training architectures differ. The formal test in this table is the 15-seed comparison between calibrated and uncalibrated model-based policies. Best mean slope result in bold.}}{13}{table.caption.3}\protected@file@percent }
+\newlabel{tab:main}{{2}{13}{Method comparison. All slope/contiguity metrics are evaluated on the real county environment. Training time includes all pipeline stages (trajectory collection + model training + policy optimization) for model-based methods. Comparisons with model-free DRL are reported descriptively because seed counts, training budgets, and training architectures differ. The formal test in this table is the 15-seed comparison between calibrated and uncalibrated model-based policies. Best mean slope result in bold}{table.caption.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Strong non-learning baselines in Bishan}{13}{subsection.5.3}\protected@file@percent }
 \newlabel{sec:bishan_nonlearning}{{5.3}{13}{Strong non-learning baselines in Bishan}{subsection.5.3}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Bishan real-environment non-learning baselines. Slope is percentage change in county area-weighted farmland slope; negative values indicate improvement. Budget completion is realized paired swaps divided by the 500-swap budget. Random values summarize five seeds; deterministic baselines use one deterministic episode.}}{14}{table.caption.4}\protected@file@percent }
@@ -62,11 +62,11 @@
 \newlabel{sec:calibration_sensitivity}{{5.7}{18}{Calibration sensitivity diagnostics}{subsection.5.7}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Calibration sensitivity diagnostics at the 50th-percentile treatment threshold. Common support is the share of observations whose propensity score lies in the overlap range of treated and control observations. Trimmed ATT uses $\hat  {e}\in [0.05,0.95]$ with 200 bootstrap resamples. Mean SMD is the mean absolute standardized mean difference before and after ATT weighting.}}{18}{table.caption.10}\protected@file@percent }
 \newlabel{tab:calibration_sensitivity}{{9}{18}{Calibration sensitivity diagnostics at the 50th-percentile treatment threshold. Common support is the share of observations whose propensity score lies in the overlap range of treated and control observations. Trimmed ATT uses $\hat {e}\in [0.05,0.95]$ with 200 bootstrap resamples. Mean SMD is the mean absolute standardized mean difference before and after ATT weighting}{table.caption.10}{}}
-\citation{brown2025alphaearth}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.8}Observational calibration vs.\ heuristic reward scaling}{19}{subsection.5.8}\protected@file@percent }
 \newlabel{sec:grid_search}{{5.8}{19}{Observational calibration vs.\ heuristic reward scaling}{subsection.5.8}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Reward scaling grid search (5 seeds each). The observationally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$.}}{19}{table.caption.11}\protected@file@percent }
 \newlabel{tab:grid}{{10}{19}{Reward scaling grid search (5 seeds each). The observationally derived $\alpha = 0.185$ is marked. Grid-search optimum at $\alpha = 0.200$}{table.caption.11}{}}
+\citation{brown2025alphaearth}
 \citation{lambert2022investigating}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.9}Ablation: GeoFM embedding augmentation (E4)}{20}{subsection.5.9}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces GeoFM embedding ablation. TM = transition model.}}{20}{table.caption.12}\protected@file@percent }
@@ -85,10 +85,10 @@
 \newlabel{sec:discussion}{{6}{23}{Discussion}{section.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Why model-based training can perform well with an approximate environment}{23}{subsection.6.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Observational calibration as reward regularization}{24}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}The accuracy--utility paradox in GeoFM augmentation}{24}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}The accuracy--utility paradox in GeoFM augmentation}{25}{subsection.6.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Limitations}{25}{subsection.6.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{26}{section.7}\protected@file@percent }
-\newlabel{sec:conclusions}{{7}{26}{Conclusions}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{27}{section.7}\protected@file@percent }
+\newlabel{sec:conclusions}{{7}{27}{Conclusions}{section.7}{}}
 \bibcite{amodei2016concrete}{{1}{2016}{{Amodei et~al.}}{{}}}
 \bibcite{bai2022training}{{2}{2022}{{Bai et~al.}}{{}}}
 \bibcite{brown2025alphaearth}{{3}{2025}{{Brown et~al.}}{{}}}
