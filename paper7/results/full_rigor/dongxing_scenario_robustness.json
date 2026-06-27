@@ -2973,5 +2973,56 @@
   "planning_horizon": 100,
   "deterministic_seed_repetition_avoided": true,
   "policy_transfer_tested": false,
-  "claim_boundary": "Scenario-based Dongxing robustness for local learned-environment planning; deterministic Dongxing seed repetitions are not treated as independent replications, and this is not direct Bishan-to-Dongxing policy transfer."
+  "claim_boundary": "Scenario-based Dongxing robustness for local learned-environment planning; deterministic Dongxing seed repetitions are not treated as independent replications, and this is not direct Bishan-to-Dongxing policy transfer.",
+  "optimizer_evaluation_environment": "learned_scenario_surrogate",
+  "final_evaluation_environment": "real_scenario_environments",
+  "experiment_config": {
+    "baseline_policies": [
+      "random",
+      "dynamic_slope_gap",
+      "scalarized_default",
+      "baimu_aware"
+    ],
+    "random_seeds": [
+      0,
+      1,
+      2
+    ],
+    "cem_iterations": 8,
+    "cem_population_size": 32,
+    "elite_frac": 0.25,
+    "optimizer_seed": 0,
+    "transition_collection_policies": [
+      "random",
+      "dynamic_slope_gap",
+      "area_weighted_slope_gap",
+      "contiguity_aware",
+      "baimu_aware",
+      "scalarized_default"
+    ],
+    "transition_collection_seeds": [
+      0,
+      1,
+      2
+    ],
+    "transition_max_steps": 100
+  },
+  "command_config": {
+    "dltb": "paper7/data/dongxing_DLTB_with_slope.gpkg",
+    "block_dir": "paper7/results/dongxing_blocks_slope",
+    "policies": [
+      "random",
+      "dynamic_slope_gap",
+      "scalarized_default",
+      "baimu_aware"
+    ],
+    "random_seeds": [
+      0,
+      1,
+      2
+    ],
+    "cem_iterations": 8,
+    "cem_population_size": 32,
+    "output": "paper7/results/full_rigor/dongxing_scenario_robustness.json"
+  }
 }

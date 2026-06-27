@@ -458,8 +458,21 @@ def run_scenario_robustness_experiment(
         "description": "Dongxing scenario-based robustness evaluation with a scenario-robust linear learned-environment planner.",
         "status": "supported_as_dongxing_scenario_robustness",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "optimizer_evaluation_environment": "learned_scenario_surrogate",
+        "final_evaluation_environment": "real_scenario_environments",
         "scenario_count": len(scenarios),
         "scenarios": [asdict(spec) for spec in scenarios],
+        "experiment_config": {
+            "baseline_policies": list(baseline_policies),
+            "random_seeds": [int(seed) for seed in random_seeds],
+            "cem_iterations": int(cem_iterations),
+            "cem_population_size": int(cem_population_size),
+            "elite_frac": 0.25,
+            "optimizer_seed": 0,
+            "transition_collection_policies": list(TRANSITION_POLICIES),
+            "transition_collection_seeds": [int(seed) for seed in random_seeds],
+            "transition_max_steps": int(transition_max_steps),
+        },
         "policy_summaries": summarize_policy_scenario_runs(runs),
         "runs": runs,
         "optimizer": optimizer,
@@ -524,8 +537,19 @@ def main() -> None:
         random_seeds=_parse_int_csv(args.random_seeds),
         cem_iterations=args.cem_iterations,
         cem_population_size=args.cem_population_size,
-        output_path=args.output,
+        output_path=None,
     )
+    report["command_config"] = {
+        "dltb": os.fspath(args.dltb),
+        "block_dir": os.fspath(args.block_dir),
+        "policies": _parse_csv(args.policies),
+        "random_seeds": _parse_int_csv(args.random_seeds),
+        "cem_iterations": int(args.cem_iterations),
+        "cem_population_size": int(args.cem_population_size),
+        "output": os.fspath(args.output),
+    }
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"output": os.fspath(args.output), "scenario_count": report["scenario_count"]}, indent=2))
 
 
