@@ -5,10 +5,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+
+PAPER7_DIR = Path(__file__).resolve().parent
+REPO_ROOT = PAPER7_DIR.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import numpy as np
 
@@ -234,6 +240,10 @@ def optimize_scenario_robust_linear_policy(
     population_size: int = 32,
     elite_frac: float = 0.25,
     seed: int = 0,
+    transition_model: dict[str, Any] | None = None,
+    initial_observations: list[np.ndarray] | None = None,
+    n_blocks: int | None = None,
+    horizon: int | None = None,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     if not envs:
         raise ValueError("At least one scenario environment is required")
@@ -246,6 +256,29 @@ def optimize_scenario_robust_linear_policy(
     elite_fraction = float(elite_frac)
     if not 0.0 < elite_fraction <= 1.0:
         raise ValueError("elite_frac must be in (0, 1]")
+
+    if transition_model is not None:
+        observations = list(initial_observations or [])
+        if not observations:
+            raise ValueError("At least one initial observation is required for surrogate optimization")
+        block_count = int(n_blocks if n_blocks is not None else envs[0].n_blocks)
+        planning_horizon = int(horizon if horizon is not None else max(env.max_steps for env in envs))
+        optimizer = dict(
+            optimize_policy_weights_cem(
+                initial_observations=observations,
+                n_blocks=block_count,
+                model=transition_model,
+                horizon=planning_horizon,
+                iterations=iteration_count,
+                population_size=population_count,
+                elite_frac=elite_fraction,
+                seed=int(seed),
+            )
+        )
+        optimizer["optimizer"] = "cross_entropy_method_learned_scenario_surrogate"
+        optimizer["scenario_selection_count"] = len(observations)
+        optimizer["best_score"] = optimizer.get("best_surrogate_score")
+        return np.asarray(optimizer["weights"], dtype=np.float64), optimizer
 
     rng = np.random.default_rng(int(seed))
     dim = K_BLOCK_GENERIC + 1
@@ -306,6 +339,33 @@ def _mean_real_scenario_score(envs: list[GenericCountyEnv], weights: np.ndarray)
     return float(np.mean(scores))
 
 
+def _collect_scenario_transition_rows(
+    selection_envs: list[GenericCountyEnv],
+    policies: list[str],
+    seeds: list[int],
+    max_steps: int,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for env in selection_envs:
+        rows.extend(
+            collect_transition_rows(
+                env_factory=lambda env=env: env,
+                policies=policies,
+                seeds=seeds,
+                max_steps=max_steps,
+            )
+        )
+    return rows
+
+
+def _initial_observations_from_envs(envs: list[GenericCountyEnv]) -> list[np.ndarray]:
+    observations: list[np.ndarray] = []
+    for index, env in enumerate(envs):
+        obs, _ = env.reset(seed=int(index))
+        observations.append(np.asarray(obs, dtype=np.float32))
+    return observations
+
+
 def run_scenario_robustness_experiment(
     *,
     parcels: list[dict[str, Any]],
@@ -338,12 +398,37 @@ def run_scenario_robustness_experiment(
     ]
     if not selection_envs:
         raise ValueError("At least one selection scenario is required")
+    transition_max_steps = min(100, max(env.max_steps for env in selection_envs))
+    transition_rows = _collect_scenario_transition_rows(
+        selection_envs=selection_envs,
+        policies=list(TRANSITION_POLICIES),
+        seeds=random_seeds,
+        max_steps=transition_max_steps,
+    )
+    transition_model = fit_one_step_model(transition_rows, ridge=1e-3)
+    initial_observations = _initial_observations_from_envs(selection_envs)
     weights, optimizer = optimize_scenario_robust_linear_policy(
         envs=selection_envs,
         iterations=cem_iterations,
         population_size=cem_population_size,
         elite_frac=0.25,
         seed=0,
+        transition_model=transition_model,
+        initial_observations=initial_observations,
+        n_blocks=selection_envs[0].n_blocks,
+        horizon=transition_max_steps,
+    )
+    optimizer.update(
+        {
+            "mbrl_transition_model_used": True,
+            "n_training_transitions": len(transition_rows),
+            "selection_scenario_ids": [
+                str(spec.scenario_id) for spec in scenarios if spec.split == "selection"
+            ],
+            "transition_collection_policies": list(TRANSITION_POLICIES),
+            "transition_collection_seeds": [int(seed) for seed in random_seeds],
+            "transition_max_steps": int(transition_max_steps),
+        }
     )
 
     runs: list[dict[str, Any]] = []
@@ -378,6 +463,9 @@ def run_scenario_robustness_experiment(
         "policy_summaries": summarize_policy_scenario_runs(runs),
         "runs": runs,
         "optimizer": optimizer,
+        "mbrl_transition_model_used": True,
+        "n_training_transitions": len(transition_rows),
+        "planning_horizon": int(transition_max_steps),
         "deterministic_seed_repetition_avoided": True,
         "policy_transfer_tested": False,
         "claim_boundary": (
@@ -390,3 +478,56 @@ def run_scenario_robustness_experiment(
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     return report
+
+
+def load_block_package(block_dir: Path) -> tuple[dict[str, list[int]], list[int]]:
+    block_compositions = json.loads((block_dir / "block_compositions.json").read_text(encoding="utf-8"))
+    block_features = json.loads((block_dir / "block_features.json").read_text(encoding="utf-8"))
+    block_ids = [int(item["block_id"]) for item in block_features]
+    return block_compositions, block_ids
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dltb", type=Path, default=Path("paper7/data/dongxing_DLTB_with_slope.gpkg"))
+    parser.add_argument("--block-dir", type=Path, default=Path("paper7/results/dongxing_blocks_slope"))
+    parser.add_argument("--policies", default="random,dynamic_slope_gap,scalarized_default,baimu_aware")
+    parser.add_argument("--random-seeds", default="0,1,2")
+    parser.add_argument("--cem-iterations", type=int, default=8)
+    parser.add_argument("--cem-population-size", type=int, default=32)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("paper7/results/full_rigor/dongxing_scenario_robustness.json"),
+    )
+    return parser.parse_args()
+
+
+def _parse_csv(raw: str) -> list[str]:
+    return [item.strip() for item in str(raw).split(",") if item.strip()]
+
+
+def _parse_int_csv(raw: str) -> list[int]:
+    return [int(item) for item in _parse_csv(raw)]
+
+
+def main() -> None:
+    args = parse_args()
+    parcels = load_dongxing_parcels_for_full_env(args.dltb, args.block_dir)
+    block_compositions, block_ids = load_block_package(args.block_dir)
+    report = run_scenario_robustness_experiment(
+        parcels=parcels,
+        block_compositions=block_compositions,
+        block_ids=block_ids,
+        scenarios=build_default_scenario_specs(),
+        baseline_policies=_parse_csv(args.policies),
+        random_seeds=_parse_int_csv(args.random_seeds),
+        cem_iterations=args.cem_iterations,
+        cem_population_size=args.cem_population_size,
+        output_path=args.output,
+    )
+    print(json.dumps({"output": os.fspath(args.output), "scenario_count": report["scenario_count"]}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
