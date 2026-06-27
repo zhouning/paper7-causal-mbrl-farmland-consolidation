@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from paper7.generic_county_env import GenericCountyEnv
 from paper7.dongxing_scenario_robustness import (
@@ -164,6 +165,19 @@ def test_optimize_scenario_robust_linear_policy_returns_weight_vector():
     assert len(optimizer["history"]) == 2
 
 
+def test_optimize_scenario_robust_linear_policy_rejects_invalid_parameters():
+    envs = [_toy_env()]
+
+    with pytest.raises(ValueError, match="iterations must be positive"):
+        optimize_scenario_robust_linear_policy(envs=envs, iterations=0)
+
+    with pytest.raises(ValueError, match="population_size must be positive"):
+        optimize_scenario_robust_linear_policy(envs=envs, population_size=0)
+
+    with pytest.raises(ValueError, match="elite_frac must be in"):
+        optimize_scenario_robust_linear_policy(envs=envs, elite_frac=0.0)
+
+
 def test_run_scenario_robustness_experiment_smoke_uses_scenarios_not_seed_replication():
     parcels = _toy_parcels()
     block_compositions = {"0": [0, 1], "1": [2, 3]}
@@ -193,3 +207,22 @@ def test_run_scenario_robustness_experiment_smoke_uses_scenarios_not_seed_replic
     assert result["deterministic_seed_repetition_avoided"] is True
     assert robust["scenario_count"] == 2
     assert deterministic["seed_replication_is_independent"] is False
+
+
+def test_run_scenario_robustness_experiment_requires_selection_scenario():
+    scenarios = [
+        ScenarioSpec("heldout_only", "heldout", 1.0, 0.0, 0, 4, 1, "heldout"),
+    ]
+
+    with pytest.raises(ValueError, match="At least one selection scenario"):
+        run_scenario_robustness_experiment(
+            parcels=_toy_parcels(),
+            block_compositions={"0": [0, 1], "1": [2, 3]},
+            block_ids=[0, 1],
+            scenarios=scenarios,
+            baseline_policies=["dynamic_slope_gap"],
+            random_seeds=[0, 1],
+            cem_iterations=2,
+            cem_population_size=6,
+            output_path=None,
+        )

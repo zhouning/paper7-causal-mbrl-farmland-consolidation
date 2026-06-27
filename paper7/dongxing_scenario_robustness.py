@@ -237,19 +237,29 @@ def optimize_scenario_robust_linear_policy(
 ) -> tuple[np.ndarray, dict[str, Any]]:
     if not envs:
         raise ValueError("At least one scenario environment is required")
+    iteration_count = int(iterations)
+    if iteration_count <= 0:
+        raise ValueError("iterations must be positive")
+    population_count = int(population_size)
+    if population_count <= 0:
+        raise ValueError("population_size must be positive")
+    elite_fraction = float(elite_frac)
+    if not 0.0 < elite_fraction <= 1.0:
+        raise ValueError("elite_frac must be in (0, 1]")
+
     rng = np.random.default_rng(int(seed))
     dim = K_BLOCK_GENERIC + 1
     mean = np.zeros(dim, dtype=np.float64)
     mean[0] = 1.0
     mean[-1] = 1.0
     scale = np.ones(dim, dtype=np.float64)
-    elite_count = max(1, int(round(int(population_size) * float(elite_frac))))
+    elite_count = min(population_count, max(1, int(round(population_count * elite_fraction))))
     best_weights = mean.copy()
     best_score = -np.inf
     history: list[dict[str, Any]] = []
 
-    for iteration in range(int(iterations)):
-        population = rng.normal(mean, scale, size=(int(population_size), dim))
+    for iteration in range(iteration_count):
+        population = rng.normal(mean, scale, size=(population_count, dim))
         scores = np.asarray(
             [_mean_real_scenario_score(envs, weights) for weights in population],
             dtype=np.float64,
@@ -273,9 +283,9 @@ def optimize_scenario_robust_linear_policy(
 
     return best_weights, {
         "optimizer": "cross_entropy_method_real_scenario_smoke",
-        "iterations": int(iterations),
-        "population_size": int(population_size),
-        "elite_frac": float(elite_frac),
+        "iterations": iteration_count,
+        "population_size": population_count,
+        "elite_frac": elite_fraction,
         "seed": int(seed),
         "weights": [round(float(value), 10) for value in best_weights.tolist()],
         "history": history,
@@ -321,7 +331,9 @@ def run_scenario_robustness_experiment(
         scenario_envs[spec.scenario_id]
         for spec in scenarios
         if spec.split == "selection"
-    ] or list(scenario_envs.values())
+    ]
+    if not selection_envs:
+        raise ValueError("At least one selection scenario is required")
     weights, optimizer = optimize_scenario_robust_linear_policy(
         envs=selection_envs,
         iterations=cem_iterations,
