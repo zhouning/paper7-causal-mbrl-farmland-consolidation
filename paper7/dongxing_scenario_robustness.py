@@ -318,6 +318,10 @@ def run_scenario_robustness_experiment(
     cem_population_size: int,
     output_path: Path | None,
 ) -> dict[str, Any]:
+    scenario_ids = [str(spec.scenario_id) for spec in scenarios]
+    if len(scenario_ids) != len(set(scenario_ids)):
+        raise ValueError("Scenario IDs must be unique")
+
     scenario_envs = {
         spec.scenario_id: build_env_from_parcels_and_scenario(
             parcels=parcels,

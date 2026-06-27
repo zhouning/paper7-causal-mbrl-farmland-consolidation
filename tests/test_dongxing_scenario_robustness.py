@@ -226,3 +226,23 @@ def test_run_scenario_robustness_experiment_requires_selection_scenario():
             cem_population_size=6,
             output_path=None,
         )
+
+
+def test_run_scenario_robustness_experiment_rejects_duplicate_scenario_ids():
+    scenarios = [
+        ScenarioSpec("dup", "selection", 1.0, 0.0, 0, 4, 1, "selection"),
+        ScenarioSpec("dup", "heldout", 1.1, 0.0, 0, 4, 1, "heldout"),
+    ]
+
+    with pytest.raises(ValueError, match="Scenario IDs must be unique"):
+        run_scenario_robustness_experiment(
+            parcels=_toy_parcels(),
+            block_compositions={"0": [0, 1], "1": [2, 3]},
+            block_ids=[0, 1],
+            scenarios=scenarios,
+            baseline_policies=["dynamic_slope_gap"],
+            random_seeds=[0, 1],
+            cem_iterations=2,
+            cem_population_size=6,
+            output_path=None,
+        )
