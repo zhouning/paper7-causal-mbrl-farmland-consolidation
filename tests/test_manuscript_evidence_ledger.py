@@ -32,6 +32,7 @@ def test_build_ledger_from_real_audit_contains_required_claims():
         "transition_surrogate_diagnostics",
         "planning_tradeoff_boundary",
         "dongxing_local_counterpart",
+        "dongxing_scenario_robustness",
         "direct_transfer_boundary",
         "reward_weight_replay_boundary",
     }
@@ -49,7 +50,7 @@ def test_build_ledger_from_real_audit_contains_required_claims():
     assert ledger["overall_status"] == "supported_with_bounded_external_scope"
     assert "observational reward regularization" in ledger["required_boundaries"]
     assert "not definitive causal identification" in ledger["required_boundaries"]
-
+    assert "scenario-based Dongxing robustness" in ledger["required_boundaries"]
 
 def test_real_ledger_artifact_paths_exist():
     ledger = build_manuscript_evidence_ledger(REAL_AUDIT_PATH, repo_root=REPO_ROOT)
@@ -177,6 +178,15 @@ def test_fixture_ledger_keeps_claim_strengths_bounded(tmp_path):
                     "status": "supported_as_local_dongxing_mbrl_results",
                     "multi_step_mbrl_planning_tested": True,
                 },
+                "dongxing_scenario_robustness": {
+                    "path": "paper7/results/full_rigor/dongxing_scenario_robustness.json",
+                    "status": "supported_as_dongxing_scenario_robustness",
+                    "scenario_count": 10,
+                    "scenario_robust_reward_mean": 20.0,
+                    "scenario_robust_slope_change_pct_mean": -1.5,
+                    "deterministic_seed_repetition_avoided": True,
+                    "policy_transfer_tested": False,
+                },
                 "dongxing_multistep_mbrl_policy": {
                     "path": "paper7/results/full_rigor/dongxing_multistep_mbrl_policy.json",
                     "real_eval_reward_mean": 61.287306,
@@ -199,6 +209,7 @@ def test_fixture_ledger_keeps_claim_strengths_bounded(tmp_path):
 
     assert rows["calibration_effect"]["claim_strength"] == "supported_bounded"
     assert rows["dongxing_local_counterpart"]["claim_strength"] == "supported_bounded"
+    assert "dongxing_scenario_robustness" in rows
     assert rows["reward_weight_replay_boundary"]["metrics"][
         "policy_retraining_under_all_weights"
     ] is False

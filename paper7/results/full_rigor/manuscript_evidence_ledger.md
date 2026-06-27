@@ -1,7 +1,7 @@
 # Paper 7 Manuscript Evidence Ledger
 
-Generated UTC: `2026-06-27T05:56:23.639892+00:00`
-Audit path: `D:\test\paper7-causal-mbrl-farmland-consolidation\.worktrees\paper7-full-rigor-manuscript-integration\paper7\results\revision\end_to_end_validation.json`
+Generated UTC: `2026-06-27T13:59:28.876512+00:00`
+Audit path: `D:\test\paper7-causal-mbrl-farmland-consolidation\.worktrees\paper7-reviewer-hardening\paper7\results\revision\end_to_end_validation.json`
 Overall status: `supported_with_bounded_external_scope`
 
 ## Claim Map
@@ -15,6 +15,7 @@ Overall status: `supported_with_bounded_external_scope`
 | planning_tradeoff_boundary | supported_bounded | slope_delta_with_minus_no_mean=-0.126779; contiguity_delta_with_minus_no_mean=-0.001977; baimu_count_delta_with_minus_no_mean=-0.2; baimu_area_delta_with_minus_no_mean=-67.208419; n_weight_settings=14 | Report slope-contiguity-baimu trade-offs; do not claim a Pareto improvement across every planning metric. |
 | bishan_non_learning_baselines | supported_bounded | random_slope_mean=0.089326; slope_gap_greedy_slope=1.10799; area_weighted_greedy_slope=4.696778; immediate_slope_delta_slope=-0.15191 | This is a local baseline comparison, not a universal claim over all hand-designed rules. |
 | dongxing_local_counterpart | supported_bounded | full_baseline_status=supported_as_full_real_environment_baselines; local_learned_eval_seeds=10; local_mbrl_status=supported_as_local_dongxing_mbrl_results; multistep_planning_tested=True; multistep_reward_mean=61.287306; multistep_slope_change_pct_mean=-1.882392 | Dongxing is local external-counterpart evidence, not direct Bishan-to-Dongxing policy transfer. |
+| dongxing_scenario_robustness | supported_bounded | scenario_count=10; scenario_robust_reward_mean=70.449738; scenario_robust_slope_change_pct_mean=-1.368105; deterministic_seed_repetition_avoided=True; policy_transfer_tested=False | scenario-based Dongxing robustness; deterministic Dongxing seed repetitions are not independent replications; not direct Bishan-to-Dongxing policy transfer |
 | direct_transfer_boundary | structural_boundary | status=structurally_invalid_for_direct_policy_transfer; observation_dim_match=False; action_dim_match=False; direct_policy_transfer_tested=False; fine_tuning_required=True | not direct Bishan-to-Dongxing policy transfer |
 | reward_weight_replay_boundary | supported_bounded | n_episodes=60; n_weight_settings=14; policy_retraining_under_all_weights=False; reward_specification_exported=True | fixed-policy replay; not proof that retrained policies are robust under every planning preference |
 
@@ -53,6 +54,9 @@ Overall status: `supported_with_bounded_external_scope`
 - `paper7\results\full_rigor\dongxing_multistep_mbrl_policy.json`
 - `paper7\results\full_rigor\transfer_finetune_results.json`
 
+### dongxing_scenario_robustness
+- `paper7\results\full_rigor\dongxing_scenario_robustness.json`
+
 ### direct_transfer_boundary
 - `paper7\results\full_rigor\transfer_finetune_results.json`
 
@@ -67,6 +71,8 @@ Overall status: `supported_with_bounded_external_scope`
 - not direct Bishan-to-Dongxing policy transfer
 - final real-environment evaluation
 - fixed-policy replay
+- scenario-based Dongxing robustness
+- deterministic Dongxing seed repetitions are not independent replications
 
 ## Forbidden Overclaims
 

@@ -97,6 +97,7 @@ def build_manuscript_evidence_ledger(
     dongxing_baselines = evidence.get("dongxing_full_baselines", {})
     dongxing_learned = evidence.get("dongxing_full_learned_policy", {})
     dongxing_mbrl = evidence.get("dongxing_mbrl_results", {})
+    dongxing_robustness = evidence.get("dongxing_scenario_robustness", {})
     dongxing_multistep = evidence.get("dongxing_multistep_mbrl_policy", {})
     transfer = evidence.get("transfer_finetune_results", {})
     source_ablation = evidence.get("trajectory_source_ablation", {})
@@ -322,6 +323,38 @@ def build_manuscript_evidence_ledger(
 
     _add_claim(
         claims,
+        claim_id="dongxing_scenario_robustness",
+        manuscript_claim=(
+            "Dongxing scenario perturbations support local robustness evidence "
+            "for learned-environment planning without treating deterministic "
+            "seed repetitions as independent replications."
+        ),
+        artifact_paths=_paths(dongxing_robustness.get("path")),
+        metrics={
+            "scenario_count": dongxing_robustness.get("scenario_count"),
+            "scenario_robust_reward_mean": dongxing_robustness.get(
+                "scenario_robust_reward_mean"
+            ),
+            "scenario_robust_slope_change_pct_mean": dongxing_robustness.get(
+                "scenario_robust_slope_change_pct_mean"
+            ),
+            "deterministic_seed_repetition_avoided": dongxing_robustness.get(
+                "deterministic_seed_repetition_avoided"
+            ),
+            "policy_transfer_tested": dongxing_robustness.get("policy_transfer_tested"),
+        },
+        statistic="scenario-based Dongxing robustness summary",
+        claim_strength="supported_bounded",
+        required_boundary=(
+            "scenario-based Dongxing robustness; deterministic Dongxing seed "
+            "repetitions are not independent replications; not direct "
+            "Bishan-to-Dongxing policy transfer"
+        ),
+        manuscript_destination="main_results_and_discussion",
+    )
+
+    _add_claim(
+        claims,
         claim_id="direct_transfer_boundary",
         manuscript_claim=(
             "Direct Bishan-to-Dongxing policy transfer is structurally invalid "
@@ -388,6 +421,8 @@ def build_manuscript_evidence_ledger(
             "not direct Bishan-to-Dongxing policy transfer",
             "final real-environment evaluation",
             "fixed-policy replay",
+            "scenario-based Dongxing robustness",
+            "deterministic Dongxing seed repetitions are not independent replications",
         ],
         "forbidden_overclaims": [
             "universal generalization across counties",

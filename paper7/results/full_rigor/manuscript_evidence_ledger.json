@@ -1,8 +1,8 @@
 {
   "description": "Manuscript-facing Paper 7 claim-to-evidence ledger.",
-  "generated_utc": "2026-06-27T05:56:23.639892+00:00",
-  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-full-rigor-manuscript-integration",
-  "audit_path": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-full-rigor-manuscript-integration\\paper7\\results\\revision\\end_to_end_validation.json",
+  "generated_utc": "2026-06-27T13:59:28.876512+00:00",
+  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-reviewer-hardening",
+  "audit_path": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-reviewer-hardening\\paper7\\results\\revision\\end_to_end_validation.json",
   "overall_status": "supported_with_bounded_external_scope",
   "claims": [
     {
@@ -148,6 +148,24 @@
       "manuscript_destination": "main_results_and_discussion"
     },
     {
+      "claim_id": "dongxing_scenario_robustness",
+      "manuscript_claim": "Dongxing scenario perturbations support local robustness evidence for learned-environment planning without treating deterministic seed repetitions as independent replications.",
+      "artifact_paths": [
+        "paper7\\results\\full_rigor\\dongxing_scenario_robustness.json"
+      ],
+      "metrics": {
+        "scenario_count": 10,
+        "scenario_robust_reward_mean": 70.449738,
+        "scenario_robust_slope_change_pct_mean": -1.368105,
+        "deterministic_seed_repetition_avoided": true,
+        "policy_transfer_tested": false
+      },
+      "statistic": "scenario-based Dongxing robustness summary",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "scenario-based Dongxing robustness; deterministic Dongxing seed repetitions are not independent replications; not direct Bishan-to-Dongxing policy transfer",
+      "manuscript_destination": "main_results_and_discussion"
+    },
+    {
       "claim_id": "direct_transfer_boundary",
       "manuscript_claim": "Direct Bishan-to-Dongxing policy transfer is structurally invalid without adapter-level changes.",
       "artifact_paths": [
@@ -189,7 +207,9 @@
     "descriptive model-free baseline comparison",
     "not direct Bishan-to-Dongxing policy transfer",
     "final real-environment evaluation",
-    "fixed-policy replay"
+    "fixed-policy replay",
+    "scenario-based Dongxing robustness",
+    "deterministic Dongxing seed repetitions are not independent replications"
   ],
   "forbidden_overclaims": [
     "universal generalization across counties",
