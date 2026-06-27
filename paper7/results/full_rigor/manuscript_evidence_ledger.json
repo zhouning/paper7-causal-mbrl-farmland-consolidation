@@ -1,0 +1,201 @@
+{
+  "description": "Manuscript-facing Paper 7 claim-to-evidence ledger.",
+  "generated_utc": "2026-06-27T05:56:23.639892+00:00",
+  "repo_root": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-full-rigor-manuscript-integration",
+  "audit_path": "D:\\test\\paper7-causal-mbrl-farmland-consolidation\\.worktrees\\paper7-full-rigor-manuscript-integration\\paper7\\results\\revision\\end_to_end_validation.json",
+  "overall_status": "supported_with_bounded_external_scope",
+  "claims": [
+    {
+      "claim_id": "bishan_learned_environment_e2e",
+      "manuscript_claim": "Bishan learned-environment policies are trained in the learned environment and evaluated in the real parcel-simulation environment.",
+      "artifact_paths": [
+        "paper7\\results\\revision\\seeds",
+        "paper7\\models\\transition_model.pt",
+        "paper7\\models\\training_history.json"
+      ],
+      "metrics": {
+        "n_paired_seeds": 15,
+        "no_cal_slope_mean": -0.975683,
+        "with_cal_slope_mean": -1.102462,
+        "improvement_pct": 12.993898,
+        "transition_obs_cosine": 0.999794,
+        "transition_reward_mse": 1.096993
+      },
+      "statistic": "paired seed summary for calibrated versus uncalibrated learned policies",
+      "claim_strength": "supported_strong",
+      "required_boundary": "Final policy outcomes are measured in the real environment; the learned environment is a training surrogate.",
+      "manuscript_destination": "main_results"
+    },
+    {
+      "claim_id": "calibration_effect",
+      "manuscript_claim": "Treatment-effect-informed reward scaling improves Bishan learned-environment policy training under paired seed evaluation.",
+      "artifact_paths": [
+        "paper7\\results\\causal_calibration.json",
+        "paper7\\results\\revision\\causal_sensitivity_diagnostics.json",
+        "paper7\\results\\revision\\seeds"
+      ],
+      "metrics": {
+        "calibration_factor": 0.185005,
+        "one_sided_p": 0.011963,
+        "two_sided_p": 0.023926,
+        "improvement_pct": 12.993898,
+        "calibrated_win_count": 10,
+        "uncalibrated_win_count": 5
+      },
+      "statistic": "exact paired sign-flip test",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "observational reward regularization; not definitive causal identification",
+      "manuscript_destination": "main_results"
+    },
+    {
+      "claim_id": "reward_scaling_comparator",
+      "manuscript_claim": "The pre-specified observational calibration factor is close to the empirical reward-scale optimum and improves over unscaled rewards.",
+      "artifact_paths": [
+        "paper7\\results\\revision\\reward_scaling_comparator.json",
+        "paper7\\results\\revision\\alpha_grid\\grid_results.json"
+      ],
+      "metrics": {
+        "n_grid_runs": 40,
+        "n_alphas": 8,
+        "best_scale": 0.2,
+        "pre_specified_scale": 0.185,
+        "pre_vs_best_relative_gap_pct": 3.12135,
+        "pre_vs_unscaled_slope_gain_pct": 22.144879
+      },
+      "statistic": "eight-value reward-scale grid with five seeds per value",
+      "claim_strength": "supported_strong",
+      "required_boundary": "This supports data-driven scaling, not a proof that the global factor is optimal in every state.",
+      "manuscript_destination": "main_results"
+    },
+    {
+      "claim_id": "transition_surrogate_diagnostics",
+      "manuscript_claim": "Recorded-action and policy-induced diagnostics support the learned environment as an approximate training surrogate.",
+      "artifact_paths": [
+        "paper7\\results\\revision\\transition_rollout_diagnostics.json",
+        "paper7\\results\\revision\\policy_induced_diagnostics_15seed.json",
+        "paper7\\results\\revision\\trajectory_source_ablation.json"
+      ],
+      "metrics": {
+        "horizon_100_mask_agreement": 0.997384,
+        "horizon_100_reward_mae": 0.234012,
+        "policy_induced_mask_agreement": 0.997629,
+        "policy_induced_support_distance": 0.012601,
+        "policy_induced_final_real_slope_pct": -1.105524,
+        "best_trajectory_source": "mixed"
+      },
+      "statistic": "recorded-action rollout and synchronized learned-vs-real diagnostics",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "Diagnostics support surrogate training but do not replace final real-environment evaluation.",
+      "manuscript_destination": "main_results"
+    },
+    {
+      "claim_id": "planning_tradeoff_boundary",
+      "manuscript_claim": "Calibration improves the slope objective but is not a Pareto improvement on every planning metric.",
+      "artifact_paths": [
+        "paper7\\results\\revision\\planning_significance_audit.json",
+        "paper7\\results\\full_rigor\\reward_weight_sensitivity.json"
+      ],
+      "metrics": {
+        "slope_delta_with_minus_no_mean": -0.126779,
+        "contiguity_delta_with_minus_no_mean": -0.001977,
+        "baimu_count_delta_with_minus_no_mean": -0.2,
+        "baimu_area_delta_with_minus_no_mean": -67.208419,
+        "n_weight_settings": 14
+      },
+      "statistic": "paired planning-metric audit and fixed-policy reward-component replay",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "Report slope-contiguity-baimu trade-offs; do not claim a Pareto improvement across every planning metric.",
+      "manuscript_destination": "main_results_and_discussion"
+    },
+    {
+      "claim_id": "bishan_non_learning_baselines",
+      "manuscript_claim": "Strong Bishan non-learning rules do not match the calibrated learned policy under the stored real-environment evaluation.",
+      "artifact_paths": [
+        "paper7\\results\\revision\\bishan_strong_baselines.json"
+      ],
+      "metrics": {
+        "random_slope_mean": 0.089326,
+        "slope_gap_greedy_slope": 1.10799,
+        "area_weighted_greedy_slope": 4.696778,
+        "immediate_slope_delta_slope": -0.15191
+      },
+      "statistic": "real-environment non-learning baseline audit",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "This is a local baseline comparison, not a universal claim over all hand-designed rules.",
+      "manuscript_destination": "main_results"
+    },
+    {
+      "claim_id": "dongxing_local_counterpart",
+      "manuscript_claim": "Dongxing supports a full-reward local counterpart with local learned-policy and local learned-environment evidence.",
+      "artifact_paths": [
+        "paper7\\results\\full_rigor\\dongxing_full_baselines.json",
+        "paper7\\results\\full_rigor\\dongxing_full_learned_policy.json",
+        "paper7\\results\\full_rigor\\dongxing_mbrl_results.json",
+        "paper7\\results\\full_rigor\\dongxing_multistep_mbrl_policy.json",
+        "paper7\\results\\full_rigor\\transfer_finetune_results.json"
+      ],
+      "metrics": {
+        "full_baseline_status": "supported_as_full_real_environment_baselines",
+        "local_learned_eval_seeds": 10,
+        "local_mbrl_status": "supported_as_local_dongxing_mbrl_results",
+        "multistep_planning_tested": true,
+        "multistep_reward_mean": 61.287306,
+        "multistep_slope_change_pct_mean": -1.882392
+      },
+      "statistic": "external full-reward local counterpart result bundle",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "Dongxing is local external-counterpart evidence, not direct Bishan-to-Dongxing policy transfer.",
+      "manuscript_destination": "main_results_and_discussion"
+    },
+    {
+      "claim_id": "direct_transfer_boundary",
+      "manuscript_claim": "Direct Bishan-to-Dongxing policy transfer is structurally invalid without adapter-level changes.",
+      "artifact_paths": [
+        "paper7\\results\\full_rigor\\transfer_finetune_results.json"
+      ],
+      "metrics": {
+        "status": "structurally_invalid_for_direct_policy_transfer",
+        "observation_dim_match": false,
+        "action_dim_match": false,
+        "direct_policy_transfer_tested": false,
+        "fine_tuning_required": true
+      },
+      "statistic": "dimension-mismatch audit",
+      "claim_strength": "structural_boundary",
+      "required_boundary": "not direct Bishan-to-Dongxing policy transfer",
+      "manuscript_destination": "discussion_and_limitations"
+    },
+    {
+      "claim_id": "reward_weight_replay_boundary",
+      "manuscript_claim": "Reward-weight sensitivity is supported as fixed-policy replay and reward-specification evidence.",
+      "artifact_paths": [
+        "paper7\\results\\full_rigor\\reward_weight_sensitivity.json"
+      ],
+      "metrics": {
+        "n_episodes": 60,
+        "n_weight_settings": 14,
+        "policy_retraining_under_all_weights": false,
+        "reward_specification_exported": true
+      },
+      "statistic": "fixed-policy replay across alternative reward weights",
+      "claim_strength": "supported_bounded",
+      "required_boundary": "fixed-policy replay; not proof that retrained policies are robust under every planning preference",
+      "manuscript_destination": "discussion_and_supplement"
+    }
+  ],
+  "required_boundaries": [
+    "observational reward regularization",
+    "not definitive causal identification",
+    "descriptive model-free baseline comparison",
+    "not direct Bishan-to-Dongxing policy transfer",
+    "final real-environment evaluation",
+    "fixed-policy replay"
+  ],
+  "forbidden_overclaims": [
+    "universal generalization across counties",
+    "formal superiority over all model-free RL methods",
+    "direct transfer of Bishan policies to Dongxing",
+    "definitive causal identification of reward effects",
+    "transition model as a replacement for final real-environment evaluation"
+  ]
+}
