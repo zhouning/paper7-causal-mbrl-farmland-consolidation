@@ -1,5 +1,5 @@
 * Learned environments enable CPU-based farmland planning reinforcement learning.
-* Observational reward calibration reduces reward exploitation.
-* Mixed random-greedy trajectories give the strongest held-out transition fidelity.
-* Dongxing adds full-reward local counterpart and multi-step learned-env evidence.
-* Reward scaling is checked against an eight-value grid search.
+* Observational reward calibration reduces learned-reward exploitation.
+* Policy-induced diagnostics support real-environment evaluation boundaries.
+* Dongxing adds a full-reward local counterpart with learned-env evidence.
+* Evidence ledger links headline claims to verified result artifacts.

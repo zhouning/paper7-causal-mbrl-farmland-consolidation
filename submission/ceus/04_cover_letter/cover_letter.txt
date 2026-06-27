@@ -16,7 +16,7 @@ Specifically, the manuscript reports:
 
 3. A treatment-effect-informed reward calibration method checked against an eight-value reward-scaling grid.
 
-4. A 15-seed real-environment evaluation showing that calibrated model-based policies improve over the uncalibrated learned-environment policy and provide descriptive comparison with GPU-trained model-free baselines.
+4. A 15-seed real-environment evaluation showing that calibrated model-based policies improve over the uncalibrated learned-environment policy under an exact paired sign-flip test, with descriptive comparison to GPU-trained model-free baselines.
 
 5. Policy-induced learned-vs-real diagnostics, a trajectory-source robustness ablation, and a Dongxing District full-reward local counterpart experiment covering full baselines, a local learned policy, one-step model-based action selection, held-out scoring optimization, and a multi-step learned-environment policy, with explicit limits on direct cross-county transfer claims.
 
