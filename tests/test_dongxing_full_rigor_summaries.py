@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -90,6 +92,20 @@ def test_build_dongxing_mbrl_results_summary_compacts_local_mbrl_evidence():
             "multi_step_mbrl_planning_tested": True,
             "policy_transfer_tested": False,
         },
+        {
+            "status": "supported_as_dongxing_scenario_robustness",
+            "scenario_count": 3,
+            "policy_summaries": {
+                "scenario_robust_mbrl": {
+                    "reward_mean": 12.0,
+                    "reward_worst": 8.0,
+                    "slope_change_pct_mean": -1.2,
+                    "scenario_count": 3,
+                }
+            },
+            "deterministic_seed_repetition_avoided": True,
+            "policy_transfer_tested": False,
+        },
     )
 
     assert summary["status"] == "supported_as_local_dongxing_mbrl_results"
@@ -100,6 +116,8 @@ def test_build_dongxing_mbrl_results_summary_compacts_local_mbrl_evidence():
     assert summary["mbrl_transition_model_used"] is True
     assert summary["policy_transfer_tested"] is False
     assert summary["multi_step_mbrl_planning_tested"] is True
+    assert summary["scenario_robustness"]["scenario_count"] == 3
+    assert summary["scenario_robustness"]["deterministic_seed_repetition_avoided"] is True
 
 
 def test_build_transfer_finetune_summary_marks_direct_transfer_structurally_invalid():
@@ -248,3 +266,17 @@ def test_write_full_rigor_summaries_writes_expected_files(tmp_path):
     assert summary["policy_holdout_reward_beats_baseline_count"] == 2
     mbrl_summary = json.loads(outputs["dongxing_mbrl_results"].read_text(encoding="utf-8"))
     assert mbrl_summary["multi_step_mbrl_planning_tested"] is True
+
+
+def test_dongxing_full_rigor_summaries_script_help_imports_from_repo_root():
+    repo_root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, "paper7/dongxing_full_rigor_summaries.py", "--help"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "--repo-root" in result.stdout

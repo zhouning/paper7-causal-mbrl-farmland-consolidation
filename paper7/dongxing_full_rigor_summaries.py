@@ -4,15 +4,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from paper7.generic_county_env import K_BLOCK_GENERIC, K_GLOBAL_GENERIC
-
 
 PAPER7_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PAPER7_DIR.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from paper7.generic_county_env import K_BLOCK_GENERIC, K_GLOBAL_GENERIC
+
+
 FULL_RIGOR_DIR = PAPER7_DIR / "results" / "full_rigor"
 REVISION_DIR = PAPER7_DIR / "results" / "revision"
 
@@ -176,14 +181,20 @@ def build_dongxing_mbrl_results_summary(
     full_model_based_policy: dict[str, Any],
     model_based_optimization: dict[str, Any],
     multistep_mbrl_policy: dict[str, Any] | None = None,
+    scenario_robustness: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     trajectory_summary = build_dongxing_trajectory_summary(transition_diagnostics)
     policy_summary = dict(full_model_based_policy)
     optimization_summary = dict(model_based_optimization)
     multistep_summary = dict(multistep_mbrl_policy or {})
+    robustness_summary = dict(scenario_robustness or {})
     has_multistep = (
         multistep_summary.get("status")
         == "supported_as_dongxing_multistep_learned_environment_policy"
+    )
+    has_robustness = (
+        robustness_summary.get("status")
+        == "supported_as_dongxing_scenario_robustness"
     )
     return {
         "status": "supported_as_local_dongxing_mbrl_results",
@@ -192,6 +203,8 @@ def build_dongxing_mbrl_results_summary(
         "full_model_based_policy": policy_summary,
         "model_based_optimization": optimization_summary,
         "multistep_mbrl_policy": multistep_summary,
+        "scenario_robustness": robustness_summary,
+        "scenario_robustness_tested": bool(has_robustness),
         "mbrl_transition_model_used": bool(
             policy_summary.get("mbrl_transition_model_used", False)
             or optimization_summary.get("mbrl_transition_model_used", False)
@@ -287,6 +300,8 @@ def write_full_rigor_summaries(repo_root: Path = REPO_ROOT) -> dict[str, Path]:
     model_based_optimization = _load_json(full_rigor_dir / "dongxing_model_based_optimization.json")
     multistep_path = full_rigor_dir / "dongxing_multistep_mbrl_policy.json"
     multistep_mbrl_policy = _load_json(multistep_path) if multistep_path.exists() else {}
+    robustness_path = full_rigor_dir / "dongxing_scenario_robustness.json"
+    scenario_robustness = _load_json(robustness_path) if robustness_path.exists() else {}
     full_env_smoke = _load_json(full_rigor_dir / "dongxing_full_env_smoke.json")
 
     trajectories_summary = build_dongxing_trajectory_summary(transition_diagnostics)
@@ -295,6 +310,7 @@ def write_full_rigor_summaries(repo_root: Path = REPO_ROOT) -> dict[str, Path]:
         full_model_based_policy,
         model_based_optimization,
         multistep_mbrl_policy,
+        scenario_robustness,
     )
     transfer_finetune = build_transfer_finetune_summary(
         {
