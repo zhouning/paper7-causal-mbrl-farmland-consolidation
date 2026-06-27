@@ -226,3 +226,151 @@ def _deduplicate_deterministic_scenario_rows(rows: list[dict[str, Any]]) -> list
     for row in rows:
         selected.setdefault(str(row["scenario_id"]), row)
     return list(selected.values())
+
+
+def optimize_scenario_robust_linear_policy(
+    envs: list[GenericCountyEnv],
+    iterations: int = 8,
+    population_size: int = 32,
+    elite_frac: float = 0.25,
+    seed: int = 0,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    if not envs:
+        raise ValueError("At least one scenario environment is required")
+    rng = np.random.default_rng(int(seed))
+    dim = K_BLOCK_GENERIC + 1
+    mean = np.zeros(dim, dtype=np.float64)
+    mean[0] = 1.0
+    mean[-1] = 1.0
+    scale = np.ones(dim, dtype=np.float64)
+    elite_count = max(1, int(round(int(population_size) * float(elite_frac))))
+    best_weights = mean.copy()
+    best_score = -np.inf
+    history: list[dict[str, Any]] = []
+
+    for iteration in range(int(iterations)):
+        population = rng.normal(mean, scale, size=(int(population_size), dim))
+        scores = np.asarray(
+            [_mean_real_scenario_score(envs, weights) for weights in population],
+            dtype=np.float64,
+        )
+        elite_indices = np.argsort(scores)[-elite_count:]
+        elite = population[elite_indices]
+        elite_scores = scores[elite_indices]
+        mean = elite.mean(axis=0)
+        scale = np.maximum(elite.std(axis=0), 0.05)
+        if float(elite_scores[-1]) > best_score:
+            best_score = float(elite_scores[-1])
+            best_weights = population[int(elite_indices[-1])].copy()
+        history.append(
+            {
+                "iteration": int(iteration),
+                "population_mean_score": round(float(scores.mean()), 6),
+                "elite_mean_score": round(float(elite_scores.mean()), 6),
+                "best_score": round(float(best_score), 6),
+            }
+        )
+
+    return best_weights, {
+        "optimizer": "cross_entropy_method_real_scenario_smoke",
+        "iterations": int(iterations),
+        "population_size": int(population_size),
+        "elite_frac": float(elite_frac),
+        "seed": int(seed),
+        "weights": [round(float(value), 10) for value in best_weights.tolist()],
+        "history": history,
+        "best_score": round(float(best_score), 6),
+    }
+
+
+def _mean_real_scenario_score(envs: list[GenericCountyEnv], weights: np.ndarray) -> float:
+    scores = []
+    for env in envs:
+        row = evaluate_linear_weight_policy(
+            env=env,
+            weights=np.asarray(weights, dtype=np.float64),
+            policy_name="candidate",
+            scenario_id="selection",
+        )
+        scores.append(float(row["reward"]))
+    return float(np.mean(scores))
+
+
+def run_scenario_robustness_experiment(
+    *,
+    parcels: list[dict[str, Any]],
+    block_compositions: dict[str, list[int]],
+    block_ids: list[int],
+    scenarios: list[ScenarioSpec],
+    baseline_policies: list[str],
+    random_seeds: list[int],
+    cem_iterations: int,
+    cem_population_size: int,
+    output_path: Path | None,
+) -> dict[str, Any]:
+    scenario_envs = {
+        spec.scenario_id: build_env_from_parcels_and_scenario(
+            parcels=parcels,
+            block_compositions=block_compositions,
+            block_ids=block_ids,
+            scenario=spec,
+        )
+        for spec in scenarios
+    }
+    selection_envs = [
+        scenario_envs[spec.scenario_id]
+        for spec in scenarios
+        if spec.split == "selection"
+    ] or list(scenario_envs.values())
+    weights, optimizer = optimize_scenario_robust_linear_policy(
+        envs=selection_envs,
+        iterations=cem_iterations,
+        population_size=cem_population_size,
+        elite_frac=0.25,
+        seed=0,
+    )
+
+    runs: list[dict[str, Any]] = []
+    for spec in scenarios:
+        env = scenario_envs[spec.scenario_id]
+        for policy in baseline_policies:
+            seeds = random_seeds if policy == "random" else [0]
+            for seed in seeds:
+                runs.append(
+                    evaluate_baseline_policy_on_env(
+                        env=env,
+                        policy=policy,
+                        scenario_id=spec.scenario_id,
+                        seed=int(seed),
+                    )
+                )
+        runs.append(
+            evaluate_linear_weight_policy(
+                env=env,
+                weights=weights,
+                policy_name="scenario_robust_mbrl",
+                scenario_id=spec.scenario_id,
+            )
+        )
+
+    report = {
+        "description": "Dongxing scenario-based robustness evaluation with a scenario-robust linear learned-environment planner.",
+        "status": "supported_as_dongxing_scenario_robustness",
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "scenario_count": len(scenarios),
+        "scenarios": [asdict(spec) for spec in scenarios],
+        "policy_summaries": summarize_policy_scenario_runs(runs),
+        "runs": runs,
+        "optimizer": optimizer,
+        "deterministic_seed_repetition_avoided": True,
+        "policy_transfer_tested": False,
+        "claim_boundary": (
+            "Scenario-based Dongxing robustness for local learned-environment planning; "
+            "deterministic Dongxing seed repetitions are not treated as independent "
+            "replications, and this is not direct Bishan-to-Dongxing policy transfer."
+        ),
+    }
+    if output_path is not None:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    return report

@@ -6,6 +6,8 @@ from paper7.dongxing_scenario_robustness import (
     apply_slope_perturbation,
     build_default_scenario_specs,
     evaluate_linear_weight_policy,
+    optimize_scenario_robust_linear_policy,
+    run_scenario_robustness_experiment,
     summarize_policy_scenario_runs,
 )
 
@@ -145,3 +147,49 @@ def test_evaluate_linear_weight_policy_runs_on_toy_env():
     assert result["deterministic_policy"] is True
     assert result["steps"] > 0
     assert result["completed_swaps"] > 0
+
+
+def test_optimize_scenario_robust_linear_policy_returns_weight_vector():
+    envs = [_toy_env(), _toy_env(total_budget=3)]
+    weights, optimizer = optimize_scenario_robust_linear_policy(
+        envs=envs,
+        iterations=2,
+        population_size=6,
+        elite_frac=0.5,
+        seed=3,
+    )
+
+    assert weights.shape == (9,)
+    assert optimizer["optimizer"] == "cross_entropy_method_real_scenario_smoke"
+    assert len(optimizer["history"]) == 2
+
+
+def test_run_scenario_robustness_experiment_smoke_uses_scenarios_not_seed_replication():
+    parcels = _toy_parcels()
+    block_compositions = {"0": [0, 1], "1": [2, 3]}
+    block_ids = [0, 1]
+    scenarios = [
+        ScenarioSpec("base", "selection", 1.0, 0.0, 0, 4, 1, "base"),
+        ScenarioSpec("scaled", "heldout", 1.1, 0.0, 0, 4, 1, "scaled"),
+    ]
+
+    result = run_scenario_robustness_experiment(
+        parcels=parcels,
+        block_compositions=block_compositions,
+        block_ids=block_ids,
+        scenarios=scenarios,
+        baseline_policies=["dynamic_slope_gap"],
+        random_seeds=[0, 1],
+        cem_iterations=2,
+        cem_population_size=6,
+        output_path=None,
+    )
+
+    robust = result["policy_summaries"]["scenario_robust_mbrl"]
+    deterministic = result["policy_summaries"]["dynamic_slope_gap"]
+
+    assert result["status"] == "supported_as_dongxing_scenario_robustness"
+    assert result["scenario_count"] == 2
+    assert result["deterministic_seed_repetition_avoided"] is True
+    assert robust["scenario_count"] == 2
+    assert deterministic["seed_replication_is_independent"] is False
