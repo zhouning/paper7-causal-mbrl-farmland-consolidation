@@ -1055,6 +1055,12 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "multi_step_mbrl_planning_tested": bool(
                     dongxing_mbrl_results.get("multi_step_mbrl_planning_tested", False)
                 ),
+                "scenario_robustness_tested": bool(
+                    dongxing_mbrl_results.get("scenario_robustness_tested", False)
+                ),
+                "scenario_count": dongxing_mbrl_results.get(
+                    "scenario_robustness", {}
+                ).get("scenario_count"),
                 "interpretation": dongxing_mbrl_results.get("interpretation"),
             }
         )

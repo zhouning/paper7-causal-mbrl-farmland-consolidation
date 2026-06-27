@@ -97,6 +97,7 @@ def summarize_dongxing_mbrl_results(path: Path) -> dict[str, Any]:
     trajectory = payload.get("transition_diagnostics", {})
     full_policy = payload.get("full_model_based_policy", {})
     optimization = payload.get("model_based_optimization", {})
+    scenario_robustness = payload.get("scenario_robustness", {})
     return {
         "status": payload.get("status", "supported_as_local_dongxing_mbrl_results"),
         "path": _display_path(path),
@@ -108,6 +109,10 @@ def summarize_dongxing_mbrl_results(path: Path) -> dict[str, Any]:
         "multi_step_mbrl_planning_tested": bool(
             payload.get("multi_step_mbrl_planning_tested", False)
         ),
+        "scenario_robustness_tested": bool(
+            payload.get("scenario_robustness_tested", False)
+        ),
+        "scenario_robustness": scenario_robustness,
         "interpretation": payload.get(
             "interpretation",
             "Local Dongxing one-step model-based policy and held-out scoring optimization; not transfer or multi-step planning.",

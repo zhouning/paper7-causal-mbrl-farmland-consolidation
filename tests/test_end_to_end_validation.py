@@ -727,6 +727,11 @@ def test_summarize_dongxing_mbrl_results_extracts_scope(tmp_path):
             "mbrl_transition_model_used": True,
             "policy_transfer_tested": False,
             "multi_step_mbrl_planning_tested": False,
+            "scenario_robustness_tested": True,
+            "scenario_robustness": {
+                "scenario_count": 10,
+                "deterministic_seed_repetition_avoided": True,
+            },
         },
     )
 
@@ -736,6 +741,8 @@ def test_summarize_dongxing_mbrl_results_extracts_scope(tmp_path):
     assert summary["mbrl_transition_model_used"] is True
     assert summary["policy_transfer_tested"] is False
     assert summary["multi_step_mbrl_planning_tested"] is False
+    assert summary["scenario_robustness_tested"] is True
+    assert summary["scenario_robustness"]["scenario_count"] == 10
 
 
 def test_classify_claim_scope_marks_dongxing_mbrl_results_scope():
@@ -744,6 +751,8 @@ def test_classify_claim_scope_marks_dongxing_mbrl_results_scope():
             "dongxing_mbrl_results": {
                 "status": "supported_as_local_dongxing_mbrl_results",
                 "mbrl_transition_model_used": True,
+                "scenario_robustness_tested": True,
+                "scenario_robustness": {"scenario_count": 10},
                 "interpretation": "local mbrl bundle",
             }
         }
@@ -754,6 +763,8 @@ def test_classify_claim_scope_marks_dongxing_mbrl_results_scope():
     assert scope["status"] == "supported_as_local_dongxing_mbrl_results"
     assert scope["policy_transfer_tested"] is False
     assert scope["multi_step_mbrl_planning_tested"] is False
+    assert scope["scenario_robustness_tested"] is True
+    assert scope["scenario_count"] == 10
 
 
 def test_summarize_transfer_finetune_results_marks_structural_invalid(tmp_path):

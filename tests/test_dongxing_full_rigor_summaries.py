@@ -116,6 +116,7 @@ def test_build_dongxing_mbrl_results_summary_compacts_local_mbrl_evidence():
     assert summary["mbrl_transition_model_used"] is True
     assert summary["policy_transfer_tested"] is False
     assert summary["multi_step_mbrl_planning_tested"] is True
+    assert summary["scenario_robustness_tested"] is True
     assert summary["scenario_robustness"]["scenario_count"] == 3
     assert summary["scenario_robustness"]["deterministic_seed_repetition_avoided"] is True
 
@@ -232,6 +233,25 @@ def test_write_full_rigor_summaries_writes_expected_files(tmp_path):
         ),
         encoding="utf-8",
     )
+    (full_rigor / "dongxing_scenario_robustness.json").write_text(
+        json.dumps(
+            {
+                "status": "supported_as_dongxing_scenario_robustness",
+                "scenario_count": 2,
+                "policy_summaries": {
+                    "scenario_robust_mbrl": {
+                        "reward_mean": 10.0,
+                        "reward_worst": 6.0,
+                        "slope_change_pct_mean": -1.0,
+                        "scenario_count": 2,
+                    }
+                },
+                "deterministic_seed_repetition_avoided": True,
+            }
+        ),
+        encoding="utf-8",
+    )
+
     (full_rigor / "dongxing_full_env_smoke.json").write_text(
         json.dumps(
             {
@@ -266,6 +286,8 @@ def test_write_full_rigor_summaries_writes_expected_files(tmp_path):
     assert summary["policy_holdout_reward_beats_baseline_count"] == 2
     mbrl_summary = json.loads(outputs["dongxing_mbrl_results"].read_text(encoding="utf-8"))
     assert mbrl_summary["multi_step_mbrl_planning_tested"] is True
+    assert mbrl_summary["scenario_robustness_tested"] is True
+    assert mbrl_summary["scenario_robustness"]["scenario_count"] == 2
 
 
 def test_dongxing_full_rigor_summaries_script_help_imports_from_repo_root():
