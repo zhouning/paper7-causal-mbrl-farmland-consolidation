@@ -200,11 +200,12 @@ def summarize_policy_scenario_runs(runs: list[dict[str, Any]]) -> dict[str, dict
         grouped.setdefault(str(row["policy"]), []).append(row)
     summaries: dict[str, dict[str, Any]] = {}
     for policy, rows in grouped.items():
-        summary = summarize_runs(rows)
-        scenario_ids = sorted({str(row["scenario_id"]) for row in rows})
         deterministic = all(bool(row.get("deterministic_policy", False)) for row in rows)
-        rewards = [float(row["reward"]) for row in rows]
-        slopes = [float(row["slope_change_pct"]) for row in rows]
+        summary_rows = _deduplicate_deterministic_scenario_rows(rows) if deterministic else rows
+        summary = summarize_runs(summary_rows)
+        scenario_ids = sorted({str(row["scenario_id"]) for row in rows})
+        rewards = [float(row["reward"]) for row in summary_rows]
+        slopes = [float(row["slope_change_pct"]) for row in summary_rows]
         summary.update(
             {
                 "policy": policy,
@@ -218,3 +219,10 @@ def summarize_policy_scenario_runs(runs: list[dict[str, Any]]) -> dict[str, dict
         )
         summaries[policy] = summary
     return summaries
+
+
+def _deduplicate_deterministic_scenario_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    selected: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        selected.setdefault(str(row["scenario_id"]), row)
+    return list(selected.values())

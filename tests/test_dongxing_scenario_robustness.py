@@ -91,6 +91,44 @@ def test_summarize_policy_scenario_runs_uses_scenario_variation_for_deterministi
     assert summary["slope_change_pct_worst"] == -0.5
 
 
+def test_summarize_policy_scenario_runs_deduplicates_deterministic_seed_repeats():
+    runs = [
+        {
+            "policy": "deterministic_rule",
+            "scenario_id": "base",
+            "seed": 0,
+            "deterministic_policy": True,
+            "reward": 10.0,
+            "slope_change_pct": -1.0,
+        },
+        {
+            "policy": "deterministic_rule",
+            "scenario_id": "base",
+            "seed": 1,
+            "deterministic_policy": True,
+            "reward": 99.0,
+            "slope_change_pct": -9.9,
+        },
+        {
+            "policy": "deterministic_rule",
+            "scenario_id": "budget_low",
+            "seed": 0,
+            "deterministic_policy": True,
+            "reward": 5.0,
+            "slope_change_pct": -0.5,
+        },
+    ]
+
+    summary = summarize_policy_scenario_runs(runs)["deterministic_rule"]
+
+    assert summary["scenario_count"] == 2
+    assert summary["n"] == 2
+    assert summary["deterministic_policy"] is True
+    assert summary["seed_replication_is_independent"] is False
+    assert summary["reward_mean"] == 7.5
+    assert summary["reward_worst"] == 5.0
+
+
 def test_evaluate_linear_weight_policy_runs_on_toy_env():
     env = _toy_env()
     weights = np.asarray([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
