@@ -2,4 +2,5 @@
 * Observational reward calibration reduces learned-reward exploitation.
 * Policy-induced diagnostics support real-environment evaluation boundaries.
 * Dongxing adds a full-reward local counterpart with learned-env evidence.
+* Dongxing scenario robustness avoids deterministic seed pseudo-replication.
 * Evidence ledger links headline claims to verified result artifacts.

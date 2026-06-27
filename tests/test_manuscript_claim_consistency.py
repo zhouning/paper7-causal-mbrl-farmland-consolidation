@@ -63,6 +63,8 @@ def test_manuscript_keeps_review_boundaries_visible():
         "model-free",
         "real-environment evaluation",
         "fixed-policy",
+        "scenario-based dongxing robustness",
+        "deterministic dongxing seed repetitions",
     ]
 
     for path, manuscript in _read_all_manuscripts().items():
@@ -78,6 +80,8 @@ def test_manuscript_does_not_reintroduce_forbidden_overclaims():
         r"direct transfer of bishan policies to dongxing",
         r"definitive causal identification of reward effects",
         r"transition model as a replacement for final real-environment evaluation",
+        r"dongxing.*eval seeds.*independent",
+        r"deterministic.*dongxing.*seed.*independent",
     ]
 
     for path, manuscript in _read_all_manuscripts().items():
