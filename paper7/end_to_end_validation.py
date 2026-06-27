@@ -696,6 +696,28 @@ def summarize_dongxing_multistep_mbrl_policy(path: Path) -> dict[str, Any]:
     }
 
 
+
+def summarize_dongxing_scenario_robustness(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"status": "missing", "path": display_path(path)}
+    payload = load_json(path)
+    robust = payload.get("policy_summaries", {}).get("scenario_robust_mbrl", {})
+    return {
+        "status": payload.get("status"),
+        "path": display_path(path),
+        "scenario_count": payload.get("scenario_count"),
+        "scenario_robust_reward_mean": robust.get("reward_mean"),
+        "scenario_robust_reward_worst": robust.get("reward_worst"),
+        "scenario_robust_slope_change_pct_mean": robust.get("slope_change_pct_mean"),
+        "scenario_robust_slope_change_pct_worst": robust.get("slope_change_pct_worst"),
+        "deterministic_seed_repetition_avoided": bool(
+            payload.get("deterministic_seed_repetition_avoided", False)
+        ),
+        "policy_transfer_tested": bool(payload.get("policy_transfer_tested", False)),
+        "claim_boundary": payload.get("claim_boundary"),
+    }
+
+
 def summarize_trajectory_source_ablation(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"status": "missing", "path": display_path(path)}
@@ -809,6 +831,7 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     dongxing_transition = evidence.get("dongxing_transition_diagnostics", {})
     dongxing_trajectory = evidence.get("dongxing_trajectory_summary", {})
     dongxing_mbrl_results = evidence.get("dongxing_mbrl_results", {})
+    dongxing_scenario_robustness = evidence.get("dongxing_scenario_robustness", {})
     dongxing_model_based = evidence.get("dongxing_full_model_based_policy", {})
     dongxing_model_optimization = evidence.get("dongxing_model_based_optimization", {})
     dongxing_multistep_mbrl = evidence.get("dongxing_multistep_mbrl_policy", {})
@@ -1064,6 +1087,27 @@ def classify_claim_scope(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "interpretation": dongxing_mbrl_results.get("interpretation"),
             }
         )
+    if (
+        dongxing_scenario_robustness.get("status")
+        == "supported_as_dongxing_scenario_robustness"
+    ):
+        scopes.append(
+            {
+                "id": "dongxing_scenario_robustness_scope",
+                "status": dongxing_scenario_robustness.get("status"),
+                "evidence_level": "external_scenario_robustness",
+                "scenario_count": dongxing_scenario_robustness.get("scenario_count"),
+                "deterministic_seed_repetition_avoided": bool(
+                    dongxing_scenario_robustness.get(
+                        "deterministic_seed_repetition_avoided", False
+                    )
+                ),
+                "policy_transfer_tested": bool(
+                    dongxing_scenario_robustness.get("policy_transfer_tested", False)
+                ),
+                "interpretation": dongxing_scenario_robustness.get("claim_boundary"),
+            }
+        )
     if dongxing_model_based.get("status") == "supported_as_dongxing_full_one_step_model_based_policy":
         scopes.append(
             {
@@ -1251,6 +1295,9 @@ def build_validation_report(
     evidence["dongxing_mbrl_results"] = summarize_dongxing_mbrl_results(
         paper7_dir / "results" / "full_rigor" / "dongxing_mbrl_results.json"
     )
+    evidence["dongxing_scenario_robustness"] = summarize_dongxing_scenario_robustness(
+        paper7_dir / "results" / "full_rigor" / "dongxing_scenario_robustness.json"
+    )
     evidence["transfer_finetune_results"] = summarize_transfer_finetune_results(
         paper7_dir / "results" / "full_rigor" / "transfer_finetune_results.json"
     )
@@ -1294,6 +1341,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--out",
+        "--output",
         default=str(DEFAULT_OUT),
         help="Path to write the validation JSON report.",
     )

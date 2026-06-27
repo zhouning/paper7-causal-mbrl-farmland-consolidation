@@ -11,6 +11,7 @@ from paper7.end_to_end_validation import (
     select_policy_induced_diagnostics_path,
     summarize_alpha_grid,
     summarize_dongxing_mbrl_results,
+    summarize_dongxing_scenario_robustness,
     summarize_dongxing_rl_lite,
     summarize_dongxing_trajectory_summary,
     summarize_dongxing_full_baselines,
@@ -765,6 +766,56 @@ def test_classify_claim_scope_marks_dongxing_mbrl_results_scope():
     assert scope["multi_step_mbrl_planning_tested"] is False
     assert scope["scenario_robustness_tested"] is True
     assert scope["scenario_count"] == 10
+
+
+
+def test_summarize_dongxing_scenario_robustness_extracts_scope(tmp_path):
+    path = tmp_path / "dongxing_scenario_robustness.json"
+    _write_json(
+        path,
+        {
+            "status": "supported_as_dongxing_scenario_robustness",
+            "scenario_count": 4,
+            "policy_summaries": {
+                "scenario_robust_mbrl": {
+                    "reward_mean": 12.0,
+                    "reward_worst": 8.0,
+                    "slope_change_pct_mean": -1.2,
+                    "slope_change_pct_worst": -0.8,
+                }
+            },
+            "deterministic_seed_repetition_avoided": True,
+            "policy_transfer_tested": False,
+            "claim_boundary": "scenario-based Dongxing robustness; not direct Bishan-to-Dongxing policy transfer",
+        },
+    )
+
+    summary = summarize_dongxing_scenario_robustness(path)
+
+    assert summary["status"] == "supported_as_dongxing_scenario_robustness"
+    assert summary["scenario_count"] == 4
+    assert summary["scenario_robust_reward_mean"] == 12.0
+    assert summary["deterministic_seed_repetition_avoided"] is True
+    assert summary["policy_transfer_tested"] is False
+
+
+def test_classify_claim_scope_marks_dongxing_scenario_robustness_scope():
+    scopes = classify_claim_scope(
+        {
+            "dongxing_scenario_robustness": {
+                "status": "supported_as_dongxing_scenario_robustness",
+                "scenario_count": 4,
+                "deterministic_seed_repetition_avoided": True,
+                "policy_transfer_tested": False,
+            }
+        }
+    )
+
+    scope = next(item for item in scopes if item["id"] == "dongxing_scenario_robustness_scope")
+
+    assert scope["status"] == "supported_as_dongxing_scenario_robustness"
+    assert scope["evidence_level"] == "external_scenario_robustness"
+    assert scope["policy_transfer_tested"] is False
 
 
 def test_summarize_transfer_finetune_results_marks_structural_invalid(tmp_path):
